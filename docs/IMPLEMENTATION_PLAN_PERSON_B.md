@@ -60,6 +60,68 @@ Assistant Reasoning
 
 ---
 
+# Cross-Team Integration Rules
+
+The implementation plan defines ownership.
+
+Ownership boundaries must be respected.
+
+---
+
+Before beginning a milestone:
+
+1. Check INTEGRATION_BOARD.md
+
+2. Verify dependencies
+
+3. Confirm required systems are:
+   - Complete
+   - or Ready for Integration
+
+---
+
+When a milestone reaches stable contract status:
+
+Update:
+
+INTEGRATION_BOARD.md
+
+and mark:
+
+Ready for Integration
+
+---
+
+If API contracts change:
+
+Update:
+
+API_SPEC.md
+
+before implementation.
+
+---
+
+If database contracts change:
+
+Update:
+
+DATABASE_SCHEMA.md
+
+before implementation.
+
+---
+
+If user workflows change:
+
+Update:
+
+USER_FLOWS.md
+
+before implementation.
+
+---
+
 # Phase 1
 
 Project Foundation
