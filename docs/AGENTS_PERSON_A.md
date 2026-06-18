@@ -82,6 +82,58 @@ Unit Tests for owned domains
 
 ---
 
+# Coordination Responsibilities
+
+Before beginning work:
+
+1. Read docs/INTEGRATION_BOARD.md
+
+2. Review active branches
+
+3. Review systems marked:
+   - In Progress
+   - Ready for Integration
+
+4. Verify no ownership conflicts exist.
+
+---
+
+If your work changes:
+
+- database schema
+- API contracts
+- shared types
+- permissions
+- routes
+
+update:
+
+docs/INTEGRATION_BOARD.md
+
+and notify the other contributor through documentation.
+
+---
+
+Never overwrite another contributor's work.
+
+Always pull latest main before beginning work.
+
+Always rebase before opening a pull request.
+
+---
+
+Integration readiness must be updated when a feature moves between:
+
+Planned
+
+In Progress
+
+Ready for Integration
+
+Complete
+
+---
+
 # Do Not Modify
 
 Unless explicitly required:
