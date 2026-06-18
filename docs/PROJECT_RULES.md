@@ -851,6 +851,86 @@ A task is complete only when:
 
 ---
 
+# Two-Person Development Protocol
+
+Project Harvest is developed by two engineers working asynchronously.
+
+All work must respect ownership boundaries.
+
+---
+
+Person A owns:
+
+Backend
+
+Database
+
+AI
+
+Forecasting
+
+Recommendations
+
+Simulation
+
+Reports Backend
+
+---
+
+Person B owns:
+
+Frontend
+
+Authentication
+
+Dashboard
+
+Settings
+
+Notifications
+
+Workspace Experiences
+
+---
+
+No contributor may implement functionality owned by the other contributor unless explicitly coordinated.
+
+---
+
+Before modifying:
+
+Database Schema
+
+API Contracts
+
+Shared Types
+
+Route Structures
+
+Permission Models
+
+Documentation
+
+notify the other contributor.
+
+---
+
+The integration board is the source of truth for readiness:
+
+docs/INTEGRATION_BOARD.md
+
+---
+
+Features should be developed against stable contracts whenever possible.
+
+Use mock data until dependent systems reach:
+
+Ready for Integration
+
+status.
+
+---
+
 # Project North Star
 
 Every implementation decision should move the platform toward:
