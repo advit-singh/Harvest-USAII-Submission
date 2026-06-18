@@ -398,6 +398,8 @@ Testing Completed
 
 Documentation Updated
 
+Template provided at PR_TEMPLATE.md.
+
 ---
 
 # Before Opening PR
