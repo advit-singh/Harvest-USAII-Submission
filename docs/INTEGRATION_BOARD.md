@@ -119,7 +119,7 @@ Production-demo ready.
 
 | Branch | Owner | Status |
 |----------|----------|----------|
-| feature/app-platform-foundation | B | Complete (pending PR) |
+| feature/app-platform-foundation | B | PR Open |
 
 ---
 
@@ -222,7 +222,7 @@ Completed:
 
 Working On:
 
-- Opening PR for `feature/app-platform-foundation`
+- Awaiting PR review and merge to `master`
 
 Blockers:
 
@@ -231,6 +231,10 @@ Blockers:
 Ready For Integration:
 
 - Organization API client (mocked, API_SPEC-aligned types in `src/types`)
+
+Milestone Status:
+
+- Application Platform Foundation (Phases 1–6) — **Complete**, PR open
 
 ---
 
