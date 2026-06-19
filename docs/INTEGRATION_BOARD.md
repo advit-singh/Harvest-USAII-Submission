@@ -97,8 +97,12 @@ Production-demo ready.
 | Donation Matching Engine | A | Not Started | No | |
 | AI Assistant Backend | A | Not Started | No | |
 | Report Generation Backend | A | Not Started | No | |
-| Authentication | B | Not Started | No | |
-| Dashboard Workspace | B | Not Started | No | |
+| Authentication | B | Complete | Yes | Supabase SSR + dev mock mode; login/register/reset flows |
+| Design System | B | Complete | Yes | Harvest tokens in `src/design-system` + `src/styles/globals.css` |
+| App Shell / Navigation | B | Complete | Yes | Sidebar, header, org switcher, command palette, breadcrumbs |
+| Organization Onboarding UI | B | Complete | Yes | 5-step wizard; org API client mocked (`NEXT_PUBLIC_USE_MOCK_API`) |
+| Organization API (backend) | A | Not Started | No | Person B consuming mocks until A delivers |
+| Dashboard Workspace | B | Not Started | No | Empty-state placeholder only; widgets deferred to next milestone |
 | Analytics Workspace | B | Not Started | No | |
 | Forecast Workspace | B | Not Started | No | |
 | Recommendations Workspace | B | Not Started | No | |
@@ -115,11 +119,28 @@ Production-demo ready.
 
 | Branch | Owner | Status |
 |----------|----------|----------|
-| | | |
+| feature/app-platform-foundation | B | Complete (pending PR) |
 
 ---
 
 # Integration Dependencies
+
+## Organization API Client
+
+Requires:
+
+- `GET/POST /api/v1/organizations`
+- `GET /api/v1/users/me`
+- `GET/POST /api/v1/organizations/:id/members`
+- `GET /api/v1/roles`
+
+Status:
+
+Ready for Integration (mocked client in `src/lib/api`)
+
+Person A: swap mocks when backend routes are live.
+
+---
 
 ## Dashboard
 
@@ -175,6 +196,44 @@ Waiting
 
 # Daily Sync Log
 
+## 2026-06-19
+
+### Person A
+
+Completed:
+
+Working On:
+
+Blockers:
+
+Ready For Integration:
+
+---
+
+### Person B
+
+Completed:
+
+- Next.js 16 app scaffold with TypeScript strict, Tailwind v4, TanStack Query, Zustand, RHF, Zod, Vitest
+- Harvest design system tokens and component library
+- Supabase auth flows + dev mock auth mode
+- 5-step organization onboarding wizard
+- App shell: sidebar, header, org switcher, command palette, workspace placeholders
+
+Working On:
+
+- Opening PR for `feature/app-platform-foundation`
+
+Blockers:
+
+- Organization backend APIs (Person A) — using mocks
+
+Ready For Integration:
+
+- Organization API client (mocked, API_SPEC-aligned types in `src/types`)
+
+---
+
 ## YYYY-MM-DD
 
 ### Person A
@@ -223,16 +282,17 @@ Before consuming another developer's work:
 
 Current Risks:
 
--
+- Person A and Person B both need to coordinate on `package.json` when database layer is added
 
 Architecture Concerns:
 
--
+- Next.js 16 scaffolded (docs specify 15; functionally compatible)
 
 Merge Conflict Risks:
 
--
+- `package.json`, `tsconfig.json` when Person A adds Drizzle scripts and `src/db`
 
 Upcoming Integration Milestones:
 
--
+- Dashboard Workspace (`feature/dashboard-workspace`)
+- Person A organization API backend → swap mock client
