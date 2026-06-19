@@ -103,7 +103,7 @@ Production-demo ready.
 | Organization Onboarding UI | B | Complete | Yes | 5-step wizard; org API client mocked (`NEXT_PUBLIC_USE_MOCK_API`) |
 | Organization API (backend) | A | Not Started | No | Person B consuming mocks until A delivers |
 | Dashboard Workspace | B | Complete | Yes | 7 configurable widgets, drag/resize layout, mock API clients |
-| Analytics Workspace | B | Not Started | No | |
+| Analytics Workspace | B | Complete | Yes | 5 tabs, charts, filters, drill-down, root cause, CSV export; mock API clients |
 | Forecast Workspace | B | Not Started | No | |
 | Recommendations Workspace | B | Not Started | No | |
 | Simulator Workspace | B | Not Started | No | |
@@ -121,6 +121,7 @@ Production-demo ready.
 |----------|----------|----------|
 | feature/app-platform-foundation | B | PR Open |
 | feature/dashboard-workspace | B | PR Open |
+| feature/analytics-workspace | B | PR Open |
 
 ---
 
@@ -177,6 +178,24 @@ Mock-first clients (API_SPEC-aligned types in `src/types`):
 Status:
 
 Ready for Integration
+
+---
+
+## Analytics Workspace Mock API Clients
+
+Mock-first clients (API_SPEC §26, types in `src/types/analytics.ts`):
+
+- `src/lib/api/analytics-waste.ts` — `GET /analytics/waste`
+- `src/lib/api/analytics-inventory.ts` — `GET /analytics/inventory`
+- `src/lib/api/analytics-attendance.ts` — `GET /analytics/attendance`
+- `src/lib/api/analytics-donations.ts` — `GET /analytics/donations`
+- `src/lib/api/analytics-impact.ts` — `GET /analytics/impact`
+
+Status:
+
+Ready for Integration
+
+Person A: swap mocks when backend analytics routes are live.
 
 ---
 
@@ -238,30 +257,28 @@ Ready For Integration:
 
 Completed:
 
-- Next.js 16 app scaffold with TypeScript strict, Tailwind v4, TanStack Query, Zustand, RHF, Zod, Vitest
-- Harvest design system tokens and component library
-- Supabase auth flows + dev mock auth mode
-- 5-step organization onboarding wizard
-- App shell: sidebar, header, org switcher, command palette, workspace placeholders
-- Complete Dashboard Workspace: 7 widgets, react-grid-layout, per-org persistence, mock intelligence API clients
+- Complete Analytics Workspace: 5 tabbed analysis views (waste, inventory, attendance, donations, impact)
+- Charts, filters, hierarchy drill-down, AI root-cause panel, CSV export
+- Mock-first API clients for all `GET /api/v1/analytics/*` endpoints
+- Unit and integration tests
 
 Working On:
 
-- Dashboard PR review (`feature/dashboard-workspace`)
+- Analytics PR review (`feature/analytics-workspace`)
 
 Blockers:
 
-- Person A intelligence APIs — dashboard uses mocks until live
+- Person A analytics backend routes — workspace uses mocks until live
 
 Ready For Integration:
 
-- Organization API client (mocked, API_SPEC-aligned types in `src/types`)
-- Dashboard mock API clients (forecasts, recommendations, impact, analytics, donations, notifications)
+- Analytics mock API clients (5 endpoints in `src/lib/api/analytics-*.ts`)
 
 Milestone Status:
 
 - Application Platform Foundation (Phases 1–6) — **Complete**, PR open
 - Dashboard Workspace (Phase 7) — **Complete**, PR open
+- Analytics Workspace (Phase 9) — **Complete**, PR open
 
 ---
 
@@ -325,6 +342,6 @@ Merge Conflict Risks:
 
 Upcoming Integration Milestones:
 
-- Analytics Workspace (`feature/analytics-workspace`)
+- Forecast Workspace (`feature/predictions-workspace`)
 - Person A organization API backend → swap mock client
-- Person A intelligence APIs → swap dashboard mock clients
+- Person A intelligence APIs → swap dashboard and analytics mock clients
