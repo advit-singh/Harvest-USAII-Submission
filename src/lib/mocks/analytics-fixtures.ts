@@ -149,7 +149,7 @@ export function getMockInventoryAnalytics(
 
 export function getMockAttendanceAnalytics(
   orgId: string,
-  _filters: AnalyticsFilters,
+  filters: AnalyticsFilters,
 ): AttendanceAnalytics {
   if (isEmptyOrg(orgId)) {
     return {
@@ -183,7 +183,7 @@ export function getMockAttendanceAnalytics(
       { id: "evt_holiday", name: "Holiday weeks", value: -15, unit: "%", percent: 22 },
     ],
     summary: [
-      { id: "avg_attendance", label: "Avg daily attendance", value: 395, trend: "down", trendPercent: 6 },
+      { id: "avg_attendance", label: "Avg daily attendance", value: scale(395, filters.timeRange), trend: "down", trendPercent: 6 },
       { id: "forecast_accuracy", label: "Forecast accuracy", value: "91%", trend: "up", trendPercent: 2 },
       { id: "variance", label: "Attendance variance", value: "±8.2%", trend: "up", trendPercent: 3 },
       { id: "peak_day", label: "Peak day", value: "Tuesday", trend: "flat" },
