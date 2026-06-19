@@ -102,7 +102,7 @@ Production-demo ready.
 | App Shell / Navigation | B | Complete | Yes | Sidebar, header, org switcher, command palette, breadcrumbs |
 | Organization Onboarding UI | B | Complete | Yes | 5-step wizard; org API client mocked (`NEXT_PUBLIC_USE_MOCK_API`) |
 | Organization API (backend) | A | Not Started | No | Person B consuming mocks until A delivers |
-| Dashboard Workspace | B | Not Started | No | Empty-state placeholder only; widgets deferred to next milestone |
+| Dashboard Workspace | B | Complete | Yes | 7 configurable widgets, drag/resize layout, mock API clients |
 | Analytics Workspace | B | Not Started | No | |
 | Forecast Workspace | B | Not Started | No | |
 | Recommendations Workspace | B | Not Started | No | |
@@ -120,6 +120,7 @@ Production-demo ready.
 | Branch | Owner | Status |
 |----------|----------|----------|
 | feature/app-platform-foundation | B | PR Open |
+| feature/dashboard-workspace | B | PR Open |
 
 ---
 
@@ -149,10 +150,33 @@ Requires:
 - Forecast API
 - Recommendation API
 - Impact API
+- Analytics overview API
+- Donations opportunities API
+- Notifications API
 
 Status:
 
-Waiting
+Ready for Integration (mocked clients in `src/lib/api`)
+
+Person A: swap mocks when backend routes are live.
+
+---
+
+## Dashboard Mock API Clients
+
+Mock-first clients (API_SPEC-aligned types in `src/types`):
+
+- `src/lib/api/analytics.ts` — overview
+- `src/lib/api/forecasts.ts`
+- `src/lib/api/recommendations.ts`
+- `src/lib/api/impact.ts`
+- `src/lib/api/inventory.ts`
+- `src/lib/api/donations.ts`
+- `src/lib/api/notifications.ts`
+
+Status:
+
+Ready for Integration
 
 ---
 
@@ -219,22 +243,25 @@ Completed:
 - Supabase auth flows + dev mock auth mode
 - 5-step organization onboarding wizard
 - App shell: sidebar, header, org switcher, command palette, workspace placeholders
+- Complete Dashboard Workspace: 7 widgets, react-grid-layout, per-org persistence, mock intelligence API clients
 
 Working On:
 
-- Awaiting PR review and merge to `master`
+- Dashboard PR review (`feature/dashboard-workspace`)
 
 Blockers:
 
-- Organization backend APIs (Person A) — using mocks
+- Person A intelligence APIs — dashboard uses mocks until live
 
 Ready For Integration:
 
 - Organization API client (mocked, API_SPEC-aligned types in `src/types`)
+- Dashboard mock API clients (forecasts, recommendations, impact, analytics, donations, notifications)
 
 Milestone Status:
 
 - Application Platform Foundation (Phases 1–6) — **Complete**, PR open
+- Dashboard Workspace (Phase 7) — **Complete**, PR open
 
 ---
 
@@ -298,5 +325,6 @@ Merge Conflict Risks:
 
 Upcoming Integration Milestones:
 
-- Dashboard Workspace (`feature/dashboard-workspace`)
+- Analytics Workspace (`feature/analytics-workspace`)
 - Person A organization API backend → swap mock client
+- Person A intelligence APIs → swap dashboard mock clients
