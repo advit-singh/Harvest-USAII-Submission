@@ -198,6 +198,68 @@ export function CommandPalette() {
                   </div>
                 </Command.Item>
               </Command.Group>
+              <Command.Group heading="Settings">
+                <Command.Item
+                  value="organization settings"
+                  onSelect={() => {
+                    router.push("/settings?section=organization");
+                    setOpen(false);
+                  }}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                >
+                  <div>
+                    <p>Organization settings</p>
+                    <p className="text-xs text-muted-foreground">
+                      Profile and operational details
+                    </p>
+                  </div>
+                </Command.Item>
+                <Command.Item
+                  value="team members"
+                  onSelect={() => {
+                    router.push("/settings?section=users");
+                    setOpen(false);
+                  }}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                >
+                  <div>
+                    <p>Team members</p>
+                    <p className="text-xs text-muted-foreground">
+                      Invite and manage users
+                    </p>
+                  </div>
+                </Command.Item>
+                <Command.Item
+                  value="notification preferences"
+                  onSelect={() => {
+                    router.push("/settings?section=notifications");
+                    setOpen(false);
+                  }}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                >
+                  <div>
+                    <p>Notification preferences</p>
+                    <p className="text-xs text-muted-foreground">
+                      Control alert categories
+                    </p>
+                  </div>
+                </Command.Item>
+                <Command.Item
+                  value="appearance settings"
+                  onSelect={() => {
+                    router.push("/settings?section=appearance");
+                    setOpen(false);
+                  }}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                >
+                  <div>
+                    <p>Appearance</p>
+                    <p className="text-xs text-muted-foreground">
+                      Theme, layout, and widgets
+                    </p>
+                  </div>
+                </Command.Item>
+              </Command.Group>
             </Command.List>
           </Command>
         </DialogContent>

@@ -14,6 +14,8 @@ const TYPE_LABEL: Record<NotificationType, string> = {
   "recommendation.created": "Recommendation",
   "donation.completed": "Donation",
   "report.generated": "Report",
+  "assignment.received": "Assignment",
+  "validation.warning": "Validation",
 };
 
 interface RecentActivityWidgetProps {

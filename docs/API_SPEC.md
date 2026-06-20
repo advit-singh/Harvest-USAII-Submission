@@ -253,6 +253,61 @@ Notification Settings
 
 ---
 
+### Response shape
+
+```json
+{
+  "success": true,
+  "data": {
+    "organizationId": "uuid",
+    "ai": {
+      "confidenceVisibility": true,
+      "memoryEnabled": true,
+      "recommendationAggressiveness": "medium",
+      "assistantEnabled": true
+    },
+    "forecast": {
+      "defaultHorizonDays": 7,
+      "externalDataEnabled": true
+    },
+    "notifications": {
+      "critical": true,
+      "warning": true,
+      "informational": true,
+      "emailDigest": false
+    },
+    "dashboardLayout": null,
+    "updatedAt": "2026-06-20T12:00:00Z"
+  }
+}
+```
+
+### PATCH request body (partial updates supported)
+
+```json
+{
+  "ai": {
+    "confidenceVisibility": true,
+    "memoryEnabled": true,
+    "recommendationAggressiveness": "low",
+    "assistantEnabled": true
+  },
+  "forecast": {
+    "defaultHorizonDays": 14,
+    "externalDataEnabled": false
+  },
+  "notifications": {
+    "critical": true,
+    "warning": true,
+    "informational": false,
+    "emailDigest": true
+  },
+  "dashboardLayout": {}
+}
+```
+
+---
+
 # 11. Users
 
 ## GET
@@ -1120,6 +1175,43 @@ GET /api/v1/notifications
 
 ```http
 PATCH /api/v1/notifications/:id/read
+```
+
+Marks a single notification as read.
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "notif_001",
+    "isRead": true
+  }
+}
+```
+
+---
+
+## PATCH (mark all read)
+
+```http
+PATCH /api/v1/notifications/read-all
+```
+
+Query parameters:
+
+- `organizationId` (required)
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "updatedCount": 3
+  }
+}
 ```
 
 ---

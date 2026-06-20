@@ -111,8 +111,8 @@ Production-demo ready.
 | Uploads Workspace | B | Complete | Yes | 4 tabs: upload, queue, history, validation; extraction review; mock API clients |
 | AI Assistant Workspace | B | Complete | Yes | Chat UI, conversation history, evidence panel, citations, suggested prompts; mock API clients |
 | Reports Workspace | B | Not Started | No | |
-| Settings Workspace | B | Not Started | No | |
-| Notification System | B | Not Started | No | |
+| Settings Workspace | B | Complete | Yes | 9 sections: org, users, permissions, AI, forecast, integrations, appearance, notifications, data; mock API clients |
+| Notification System | B | Complete | Yes | Header Notification Center, unread badge, mark-read, preferences filtering; mock API clients |
 
 ---
 
@@ -127,6 +127,7 @@ Production-demo ready.
 | feature/rescue-network | B | PR Open |
 | feature/uploads-workspace | B | PR Open |
 | feature/assistant-workspace | B | PR Open |
+| feature/settings-notifications | B | PR Open |
 
 ---
 
@@ -303,9 +304,85 @@ Waiting
 
 ---
 
+## Settings Workspace
+
+Requires:
+
+- Organization API
+- Organization Settings API
+- Members API
+- Roles API
+
+Status:
+
+Ready for Integration (mocked clients in `src/lib/api`)
+
+Mock-first clients (API_SPEC §10–13, types in `src/types/settings.ts`):
+
+- `src/lib/api/organization-settings.ts` — `GET/PATCH /organizations/:id/settings`
+- `src/lib/api/organizations.ts` — extended with `fetchMembers`, `removeMember`, `createRole`, `fetchRolesWithPermissions`
+
+Person A: swap mocks when organization backend routes are live.
+
+---
+
+## Notification System
+
+Requires:
+
+- Notifications API
+
+Status:
+
+Ready for Integration (mocked clients in `src/lib/api`)
+
+Mock-first clients (API_SPEC §46, types in `src/types/notification.ts`):
+
+- `src/lib/api/notifications.ts` — `GET /notifications`, `PATCH /notifications/:id/read`, `PATCH /notifications/read-all`
+- Preferences filtering via organization settings mock
+
+Person A: swap mocks when notification backend routes are live.
+
+---
+
 # Daily Sync Log
 
-## 2026-06-20 (AI Assistant Workspace)
+## 2026-06-20 (Settings & Notification Platform)
+
+### Person B
+
+Completed:
+
+- Complete Settings Workspace: 9 sections with org profile, users, permissions, AI, forecast, integrations, appearance, notification preferences, data management
+- Permissions UI with role list, permission matrix, and custom role creation
+- Notification Center in header with unread badge, mark-read, mark-all-read, and deep links
+- Theme sync via `ThemeSync` component wiring `ui-store` to `ThemeProvider`
+- Appearance section controls dashboard widget visibility via `dashboard-store`
+- Mock-first API clients for organization settings, extended org/member/role APIs, and notification mark-read
+- Command palette settings deep links
+- Unit and integration tests
+
+Working On:
+
+- Settings & notifications PR review (`feature/settings-notifications`)
+
+Blockers:
+
+- Person A organization API backend — settings uses mocks until live
+- Person A notification API backend — notification center uses mocks until live
+
+Ready For Integration:
+
+- Organization settings mock clients (`organization-settings.ts`)
+- Extended organization mock clients (members, roles with permissions)
+- Notification mark-read mock clients (`notifications.ts`)
+
+Milestone Status:
+
+- Settings Workspace (Phases 17–18) — **Complete**, PR open
+- Notification System (Phase 16) — **Complete**, PR open
+
+---
 
 ### Person B
 
