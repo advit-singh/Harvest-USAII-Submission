@@ -1,6 +1,7 @@
 "use client";
 
-import { PanelLeft } from "lucide-react";
+import Link from "next/link";
+import { Bot, PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OrgSwitcher } from "@/components/layout/OrgSwitcher";
 import { UserMenu } from "@/components/layout/UserMenu";
@@ -28,6 +29,11 @@ export function Header() {
       <div className="flex flex-1 justify-center px-4">
         <GlobalSearch />
       </div>
+      <Button variant="ghost" size="icon" asChild className="hidden sm:flex">
+        <Link href="/assistant" aria-label="Open AI Assistant">
+          <Bot className="h-5 w-5" />
+        </Link>
+      </Button>
       <CommandPalette />
       <UserMenu />
     </header>

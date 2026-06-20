@@ -109,7 +109,7 @@ Production-demo ready.
 | Simulator Workspace | B | Complete | Yes | Part of Predictions workspace (`/predictions?tab=simulator`) |
 | Rescue Network Workspace | B | Complete | Yes | 4 tabs: opportunities, recipients, history, impact; match/complete/dismiss flows; mock API clients |
 | Uploads Workspace | B | Complete | Yes | 4 tabs: upload, queue, history, validation; extraction review; mock API clients |
-| AI Assistant Workspace | B | Not Started | No | |
+| AI Assistant Workspace | B | Complete | Yes | Chat UI, conversation history, evidence panel, citations, suggested prompts; mock API clients |
 | Reports Workspace | B | Not Started | No | |
 | Settings Workspace | B | Not Started | No | |
 | Notification System | B | Not Started | No | |
@@ -126,6 +126,7 @@ Production-demo ready.
 | feature/predictions-workspace | B | PR Open |
 | feature/rescue-network | B | PR Open |
 | feature/uploads-workspace | B | PR Open |
+| feature/assistant-workspace | B | PR Open |
 
 ---
 
@@ -279,7 +280,14 @@ Requires:
 
 Status:
 
-Waiting
+Ready for Integration (mocked clients in `src/lib/api`)
+
+Mock-first clients (API_SPEC §44–45, types in `src/types/assistant.ts`):
+
+- `src/lib/api/assistant.ts` — `POST /assistant/conversations`, `POST /assistant/chat`, `GET /assistant/conversations/:id`
+- Mock conversation list maintained in-memory (no list endpoint in API_SPEC); sidebar uses mock registry only
+
+Person A: swap mocks when assistant backend routes are live.
 
 ---
 
@@ -296,6 +304,37 @@ Waiting
 ---
 
 # Daily Sync Log
+
+## 2026-06-20 (AI Assistant Workspace)
+
+### Person B
+
+Completed:
+
+- Complete AI Assistant Workspace: conversation sidebar, chat panel, evidence panel
+- Explainable responses with reasoning, confidence, citations, and recommended actions
+- Suggested prompts aligned with FRONTEND_SPEC §51 and PRD §31 demo narrative
+- Mock-first API clients for create conversation, chat, and fetch conversation
+- Header AI Assistant shortcut and command palette deep links
+- Unit and integration tests
+
+Working On:
+
+- Assistant PR review (`feature/assistant-workspace`)
+
+Blockers:
+
+- Person A assistant backend — workspace uses mocks until live
+
+Ready For Integration:
+
+- Assistant mock API clients (`assistant.ts`)
+
+Milestone Status:
+
+- AI Assistant Workspace (Phase 14) — **Complete**, PR open
+
+---
 
 ## 2026-06-20 (Uploads Workspace)
 
