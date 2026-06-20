@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
-import { Search } from "lucide-react";
+import { Bot, Search } from "lucide-react";
+import { SUGGESTED_PROMPTS } from "@/features/assistant/config/suggested-prompts";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -126,6 +127,44 @@ export function CommandPalette() {
                     </p>
                   </div>
                 </Command.Item>
+              </Command.Group>
+              <Command.Group heading="AI Assistant">
+                <Command.Item
+                  value="open ai assistant"
+                  onSelect={() => {
+                    router.push("/assistant");
+                    setOpen(false);
+                  }}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                >
+                  <Bot className="h-4 w-4" />
+                  <div>
+                    <p>Open AI Assistant</p>
+                    <p className="text-xs text-muted-foreground">
+                      Natural-language operational intelligence
+                    </p>
+                  </div>
+                </Command.Item>
+                {SUGGESTED_PROMPTS.slice(0, 3).map((prompt) => (
+                  <Command.Item
+                    key={prompt.id}
+                    value={`ask ${prompt.label}`}
+                    onSelect={() => {
+                      router.push(
+                        `/assistant?conversation=conv_demo_001`,
+                      );
+                      setOpen(false);
+                    }}
+                    className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                  >
+                    <div>
+                      <p>{prompt.label}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Ask the assistant
+                      </p>
+                    </div>
+                  </Command.Item>
+                ))}
               </Command.Group>
               <Command.Group heading="Rescue Network">
                 <Command.Item
