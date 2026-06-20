@@ -1,6 +1,14 @@
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "@/db/client";
-import { organization_sites, uploads, upload_jobs, extraction_results, validation_anomalies } from "@/db/schema";
+import {
+  organization_members,
+  organization_sites,
+  uploads,
+  upload_jobs,
+  extraction_results,
+  validation_anomalies,
+} from "@/db/schema";
+import { entitiesToReviewFields, parseNormalizedPayload } from "./upload-types";
 
 export type UploadStatus =
   | "uploaded"
@@ -188,6 +196,25 @@ export async function listUploadAnomalies(organizationId: string) {
     .orderBy(desc(validation_anomalies.created_at));
 }
 
+export async function isOrgMember(organizationId: string, userId: string) {
+  const member = await db.query.organization_members.findFirst({
+    where: and(
+      eq(organization_members.organization_id, organizationId),
+      eq(organization_members.user_id, userId),
+    ),
+  });
+  return Boolean(member && member.status === "active");
+}
+
+export async function findDuplicateUpload(organizationId: string, checksum: string, excludeId?: string) {
+  const conditions = [
+    eq(uploads.organization_id, organizationId),
+    eq(uploads.checksum, checksum),
+  ];
+  const rows = await db.select().from(uploads).where(and(...conditions)).limit(5);
+  return rows.find((row) => row.id !== excludeId && row.processing_status !== "rejected");
+}
+
 export async function getUploadReview(uploadId: string) {
   const upload = await getUploadById(uploadId);
 
@@ -197,15 +224,23 @@ export async function getUploadReview(uploadId: string) {
 
   const extractions = await db.query.extraction_results.findMany({
     where: eq(extraction_results.upload_id, uploadId),
+    orderBy: [desc(extraction_results.created_at)],
   });
 
   const anomalies = await db.query.validation_anomalies.findMany({
     where: eq(validation_anomalies.upload_id, uploadId),
   });
 
+  const latestExtraction = extractions[0];
+  const payload = latestExtraction?.structured_json
+    ? parseNormalizedPayload(latestExtraction.structured_json)
+    : null;
+
   return {
     upload,
     extractions,
     anomalies,
+    extractedEntities: payload ? entitiesToReviewFields(payload.entities) : [],
+    contentType: payload?.contentType ?? "text",
   };
 }
