@@ -22,7 +22,7 @@ export function PredictedSurplusWidget({ orgId }: PredictedSurplusWidgetProps) {
       widgetId="predicted-surplus"
       action={
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/predictions">View all</Link>
+          <Link href="/predictions?tab=explorer">View all</Link>
         </Button>
       }
     >

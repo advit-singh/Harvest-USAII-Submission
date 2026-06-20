@@ -104,9 +104,9 @@ Production-demo ready.
 | Organization API (backend) | A | Not Started | No | Person B consuming mocks until A delivers |
 | Dashboard Workspace | B | Complete | Yes | 7 configurable widgets, drag/resize layout, mock API clients |
 | Analytics Workspace | B | Complete | Yes | 5 tabs, charts, filters, drill-down, root cause, CSV export; mock API clients |
-| Forecast Workspace | B | Not Started | No | |
-| Recommendations Workspace | B | Not Started | No | |
-| Simulator Workspace | B | Not Started | No | |
+| Forecast Workspace | B | Complete | Yes | 4 tabs: summary, explorer, recommendations, simulator; mock API clients |
+| Recommendations Workspace | B | Complete | Yes | Part of Predictions workspace (`/predictions?tab=recommendations`) |
+| Simulator Workspace | B | Complete | Yes | Part of Predictions workspace (`/predictions?tab=simulator`) |
 | Rescue Network Workspace | B | Not Started | No | |
 | AI Assistant Workspace | B | Not Started | No | |
 | Reports Workspace | B | Not Started | No | |
@@ -122,6 +122,7 @@ Production-demo ready.
 | feature/app-platform-foundation | B | PR Open |
 | feature/dashboard-workspace | B | PR Open |
 | feature/analytics-workspace | B | PR Open |
+| feature/predictions-workspace | B | PR Open |
 
 ---
 
@@ -205,10 +206,20 @@ Requires:
 
 - Forecast Engine
 - Forecast API
+- Recommendation API
+- Simulation API
 
 Status:
 
-Waiting
+Ready for Integration (mocked clients in `src/lib/api`)
+
+Mock-first clients (API_SPEC §27–35, types in `src/types/forecast.ts`, `recommendation.ts`, `simulation.ts`):
+
+- `src/lib/api/forecasts.ts` — `GET/POST /forecasts`, `GET /forecasts/:id`
+- `src/lib/api/recommendations.ts` — `GET /recommendations`, `GET /recommendations/:id`, `POST /recommendations/:id/action`
+- `src/lib/api/simulations.ts` — `POST /simulations`, `/run`, `/compare`
+
+Person A: swap mocks when backend intelligence routes are live.
 
 ---
 
@@ -238,6 +249,38 @@ Waiting
 ---
 
 # Daily Sync Log
+
+## 2026-06-19 (Predictions)
+
+### Person B
+
+Completed:
+
+- Complete Predictions Workspace: summary, explorer, recommendations, simulator tabs
+- Forecast detail drawer with explainable factors panel
+- Recommendations center with filters, bulk actions, assignment, accept/reject/snooze
+- Scenario simulator with run, save, duplicate, and compare flows
+- Mock-first API clients for forecasts, recommendations, and simulations
+- Shared TanStack Query keys with dashboard widgets; deep links from dashboard
+- Unit and integration tests
+
+Working On:
+
+- Predictions PR review (`feature/predictions-workspace`)
+
+Blockers:
+
+- Person A forecast/recommendation/simulation backends — workspace uses mocks until live
+
+Ready For Integration:
+
+- Predictions mock API clients (`forecasts.ts`, `recommendations.ts`, `simulations.ts`)
+
+Milestone Status:
+
+- Predictions Workspace (Phases 10–12) — **Complete**, PR open
+
+---
 
 ## 2026-06-19
 
@@ -342,6 +385,6 @@ Merge Conflict Risks:
 
 Upcoming Integration Milestones:
 
-- Forecast Workspace (`feature/predictions-workspace`)
+- Rescue Network Workspace (`feature/rescue-network`)
 - Person A organization API backend → swap mock client
-- Person A intelligence APIs → swap dashboard and analytics mock clients
+- Person A intelligence APIs → swap predictions, dashboard, and analytics mock clients

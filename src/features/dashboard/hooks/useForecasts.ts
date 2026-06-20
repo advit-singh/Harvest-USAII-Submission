@@ -2,11 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { fetchForecasts } from "@/lib/api/forecasts";
+import { forecastKeys } from "@/features/predictions/hooks/predictions-keys";
 
-export const forecastKeys = {
-  all: ["forecasts"] as const,
-  list: (orgId: string) => [...forecastKeys.all, orgId] as const,
-};
+export { forecastKeys };
 
 export function useForecasts(orgId: string | null) {
   return useQuery({
