@@ -42,4 +42,5 @@ export interface OrganizationMember {
   email: string;
   roleId: string;
   roleName?: string;
+  organizationId?: string;
 }

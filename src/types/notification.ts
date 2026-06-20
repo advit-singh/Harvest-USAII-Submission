@@ -5,11 +5,16 @@ export type NotificationType =
   | "forecast.generated"
   | "recommendation.created"
   | "donation.completed"
-  | "report.generated";
+  | "report.generated"
+  | "assignment.received"
+  | "validation.warning";
+
+export type NotificationSeverity = "critical" | "warning" | "informational";
 
 export interface HarvestNotification {
   id: string;
   type: NotificationType;
+  severity: NotificationSeverity;
   title: string;
   message: string;
   href?: string;
