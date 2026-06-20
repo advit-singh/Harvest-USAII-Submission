@@ -107,7 +107,7 @@ Production-demo ready.
 | Forecast Workspace | B | Complete | Yes | 4 tabs: summary, explorer, recommendations, simulator; mock API clients |
 | Recommendations Workspace | B | Complete | Yes | Part of Predictions workspace (`/predictions?tab=recommendations`) |
 | Simulator Workspace | B | Complete | Yes | Part of Predictions workspace (`/predictions?tab=simulator`) |
-| Rescue Network Workspace | B | Not Started | No | |
+| Rescue Network Workspace | B | Complete | Yes | 4 tabs: opportunities, recipients, history, impact; match/complete/dismiss flows; mock API clients |
 | AI Assistant Workspace | B | Not Started | No | |
 | Reports Workspace | B | Not Started | No | |
 | Settings Workspace | B | Not Started | No | |
@@ -123,6 +123,7 @@ Production-demo ready.
 | feature/dashboard-workspace | B | PR Open |
 | feature/analytics-workspace | B | PR Open |
 | feature/predictions-workspace | B | PR Open |
+| feature/rescue-network | B | PR Open |
 
 ---
 
@@ -223,6 +224,29 @@ Person A: swap mocks when backend intelligence routes are live.
 
 ---
 
+## Rescue Network Workspace
+
+Requires:
+
+- Donation Matching Engine
+- Donation API
+- Recipients API
+- Impact API
+
+Status:
+
+Ready for Integration (mocked clients in `src/lib/api`)
+
+Mock-first clients (API_SPEC §36–39, types in `src/types/donation.ts`, `recipient.ts`):
+
+- `src/lib/api/donations.ts` — opportunities, match, complete, dismiss, history
+- `src/lib/api/recipients.ts` — `GET/POST /recipients`
+- Reuses `src/lib/api/impact.ts` for impact tab
+
+Person A: swap mocks when donation matching and backend routes are live.
+
+---
+
 ## Assistant Workspace
 
 Requires:
@@ -249,6 +273,38 @@ Waiting
 ---
 
 # Daily Sync Log
+
+## 2026-06-20 (Rescue Network)
+
+### Person B
+
+Completed:
+
+- Complete Rescue Network Workspace: 4 tabbed views (opportunities, recipients, history, impact)
+- Match review drawer with explainable ranked recipients
+- Donation completion and failure flows with human approval
+- Recipient directory with add-recipient dialog
+- Mock-first API clients for donations, recipients, match, complete, dismiss, history
+- Shared `donationKeys` with dashboard widget; deep links from dashboard and command palette
+- Unit and integration tests
+
+Working On:
+
+- Rescue Network PR review (`feature/rescue-network`)
+
+Blockers:
+
+- Person A donation matching backend — workspace uses mocks until live
+
+Ready For Integration:
+
+- Rescue mock API clients (`donations.ts` extended, `recipients.ts`)
+
+Milestone Status:
+
+- Rescue Network Workspace (Phase 13) — **Complete**, PR open
+
+---
 
 ## 2026-06-19 (Predictions)
 
@@ -385,6 +441,6 @@ Merge Conflict Risks:
 
 Upcoming Integration Milestones:
 
-- Rescue Network Workspace (`feature/rescue-network`)
 - Person A organization API backend → swap mock client
 - Person A intelligence APIs → swap predictions, dashboard, and analytics mock clients
+- Person A donation APIs → swap rescue network mock clients
