@@ -14,9 +14,9 @@ and development status.
 
 All development must follow:
 
-AGENTS.md
+`docs/AGENTS.md` (unified guide for Person A and Person B)
 
-PROJECT_RULES.md
+`docs/PROJECT_RULES.md`
 
 Implementation Plans
 
