@@ -802,18 +802,43 @@ Core intelligence endpoint.
 ## GET Forecasts
 
 ```http
-GET /api/v1/forecasts
+GET /api/v1/forecasts?organizationId={uuid}
 ```
 
-Filters:
+Query parameters:
 
-Forecast Type
+- `organizationId` (required)
+- `forecastType` (optional): `surplus` | `waste` | `demand`
+- `siteId` (optional)
+- `startDate` (optional, ISO date)
+- `endDate` (optional, ISO date)
 
-Site
+Response `data`: array of `ForecastSummary` (see `src/types/forecast.ts`)
 
-Date Range
+---
 
-Category
+## GET Forecast Summary KPIs
+
+```http
+GET /api/v1/forecasts/summary?organizationId={uuid}
+```
+
+Optional: `siteId`
+
+Response `data`:
+
+```json
+{
+  "predictedSurplusMeals": 142,
+  "predictedWasteMeals": 47,
+  "expirationRiskItems": 12,
+  "attendanceForecast": 318,
+  "purchasingForecast": 2840,
+  "confidence": 0.87,
+  "forecastWindowDays": 7,
+  "siteName": "Main Kitchen"
+}
+```
 
 ---
 
@@ -827,6 +852,7 @@ Request:
 
 ```json
 {
+  "organizationId": "uuid",
   "forecastType": "surplus",
   "siteId": "uuid",
   "days": 30
@@ -835,7 +861,7 @@ Request:
 
 ---
 
-Response:
+Response `data`:
 
 ```json
 {
@@ -868,16 +894,18 @@ Recommendations
 ## GET
 
 ```http
-GET /api/v1/recommendations
+GET /api/v1/recommendations?organizationId={uuid}
 ```
 
-Filters:
+Query parameters:
 
-Status
+- `organizationId` (required)
+- `status` (optional): `open` | `accepted` | `rejected` | `snoozed` | `completed`
+- `priority` (optional): `low` | `medium` | `high` | `critical`
+- `siteId` (optional)
+- `limit` (optional, default 50)
 
-Priority
-
-Site
+Response `data`: array of `Recommendation` (see `src/types/recommendation.ts`)
 
 ---
 
@@ -920,9 +948,39 @@ snoozed
 
 ---
 
+## Assign Recommendation
+
+```http
+POST /api/v1/recommendations/:id/assign
+```
+
+Request:
+
+```json
+{
+  "assigneeId": "uuid",
+  "notes": "",
+  "dueDate": "2026-06-25T00:00:00.000Z"
+}
+```
+
+Response `data`: `RecommendationDetail`
+
+---
+
 # 33. Scenario Simulator
 
 One of the most important APIs.
+
+---
+
+## List Simulations
+
+```http
+GET /api/v1/simulations?organizationId={uuid}
+```
+
+Response `data`: array of `Simulation` (see `src/types/simulation.ts`)
 
 ---
 
@@ -936,12 +994,42 @@ Request:
 
 ```json
 {
+  "organizationId": "uuid",
   "name": "Reduce Milk Orders",
   "changes": {
-    "milkReduction": 15
+    "attendanceChange": 0,
+    "productionChange": -15,
+    "inventoryChange": 0,
+    "ordersChange": -15,
+    "weatherImpact": 0,
+    "eventImpact": 0,
+    "donationsChange": 0
   }
 }
 ```
+
+---
+
+## Preview Simulation
+
+```http
+POST /api/v1/simulations/preview
+```
+
+Request:
+
+```json
+{
+  "organizationId": "uuid",
+  "siteId": "uuid",
+  "changes": {
+    "productionChange": -15,
+    "ordersChange": -15
+  }
+}
+```
+
+Response `data`: `SimulationResult`
 
 ---
 
