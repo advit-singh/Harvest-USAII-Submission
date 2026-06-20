@@ -76,6 +76,7 @@ export function detectRecommendations(
   if (computation.predictedSurplusMeals > 20) {
     const reduction = Math.min(20, Math.round(computation.predictedSurplusMeals * 0.15));
     const mealsSaved = Math.round(computation.predictedSurplusMeals * 0.3);
+    const weatherEvidence = snapshot.externalData.weather?.summary;
     drafts.push({
       recommendationType: "production",
       title: `Reduce production by ${reduction}%`,
@@ -84,6 +85,7 @@ export function detectRecommendations(
       evidence: [
         `Attendance trend: ${snapshot.attendanceTrend.toFixed(0)}%`,
         `Avg attendance: ${snapshot.avgAttendance.toFixed(0)}`,
+        ...(weatherEvidence ? [weatherEvidence] : []),
         `${snapshot.upcomingEvents.length} upcoming events may shift demand`,
       ],
       reasoning:

@@ -11,12 +11,16 @@ export function computeForecast(
   snapshot: OperationalSnapshot,
   horizonDays: number,
 ): ForecastComputation {
+  const externalImpact = snapshot.externalData.enabled
+    ? snapshot.externalData.combinedAttendanceImpact
+    : 0;
+
   const demandProxy = snapshot.avgAttendance || 300;
   const supplyProxy = snapshot.inventoryUnits / 10 + snapshot.avgWastePerDay;
   const surplusBase = Math.max(0, supplyProxy - demandProxy * 0.15);
   const wasteBase = Math.max(snapshot.avgWastePerDay * horizonDays, 0);
   const attendanceForecast = Math.round(
-    demandProxy * (1 + snapshot.attendanceTrend / 100) * horizonDays,
+    demandProxy * (1 + snapshot.attendanceTrend / 100 + externalImpact) * horizonDays,
   );
   const purchasingForecast = Math.round(
     (snapshot.purchaseSpend / Math.max(snapshot.windowDays, 1)) * horizonDays ||
@@ -33,13 +37,20 @@ export function computeForecast(
   }
 
   const eventModifier = snapshot.upcomingEvents.length > 0 ? 1.08 : 1;
-  predictedValue = Math.round(predictedValue * eventModifier);
+  const weatherWasteModifier =
+    snapshot.externalData.weather && snapshot.externalData.weather.rainyDays >= 2 ? 1.06 : 1;
+  predictedValue = Math.round(predictedValue * eventModifier * weatherWasteModifier);
 
   const dataPoints =
     snapshot.wasteMeals.length + snapshot.attendance.length + snapshot.inventoryUnits > 0 ? 3 : 0;
+  const externalConfidenceBoost =
+    snapshot.externalData.enabled && snapshot.externalData.sources.length > 0 ? 0.04 : 0;
   const confidence = Math.min(
     0.95,
-    Math.max(0.45, 0.55 + dataPoints * 0.08 - Math.abs(snapshot.wasteTrend) / 200),
+    Math.max(
+      0.45,
+      0.55 + dataPoints * 0.08 - Math.abs(snapshot.wasteTrend) / 200 + externalConfidenceBoost,
+    ),
   );
 
   const factors = buildRuleFactors(snapshot);
@@ -65,6 +76,26 @@ export function computeForecast(
 
 function buildRuleFactors(snapshot: OperationalSnapshot) {
   const factors: ForecastComputation["factors"] = [];
+
+  if (snapshot.externalData.weather) {
+    factors.push({
+      name: "Weather Forecast",
+      impactWeight: Math.min(0.35, Math.abs(snapshot.externalData.weather.attendanceImpact)),
+      description: snapshot.externalData.weather.summary,
+    });
+  }
+
+  if (snapshot.externalData.holidays.length > 0) {
+    const names = snapshot.externalData.holidays
+      .slice(0, 2)
+      .map((holiday) => holiday.localName)
+      .join(", ");
+    factors.push({
+      name: "Public Holidays",
+      impactWeight: Math.min(0.25, Math.abs(snapshot.externalData.holidayAttendanceImpact)),
+      description: `Upcoming holidays: ${names}`,
+    });
+  }
 
   if (snapshot.attendanceTrend !== 0) {
     factors.push({
@@ -135,7 +166,11 @@ function buildExplanation(
 ): string {
   const typeLabel =
     forecastType === "waste" ? "waste" : forecastType === "demand" ? "demand" : "surplus";
-  return `Projected ${typeLabel} of ${predictedValue} over the window based on ${snapshot.wasteMeals.length} waste records, ${snapshot.attendance.length} attendance records, and ${snapshot.expirationRiskItems} items at expiration risk.`;
+  const externalNote =
+    snapshot.externalData.enabled && snapshot.externalData.sources.length > 0
+      ? ` External signals from ${snapshot.externalData.sources.join(" + ")} incorporated.`
+      : "";
+  return `Projected ${typeLabel} of ${predictedValue} over the window based on ${snapshot.wasteMeals.length} waste records, ${snapshot.attendance.length} attendance records, and ${snapshot.expirationRiskItems} items at expiration risk.${externalNote}`;
 }
 
 export { MEAL_COST_ESTIMATE };

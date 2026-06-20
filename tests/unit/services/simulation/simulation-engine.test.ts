@@ -5,6 +5,7 @@ import {
   runSimulationEngine,
 } from "@/services/simulation/simulation-engine";
 import type { OperationalSnapshot } from "@/services/intelligence/intelligence-types";
+import { EMPTY_EXTERNAL_DATA } from "@/services/intelligence/intelligence-types";
 
 const snapshot: OperationalSnapshot = {
   organizationId: "org-1",
@@ -20,6 +21,7 @@ const snapshot: OperationalSnapshot = {
   avgAttendance: 300,
   wasteTrend: 10,
   attendanceTrend: -5,
+  externalData: { ...EMPTY_EXTERNAL_DATA },
 };
 
 describe("simulation-engine", () => {
