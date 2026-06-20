@@ -1,5 +1,6 @@
 import type { DashboardOverview } from "@/types/dashboard";
 import type { DonationOpportunity } from "@/types/donation";
+import { getMockDonationOpportunitiesFromRescue } from "@/lib/mocks/rescue-fixtures";
 import type { ForecastSummary } from "@/types/forecast";
 import type { ImpactMetrics } from "@/types/impact";
 import type { InventoryHealth } from "@/types/inventory";
@@ -168,35 +169,7 @@ export function getMockInventoryHealth(): InventoryHealth {
 }
 
 export function getMockDonationOpportunities(): DonationOpportunity[] {
-  return [
-    {
-      id: "don_001",
-      item: "Whole milk (1 gal cartons)",
-      quantity: "24 units",
-      expirationDate: new Date(Date.now() + 172800000).toISOString(),
-      suggestedRecipientCount: 3,
-      priority: "high",
-      siteName: DEMO_SITE,
-    },
-    {
-      id: "don_002",
-      item: "Fresh apples",
-      quantity: "15 kg",
-      expirationDate: new Date(Date.now() + 259200000).toISOString(),
-      suggestedRecipientCount: 2,
-      priority: "medium",
-      siteName: DEMO_SITE,
-    },
-    {
-      id: "don_003",
-      item: "Whole wheat bread loaves",
-      quantity: "18 loaves",
-      expirationDate: new Date(Date.now() + 86400000).toISOString(),
-      suggestedRecipientCount: 4,
-      priority: "high",
-      siteName: DEMO_SITE,
-    },
-  ];
+  return getMockDonationOpportunitiesFromRescue();
 }
 
 export function getMockNotifications(): HarvestNotification[] {
