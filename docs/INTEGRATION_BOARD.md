@@ -86,10 +86,10 @@ Production-demo ready.
 
 | System | Owner | Status | Consumer Ready | Notes |
 |----------|----------|----------|----------|----------|
-| Database Schema | A | Not Started | No | |
-| Upload Pipeline | A | Not Started | No | |
-| AI Extraction Engine | A | Not Started | No | |
-| Data Validation Engine | A | Not Started | No | |
+| Database Schema | A | Ready for Integration | Yes | Full schema in `src/db/schema.ts`; migrations `0000`–`0002`; seeds in `src/db/seeds` |
+| Upload Pipeline | A | Ready for Integration | Yes | API routes + auto-process; OpenRouter/Gemini when `OPENROUTER_API_KEY` set |
+| AI Extraction Engine | A | Ready for Integration | Yes | Classification, extraction, normalization via `src/services/ai` + parsers |
+| Data Validation Engine | A | Ready for Integration | Yes | Validation anomalies + resolve API; never blocks pipeline |
 | Forecast Engine | A | Not Started | No | |
 | Recommendation Engine | A | Not Started | No | |
 | Scenario Simulator Engine | A | Not Started | No | |
@@ -120,15 +120,14 @@ Production-demo ready.
 
 | Branch | Owner | Status |
 |----------|----------|----------|
-| feature/app-platform-foundation | B | PR Open |
-| feature/dashboard-workspace | B | PR Open |
-| feature/analytics-workspace | B | PR Open |
-| feature/predictions-workspace | B | PR Open |
-| feature/rescue-network | B | PR Open |
-| feature/uploads-workspace | B | PR Open |
-| feature/assistant-workspace | B | PR Open |
-| feature/settings-notifications | B | PR Open |
-| feature/reports-workspace | B | In Progress |
+| feature/app-platform-foundation | B | Merged (PR #1) |
+| feature/rescue-network | B | Merged (PR #5) |
+| feature/uploads-workspace | B | Merged (PR #7) |
+| feature/assistant-workspace | B | Merged (PR #8) |
+| feature/settings-notifications | B | Merged (PR #9) |
+| feature/reports-workspace | B | Merged (PR #10) |
+| feature/complete-upload-pipeline-backend | A | Merged (PR #11) |
+| feature/complete-upload-intelligence-pipeline | A | In Progress |
 
 ---
 
@@ -353,6 +352,39 @@ Person A: swap mocks when notification backend routes are live.
 ---
 
 # Daily Sync Log
+
+## 2026-06-20 (Upload Intelligence Pipeline — Person A)
+
+### Person A
+
+Completed:
+
+- Full database schema (40+ tables) with Drizzle migrations and demo seeds
+- OpenRouter/Gemini AI infrastructure: classification, extraction, normalization prompts
+- File parsers: CSV, Excel, PDF, text, image OCR
+- Real upload pipeline: classify → extract → normalize → validate → review → commit
+- `commit-service` writes operational data (inventory, attendance, waste, events, purchases)
+- Upload API hardening: auth, org membership, auto-process on upload, API confidence 0–1
+- Unit tests for upload/AI services and parsers
+
+Working On:
+
+- PR `feature/complete-upload-intelligence-pipeline`
+
+Blockers:
+
+- None
+
+Ready For Integration:
+
+- Upload backend APIs (`/api/v1/uploads/*`) — Person B can set `NEXT_PUBLIC_USE_MOCK_API=false`
+- Database layer for downstream intelligence engines
+
+Milestone Status:
+
+- Complete Operational Data Platform & Upload Intelligence Pipeline — **Ready for Integration**, PR in progress
+
+---
 
 ## 2026-06-20 (Reports Workspace)
 

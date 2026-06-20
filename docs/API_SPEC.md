@@ -447,6 +447,8 @@ failed
 rejected
 ```
 
+Upload list and status responses return `confidence` as a decimal `0.0`–`1.0` (stored internally as integer 0–100).
+
 ---
 
 ## Upload File
@@ -539,7 +541,35 @@ Confidence Scores
 POST /api/v1/uploads/:id/approve
 ```
 
-Commits extracted records.
+Commits extracted records to Layer 2 operational tables (inventory, attendance, waste, events, purchases).
+
+Request body (optional edits):
+
+```json
+{
+  "entities": [{ "id": "entity-0", "value": "Corrected Milk" }]
+}
+```
+
+Response includes committed record counts:
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "status": "completed",
+    "committed": {
+      "inventoryItems": 3,
+      "inventoryLots": 3,
+      "attendanceRecords": 0,
+      "wasteEvents": 0,
+      "events": 0,
+      "purchases": 0
+    }
+  }
+}
+```
 
 ---
 
@@ -552,6 +582,38 @@ POST /api/v1/uploads/:id/reject
 ```
 
 Rejects extraction.
+
+---
+
+# 19a. Upload Validation Anomalies
+
+## List Anomalies
+
+```http
+GET /api/v1/uploads/anomalies?organizationId={uuid}
+```
+
+Returns validation anomalies for an organization. Requires authentication and org membership.
+
+Response `confidence` values are decimals in the range `0.0`–`1.0`.
+
+---
+
+## Resolve Anomaly
+
+```http
+PATCH /api/v1/uploads/anomalies/:id
+```
+
+Request:
+
+```json
+{
+  "action": "accepted"
+}
+```
+
+Actions: `accepted`, `corrected`, `ignored`
 
 ---
 
