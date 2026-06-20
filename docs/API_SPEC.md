@@ -1073,6 +1073,71 @@ Custom
 GET /api/v1/reports/templates
 ```
 
+Optional query: `organizationId`
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "monthly_summary",
+      "name": "Monthly Summary",
+      "description": "Overview of operational metrics for the period",
+      "supportedFormats": ["pdf", "docx", "csv"],
+      "defaultFormat": "pdf"
+    }
+  ]
+}
+```
+
+Template IDs: `monthly_summary`, `waste_report`, `donation_report`, `executive_summary`, `sustainability_report`, `community_impact`, `operations_review`, `school_board_report`
+
+---
+
+## GET List Reports
+
+```http
+GET /api/v1/reports
+```
+
+Query:
+
+* `organizationId` (required)
+* `status` (optional): `queued` | `generating` | `ready` | `failed`
+* `template` (optional)
+* `siteId` (optional)
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "rpt_001",
+      "organizationId": "uuid",
+      "template": "monthly_summary",
+      "templateName": "Monthly Summary",
+      "siteId": "uuid",
+      "siteName": "Lincoln Elementary Cafeteria",
+      "format": "pdf",
+      "status": "ready",
+      "generatedBy": "uuid",
+      "generatedByName": "Demo User",
+      "createdAt": "2026-06-01T10:00:00Z",
+      "generatedAt": "2026-06-01T10:00:05Z",
+      "dateRange": {
+        "preset": "month",
+        "start": "2026-05-01",
+        "end": "2026-05-31"
+      }
+    }
+  ]
+}
+```
+
 ---
 
 ## Generate Report
@@ -1081,12 +1146,38 @@ GET /api/v1/reports/templates
 POST /api/v1/reports/generate
 ```
 
+Permission: `reports.generate`
+
 Request:
 
 ```json
 {
+  "organizationId": "uuid",
   "template": "monthly_summary",
-  "siteId": "uuid"
+  "siteId": "uuid",
+  "format": "pdf",
+  "dateRange": {
+    "preset": "month",
+    "start": "2026-05-01",
+    "end": "2026-05-31"
+  }
+}
+```
+
+`dateRange.preset`: `week` | `month` | `quarter` | `year` | `custom`
+
+Response (201):
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "rpt_002",
+    "status": "queued",
+    "template": "monthly_summary",
+    "format": "pdf",
+    "createdAt": "2026-06-01T10:00:00Z"
+  }
 }
 ```
 
@@ -1098,6 +1189,39 @@ Request:
 GET /api/v1/reports/:id
 ```
 
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "rpt_001",
+    "organizationId": "uuid",
+    "template": "monthly_summary",
+    "templateName": "Monthly Summary",
+    "siteId": "uuid",
+    "siteName": "Lincoln Elementary Cafeteria",
+    "format": "pdf",
+    "status": "ready",
+    "generatedBy": "uuid",
+    "generatedByName": "Demo User",
+    "createdAt": "2026-06-01T10:00:00Z",
+    "generatedAt": "2026-06-01T10:00:05Z",
+    "dateRange": {
+      "preset": "month",
+      "start": "2026-05-01",
+      "end": "2026-05-31"
+    },
+    "progress": 100,
+    "errorMessage": null
+  }
+}
+```
+
+Status values: `queued` | `generating` | `ready` | `failed`
+
+Error code when failed: `REPORT_FAILED`
+
 ---
 
 # 43. Report Download
@@ -1106,7 +1230,21 @@ GET /api/v1/reports/:id
 GET /api/v1/reports/:id/download
 ```
 
-Returns file URL.
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "fileUrl": "https://storage.example.com/reports/rpt_001.pdf",
+    "fileName": "monthly-summary-may-2026.pdf",
+    "format": "pdf",
+    "expiresAt": "2026-06-02T10:00:00Z"
+  }
+}
+```
+
+Report must be in `ready` status. Returns signed download URL.
 
 ---
 

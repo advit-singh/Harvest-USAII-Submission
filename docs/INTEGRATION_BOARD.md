@@ -110,7 +110,7 @@ Production-demo ready.
 | Rescue Network Workspace | B | Complete | Yes | 4 tabs: opportunities, recipients, history, impact; match/complete/dismiss flows; mock API clients |
 | Uploads Workspace | B | Complete | Yes | 4 tabs: upload, queue, history, validation; extraction review; mock API clients |
 | AI Assistant Workspace | B | Complete | Yes | Chat UI, conversation history, evidence panel, citations, suggested prompts; mock API clients |
-| Reports Workspace | B | Not Started | No | |
+| Reports Workspace | B | Complete | Yes | 4 tabs: templates, generated, scheduled (placeholder), exports; builder drawer; status polling; download; mock API clients |
 | Settings Workspace | B | Complete | Yes | 9 sections: org, users, permissions, AI, forecast, integrations, appearance, notifications, data; mock API clients |
 | Notification System | B | Complete | Yes | Header Notification Center, unread badge, mark-read, preferences filtering; mock API clients |
 
@@ -128,6 +128,7 @@ Production-demo ready.
 | feature/uploads-workspace | B | PR Open |
 | feature/assistant-workspace | B | PR Open |
 | feature/settings-notifications | B | PR Open |
+| feature/reports-workspace | B | In Progress |
 
 ---
 
@@ -300,7 +301,13 @@ Requires:
 
 Status:
 
-Waiting
+Ready for Integration (mocked clients in `src/lib/api`)
+
+Mock-first clients (API_SPEC §41–43, types in `src/types/report.ts`):
+
+- `src/lib/api/reports.ts` — `GET /reports/templates`, `GET /reports`, `POST /reports/generate`, `GET /reports/:id`, `GET /reports/:id/download`
+
+Person A: swap mocks when report generation backend routes are live.
 
 ---
 
@@ -346,6 +353,38 @@ Person A: swap mocks when notification backend routes are live.
 ---
 
 # Daily Sync Log
+
+## 2026-06-20 (Reports Workspace)
+
+### Person B
+
+Completed:
+
+- Complete Reports Workspace: 4 tabbed views (templates, generated, scheduled placeholder, exports)
+- Report builder drawer with template, site, date range, and format configuration
+- Generation status polling (queued → generating → ready) with progress UI
+- Download flow with mock blob exports; regenerate and share link actions
+- Mock-first API clients for all report endpoints per extended API_SPEC §41
+- Command palette reports deep links; `report.generated` notification fixture
+- Unit and integration tests
+
+Working On:
+
+- Reports workspace PR (`feature/reports-workspace`)
+
+Blockers:
+
+- Person A report generation backend — workspace uses mocks until live
+
+Ready For Integration:
+
+- Reports mock API clients (`reports.ts`)
+
+Milestone Status:
+
+- Reports Workspace (Phase 15) — **Complete**, PR in progress
+
+---
 
 ## 2026-06-20 (Settings & Notification Platform)
 

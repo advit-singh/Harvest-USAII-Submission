@@ -198,6 +198,53 @@ export function CommandPalette() {
                   </div>
                 </Command.Item>
               </Command.Group>
+              <Command.Group heading="Reports">
+                <Command.Item
+                  value="open reports"
+                  onSelect={() => {
+                    router.push("/reports");
+                    setOpen(false);
+                  }}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                >
+                  <div>
+                    <p>Open Reports</p>
+                    <p className="text-xs text-muted-foreground">
+                      Generate organizational reporting
+                    </p>
+                  </div>
+                </Command.Item>
+                <Command.Item
+                  value="generate monthly summary"
+                  onSelect={() => {
+                    router.push("/reports?tab=templates");
+                    setOpen(false);
+                  }}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                >
+                  <div>
+                    <p>Generate monthly summary</p>
+                    <p className="text-xs text-muted-foreground">
+                      Start from the monthly summary template
+                    </p>
+                  </div>
+                </Command.Item>
+                <Command.Item
+                  value="view generated reports"
+                  onSelect={() => {
+                    router.push("/reports?tab=generated");
+                    setOpen(false);
+                  }}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                >
+                  <div>
+                    <p>View generated reports</p>
+                    <p className="text-xs text-muted-foreground">
+                      Track status and download exports
+                    </p>
+                  </div>
+                </Command.Item>
+              </Command.Group>
               <Command.Group heading="Settings">
                 <Command.Item
                   value="organization settings"
