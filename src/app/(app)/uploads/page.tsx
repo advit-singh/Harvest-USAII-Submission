@@ -1,19 +1,46 @@
-import { PageHeader } from "@/components/feedback/PageHeader";
-import { EmptyState } from "@/components/feedback/EmptyState";
-import { Upload } from "lucide-react";
+"use client";
 
-export default function UploadsPage() {
+import { Suspense } from "react";
+import { PageHeader } from "@/components/feedback/PageHeader";
+import { PageLoadingState } from "@/components/feedback/LoadingState";
+import { ErrorState } from "@/components/feedback/ErrorState";
+import { UploadShell } from "@/features/uploads/components/UploadShell";
+import { useOrganizations } from "@/features/organizations/hooks/useOrganizations";
+
+function UploadsContent() {
+  const { activeOrg, activeOrgId, isLoading, isError, refetch } =
+    useOrganizations();
+
+  if (isLoading) return <PageLoadingState />;
+
+  if (isError) {
+    return (
+      <ErrorState
+        message="We couldn't load your organization data."
+        onRetry={() => refetch()}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Uploads"
-        description="Convert raw operational data into intelligence"
+        description={
+          activeOrg
+            ? `Convert raw operational data into intelligence for ${activeOrg.name}`
+            : "Convert raw operational data into intelligence"
+        }
       />
-      <EmptyState
-        icon={Upload}
-        title="Upload workspace coming soon"
-        description="Upload receipts, attendance records, inventory logs, and more. This workspace will connect to the upload pipeline when ready."
-      />
+      <UploadShell orgId={activeOrgId} />
     </div>
+  );
+}
+
+export default function UploadsPage() {
+  return (
+    <Suspense fallback={<PageLoadingState />}>
+      <UploadsContent />
+    </Suspense>
   );
 }

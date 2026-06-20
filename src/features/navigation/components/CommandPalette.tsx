@@ -80,6 +80,53 @@ export function CommandPalette() {
                   );
                 })}
               </Command.Group>
+              <Command.Group heading="Uploads">
+                <Command.Item
+                  value="upload data"
+                  onSelect={() => {
+                    router.push("/uploads?tab=upload");
+                    setOpen(false);
+                  }}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                >
+                  <div>
+                    <p>Upload data</p>
+                    <p className="text-xs text-muted-foreground">
+                      Add receipts, inventory, and attendance files
+                    </p>
+                  </div>
+                </Command.Item>
+                <Command.Item
+                  value="review pending upload"
+                  onSelect={() => {
+                    router.push("/uploads?id=upl_001&tab=queue");
+                    setOpen(false);
+                  }}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                >
+                  <div>
+                    <p>Review pending upload</p>
+                    <p className="text-xs text-muted-foreground">
+                      Human validation for extracted data
+                    </p>
+                  </div>
+                </Command.Item>
+                <Command.Item
+                  value="processing queue"
+                  onSelect={() => {
+                    router.push("/uploads?tab=queue");
+                    setOpen(false);
+                  }}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                >
+                  <div>
+                    <p>Processing queue</p>
+                    <p className="text-xs text-muted-foreground">
+                      Monitor in-flight uploads
+                    </p>
+                  </div>
+                </Command.Item>
+              </Command.Group>
               <Command.Group heading="Rescue Network">
                 <Command.Item
                   value="donation opportunities"

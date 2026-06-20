@@ -16,7 +16,7 @@ export function InitialUploadStep() {
         insights. You can also skip and upload later from the Uploads workspace.
       </p>
       <Button asChild variant="outline">
-        <Link href="/uploads">Go to Uploads</Link>
+        <Link href="/uploads?tab=upload">Go to Uploads</Link>
       </Button>
     </div>
   );
