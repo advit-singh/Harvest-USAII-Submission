@@ -1,53 +1,41 @@
-import { NextResponse } from "next/server";
+import { AuthError, requireAuthenticatedUser, requireOrgMembership } from "@/lib/api/auth";
+import { errorResponse, successResponse } from "@/lib/api/response";
+import { mapUploadSummary } from "@/lib/api/upload-mappers";
+import { commitUploadData } from "@/services/upload/commit-service";
 import { getUploadById, updateUploadStatus } from "@/services/upload/upload-service";
 
-function toIsoString(value: string | Date) {
-  return value instanceof Date ? value.toISOString() : value;
-}
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
+    const user = await requireAuthenticatedUser();
+    const upload = await getUploadById(id);
 
-function mapUploadSummary(upload: any) {
-  return {
-    id: upload.id,
-    organizationId: upload.organization_id,
-    siteId: upload.site_id,
-    fileName: upload.file_name,
-    fileType: upload.file_type,
-    fileSize: upload.file_size,
-    status: upload.processing_status,
-    stage: upload.processing_status === "completed" ? "completed" : "validated",
-    progress: upload.processing_status === "completed" ? 100 : 90,
-    classification: upload.classification,
-    confidence: upload.confidence_score,
-    description: upload.description ?? undefined,
-    createdAt: toIsoString(upload.created_at),
-    updatedAt: toIsoString(upload.updated_at),
-    failureReason: upload.failure_reason ?? undefined,
-  };
-}
+    if (!upload) {
+      return errorResponse("NOT_FOUND", "Upload not found.", 404);
+    }
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
-  const payload = await request.json();
+    await requireOrgMembership(upload.organization_id, user.id);
 
-  const upload = await getUploadById(params.id);
+    const payload = await request.json().catch(() => ({}));
+    const entityEdits = payload?.entities as Array<{ id: string; value: string }> | undefined;
 
-  if (!upload) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: "NOT_FOUND",
-          message: "Upload not found.",
-        },
-      },
-      { status: 404 },
+    const committed = await commitUploadData(id, entityEdits);
+    await updateUploadStatus(id, "completed");
+
+    const updatedUpload = await getUploadById(id);
+
+    return successResponse({
+      ...(updatedUpload ? mapUploadSummary(updatedUpload) : mapUploadSummary(upload)),
+      committed,
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return errorResponse(error.code, error.message, error.code === "UNAUTHORIZED" ? 401 : 403);
+    }
+    return errorResponse(
+      "PROCESSING_FAILED",
+      error instanceof Error ? error.message : "Failed to commit upload data.",
+      500,
     );
   }
-
-  await updateUploadStatus(params.id, "completed");
-  const updatedUpload = await getUploadById(params.id);
-
-  return NextResponse.json({
-    success: true,
-    data: updatedUpload ? mapUploadSummary(updatedUpload) : mapUploadSummary(upload),
-  });
 }
