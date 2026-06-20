@@ -21,3 +21,20 @@ export interface RecommendationActionInput {
   action: RecommendationAction;
   notes?: string;
 }
+
+export interface RecommendationDetail extends Recommendation {
+  problem: string;
+  evidence: string[];
+  reasoning: string;
+  linkedForecastId: string | null;
+  expectedImpact: string;
+  assigneeId: string | null;
+  assigneeName: string | null;
+  dueDate: string | null;
+}
+
+export interface RecommendationAssignInput {
+  assigneeId: string;
+  notes?: string;
+  dueDate?: string;
+}

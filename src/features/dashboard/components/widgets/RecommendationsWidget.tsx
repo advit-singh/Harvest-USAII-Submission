@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -60,7 +61,14 @@ export function RecommendationsWidget({ orgId }: RecommendationsWidgetProps) {
   };
 
   return (
-    <WidgetShell widgetId="recommendations">
+    <WidgetShell
+      widgetId="recommendations"
+      action={
+        <Button variant="ghost" size="sm" asChild>
+          <Link href="/predictions?tab=recommendations">View all</Link>
+        </Button>
+      }
+    >
       <WidgetQueryState
         query={query}
         emptyIcon={Sparkles}

@@ -5,16 +5,14 @@ import {
   fetchRecommendations,
   submitRecommendationAction,
 } from "@/lib/api/recommendations";
+import { recommendationKeys } from "@/features/predictions/hooks/predictions-keys";
 import type { RecommendationActionInput } from "@/types/recommendation";
 
-export const recommendationKeys = {
-  all: ["recommendations"] as const,
-  list: (orgId: string) => [...recommendationKeys.all, orgId] as const,
-};
+export { recommendationKeys };
 
 export function useRecommendations(orgId: string | null, limit = 3) {
   return useQuery({
-    queryKey: [...recommendationKeys.list(orgId ?? ""), limit],
+    queryKey: [...recommendationKeys.list(orgId ?? ""), { limit }],
     queryFn: () =>
       fetchRecommendations({ orgId: orgId!, status: "open", limit }),
     enabled: Boolean(orgId),
@@ -36,7 +34,7 @@ export function useRecommendationAction(orgId: string | null) {
     onSuccess: () => {
       if (orgId) {
         queryClient.invalidateQueries({
-          queryKey: recommendationKeys.list(orgId),
+          queryKey: recommendationKeys.all,
         });
       }
     },
