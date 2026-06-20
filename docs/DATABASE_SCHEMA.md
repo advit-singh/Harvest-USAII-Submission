@@ -1015,7 +1015,19 @@ expected_savings
 expected_meals_saved
 
 status
+
+forecast_id
+
+assignee_id
+
+due_date
 ```
+
+Optional links:
+
+- `forecast_id` → originating forecast
+- `assignee_id` → assigned team member (`users.id`)
+- `due_date` → action deadline
 
 ---
 
