@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getUploadById, updateUploadStatus } from "@/services/upload/upload-service";
+import { getUploadById, approveUpload } from "@/services/upload/upload-service";
 
 function toIsoString(value: string | Date) {
   return value instanceof Date ? value.toISOString() : value;
@@ -27,6 +27,7 @@ function mapUploadSummary(upload: any) {
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   const payload = await request.json();
+  const entities = Array.isArray(payload?.entities) ? payload.entities : [];
 
   const upload = await getUploadById(params.id);
 
@@ -43,7 +44,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     );
   }
 
-  await updateUploadStatus(params.id, "completed");
+  await approveUpload(params.id, entities);
   const updatedUpload = await getUploadById(params.id);
 
   return NextResponse.json({

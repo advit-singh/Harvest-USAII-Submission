@@ -53,7 +53,12 @@ export async function runUploadPipeline(uploadId: string) {
     );
 
     await updateUploadStatus(uploadId, "validating");
-    const issues = await validateUpload(uploadId, normalized);
+    const issues = await validateUpload(
+      uploadId,
+      upload.organization_id,
+      upload.checksum,
+      normalized,
+    );
 
     if (issues.length > 0) {
       await updateUploadStatus(uploadId, "review_required");

@@ -168,6 +168,24 @@ export async function updateUploadJobStatus(
     .where(eq(upload_jobs.id, jobId));
 }
 
+export async function findUploadByChecksum(checksum: string, organizationId: string) {
+  return db.query.uploads.findFirst({
+    where: and(
+      eq(uploads.checksum, checksum),
+      eq(uploads.organization_id, organizationId),
+    ),
+  });
+}
+
+export async function approveUpload(uploadId: string, entities?: Array<{ id: string; value: string }>) {
+  // Entities may be used later to map structured values to operational records.
+  return updateUploadStatus(uploadId, "completed");
+}
+
+export async function rejectUpload(uploadId: string, reason: string) {
+  return updateUploadStatus(uploadId, "rejected", reason);
+}
+
 export async function listUploadAnomalies(organizationId: string) {
   return db
     .select({

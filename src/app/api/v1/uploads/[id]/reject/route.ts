@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getUploadById, updateUploadStatus } from "@/services/upload/upload-service";
+import { getUploadById, rejectUpload } from "@/services/upload/upload-service";
 
 function toIsoString(value: string | Date) {
   return value instanceof Date ? value.toISOString() : value;
@@ -57,7 +57,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     );
   }
 
-  await updateUploadStatus(params.id, "rejected", reason);
+  await rejectUpload(params.id, reason);
   const updatedUpload = await getUploadById(params.id);
 
   return NextResponse.json({

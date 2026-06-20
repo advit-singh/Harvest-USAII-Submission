@@ -18,10 +18,14 @@ export async function extractUploadContent(storagePath: string): Promise<Extract
   }
 
   const arrayBuffer = await data.arrayBuffer();
-  const content = new TextDecoder().decode(new Uint8Array(arrayBuffer));
-
+  const decoder = new TextDecoder("utf-8", { fatal: false });
+  const content = decoder.decode(new Uint8Array(arrayBuffer));
   const rawText = content.slice(0, 10000);
-  const structuredJson = JSON.stringify({ content: rawText });
+  const structuredJson = JSON.stringify({
+    source: storagePath,
+    extracted_at: new Date().toISOString(),
+    content: rawText,
+  });
 
   return {
     raw_text: rawText,

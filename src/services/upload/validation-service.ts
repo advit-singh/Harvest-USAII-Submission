@@ -1,4 +1,4 @@
-import { createValidationAnomaly } from "./upload-service";
+import { createValidationAnomaly, findUploadByChecksum } from "./upload-service";
 
 export interface ValidationIssue {
   type: "duplicate_upload" | "attendance_spike" | "inventory_conflict" | "cost_outlier" | "missing_field";
@@ -10,6 +10,8 @@ export interface ValidationIssue {
 
 export async function validateUpload(
   uploadId: string,
+  organizationId: string,
+  checksum: string,
   input: { classification: string; rawText: string },
 ) {
   const issues: ValidationIssue[] = [];
@@ -24,13 +26,24 @@ export async function validateUpload(
     });
   }
 
-  if (input.rawText.length < 10) {
+  if (input.rawText.trim().length < 20) {
     issues.push({
       type: "missing_field",
       severity: "informational",
       reason: "Extracted file content is very short.",
       confidence: 40,
       suggested_fix: "Confirm the upload contains readable content.",
+    });
+  }
+
+  const duplicate = await findUploadByChecksum(checksum, organizationId);
+  if (duplicate && duplicate.id !== uploadId) {
+    issues.push({
+      type: "duplicate_upload",
+      severity: "warning",
+      reason: "An upload with the same content already exists for this organization.",
+      confidence: 85,
+      suggested_fix: "Review the duplicate upload and remove or reconcile it if necessary.",
     });
   }
 
