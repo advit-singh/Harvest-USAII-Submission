@@ -1,4 +1,9 @@
 import { apiClient } from "@/lib/api/client";
+import { isLiveIntelligenceApiEnabled } from "@/lib/api/api-mode";
+import {
+  resolveIntelligenceOrgId,
+  resolveIntelligenceSiteId,
+} from "@/lib/api/intelligence-org-bridge";
 import {
   getMockRecommendations,
   updateMockRecommendationAction,
@@ -27,7 +32,7 @@ const mockAssignments: Record<
 export async function fetchRecommendations(
   filters: RecommendationFilters,
 ): Promise<Recommendation[]> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await new Promise((r) => setTimeout(r, 200));
     let items = getMockRecommendations();
 
@@ -57,10 +62,12 @@ export async function fetchRecommendations(
     return filters.limit ? sorted.slice(0, filters.limit) : sorted;
   }
 
-  const params = new URLSearchParams({ organizationId: filters.orgId });
+  const params = new URLSearchParams({
+    organizationId: resolveIntelligenceOrgId(filters.orgId),
+  });
   if (filters.status) params.set("status", filters.status);
   if (filters.priority) params.set("priority", filters.priority);
-  if (filters.siteId) params.set("siteId", filters.siteId);
+  if (filters.siteId) params.set("siteId", resolveIntelligenceSiteId(filters.siteId));
   if (filters.limit) params.set("limit", String(filters.limit));
 
   return apiClient<Recommendation[]>(
@@ -71,7 +78,7 @@ export async function fetchRecommendations(
 export async function fetchRecommendationById(
   id: string,
 ): Promise<RecommendationDetail> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await new Promise((r) => setTimeout(r, 150));
     const detail = getMockRecommendationDetail(id);
     if (!detail) {
@@ -96,7 +103,7 @@ export async function submitRecommendationAction(
   id: string,
   input: RecommendationActionInput,
 ): Promise<Recommendation> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await new Promise((r) => setTimeout(r, 150));
     const updated = updateMockRecommendationAction(id, input.action);
     if (!updated) {
@@ -115,7 +122,7 @@ export async function assignRecommendation(
   id: string,
   input: RecommendationAssignInput,
 ): Promise<RecommendationDetail> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await new Promise((r) => setTimeout(r, 200));
     const detail = getMockRecommendationDetail(id);
     if (!detail) {

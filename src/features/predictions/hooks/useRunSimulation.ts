@@ -17,7 +17,7 @@ export function useRunSimulation(orgId: string | null) {
   });
 
   const runPreview = useMutation({
-    mutationFn: (changes: SimulationInput) => runSimulationPreview(changes),
+    mutationFn: (changes: SimulationInput) => runSimulationPreview(orgId!, changes),
   });
 
   const saveScenario = useMutation({

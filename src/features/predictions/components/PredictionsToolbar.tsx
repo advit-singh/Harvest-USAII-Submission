@@ -17,6 +17,8 @@ import {
   TIME_RANGE_OPTIONS,
 } from "@/features/predictions/config/predictions-tabs";
 import { useGenerateForecast } from "@/features/predictions/hooks/useGenerateForecast";
+import { resolveIntelligenceSiteId } from "@/lib/api/intelligence-org-bridge";
+import { isLiveIntelligenceApiEnabled } from "@/lib/api/api-mode";
 import type { PredictionsFiltersInput } from "@/features/predictions/schemas/predictions-filters.schema";
 
 interface PredictionsToolbarProps {
@@ -38,7 +40,7 @@ export function PredictionsToolbar({
     generateMutation.mutate(
       {
         forecastType: "surplus",
-        siteId: filters.siteId ?? "site_001",
+        siteId: resolveIntelligenceSiteId(filters.siteId),
         days: filters.timeRange === "week" ? 7 : filters.timeRange === "month" ? 30 : 90,
       },
       {
@@ -150,14 +152,21 @@ export function PredictionsToolbar({
         </Button>
       </div>
 
-      <Button
-        onClick={handleGenerate}
-        disabled={generateMutation.isPending}
-        aria-label="Generate forecast"
-      >
-        <Sparkles className="mr-2 h-4 w-4" aria-hidden />
-        {generateMutation.isPending ? "Generating…" : "Generate forecast"}
-      </Button>
+      <div className="flex flex-col items-stretch gap-2 sm:items-end">
+        {isLiveIntelligenceApiEnabled() ? (
+          <p className="text-xs text-muted-foreground">
+            Live intelligence API · weather via Open-Meteo · holidays via Nager.Date
+          </p>
+        ) : null}
+        <Button
+          onClick={handleGenerate}
+          disabled={generateMutation.isPending}
+          aria-label="Generate forecast"
+        >
+          <Sparkles className="mr-2 h-4 w-4" aria-hidden />
+          {generateMutation.isPending ? "Generating…" : "Generate forecast"}
+        </Button>
+      </div>
     </div>
   );
 }
