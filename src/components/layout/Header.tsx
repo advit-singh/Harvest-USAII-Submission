@@ -8,6 +8,7 @@ import { UserMenu } from "@/components/layout/UserMenu";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { GlobalSearch } from "@/features/navigation/components/GlobalSearch";
 import { CommandPalette } from "@/features/navigation/components/CommandPalette";
+import { NotificationCenter } from "@/features/notifications/components/NotificationCenter";
 import { useUiStore } from "@/store/ui-store";
 
 export function Header() {
@@ -34,6 +35,7 @@ export function Header() {
           <Bot className="h-5 w-5" />
         </Link>
       </Button>
+      <NotificationCenter />
       <CommandPalette />
       <UserMenu />
     </header>
