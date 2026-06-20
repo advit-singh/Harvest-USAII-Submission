@@ -846,6 +846,74 @@ Updates impact metrics.
 
 ---
 
+## POST Dismiss Opportunity
+
+```http
+POST /api/v1/donations/opportunities/:id/dismiss
+```
+
+Dismisses an opportunity that is no longer actionable.
+
+Request body:
+
+```json
+{
+  "reason": "optional string"
+}
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "don_001",
+    "status": "dismissed"
+  }
+}
+```
+
+---
+
+## GET Donation History
+
+```http
+GET /api/v1/donations
+```
+
+Query parameters:
+
+- `organizationId` (required)
+- `status` (optional): `completed` | `failed` | `all`
+- `siteId` (optional)
+
+Returns operational donation records (not aggregate analytics).
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "donation_001",
+      "opportunityId": "don_001",
+      "item": "Whole milk (1 gal cartons)",
+      "quantity": "24 units",
+      "recipientName": "Community Kitchen",
+      "recipientId": "rec_001",
+      "status": "completed",
+      "mealsRescued": 42,
+      "completedAt": "2026-06-18T14:30:00Z",
+      "siteName": "Lincoln Elementary Cafeteria"
+    }
+  ]
+}
+```
+
+---
+
 # 39. Recipients
 
 ## GET

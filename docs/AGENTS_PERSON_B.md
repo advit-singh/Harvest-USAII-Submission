@@ -464,6 +464,37 @@ All must pass.
 
 ---
 
+# Post-Implementation Version Control (Automatic)
+
+After completing any implementation milestone, **do not wait for the user to approve** git operations. Execute the full version control workflow automatically as defined in `docs/PROJECT_RULES.md` §Post-Implementation Version Control.
+
+---
+
+## Required Steps (No User Prompt Needed)
+
+1. Run the quality gate (`lint`, `typecheck`, `test`, `build`).
+
+2. Commit all changes with focused commit messages.
+
+3. Rebase onto the latest default branch (`master` or `main`).
+
+4. Push the feature branch: `git push -u origin HEAD`
+
+5. Open a PR with `gh pr create` using `docs/PR_TEMPLATE.md`.
+
+6. Merge the PR immediately: `gh pr merge --merge --delete-branch` (or `--auto` if checks must pass first).
+
+7. Report the merged PR URL in your final response.
+
+---
+
+## Do Not Do Without Explicit User Request
+
+* Force push
+* Destructive git resets
+
+---
+
 # Merge Conflict Policy
 
 Never overwrite another developer's work.

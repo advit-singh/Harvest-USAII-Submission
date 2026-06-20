@@ -102,12 +102,12 @@ Production-demo ready.
 | App Shell / Navigation | B | Complete | Yes | Sidebar, header, org switcher, command palette, breadcrumbs |
 | Organization Onboarding UI | B | Complete | Yes | 5-step wizard; org API client mocked (`NEXT_PUBLIC_USE_MOCK_API`) |
 | Organization API (backend) | A | Not Started | No | Person B consuming mocks until A delivers |
-| Dashboard Workspace | B | Not Started | No | Empty-state placeholder only; widgets deferred to next milestone |
-| Analytics Workspace | B | Not Started | No | |
-| Forecast Workspace | B | Not Started | No | |
-| Recommendations Workspace | B | Not Started | No | |
-| Simulator Workspace | B | Not Started | No | |
-| Rescue Network Workspace | B | Not Started | No | |
+| Dashboard Workspace | B | Complete | Yes | 7 configurable widgets, drag/resize layout, mock API clients |
+| Analytics Workspace | B | Complete | Yes | 5 tabs, charts, filters, drill-down, root cause, CSV export; mock API clients |
+| Forecast Workspace | B | Complete | Yes | 4 tabs: summary, explorer, recommendations, simulator; mock API clients |
+| Recommendations Workspace | B | Complete | Yes | Part of Predictions workspace (`/predictions?tab=recommendations`) |
+| Simulator Workspace | B | Complete | Yes | Part of Predictions workspace (`/predictions?tab=simulator`) |
+| Rescue Network Workspace | B | Complete | Yes | 4 tabs: opportunities, recipients, history, impact; match/complete/dismiss flows; mock API clients |
 | AI Assistant Workspace | B | Not Started | No | |
 | Reports Workspace | B | Not Started | No | |
 | Settings Workspace | B | Not Started | No | |
@@ -120,6 +120,10 @@ Production-demo ready.
 | Branch | Owner | Status |
 |----------|----------|----------|
 | feature/app-platform-foundation | B | PR Open |
+| feature/dashboard-workspace | B | PR Open |
+| feature/analytics-workspace | B | PR Open |
+| feature/predictions-workspace | B | PR Open |
+| feature/rescue-network | B | PR Open |
 
 ---
 
@@ -149,10 +153,51 @@ Requires:
 - Forecast API
 - Recommendation API
 - Impact API
+- Analytics overview API
+- Donations opportunities API
+- Notifications API
 
 Status:
 
-Waiting
+Ready for Integration (mocked clients in `src/lib/api`)
+
+Person A: swap mocks when backend routes are live.
+
+---
+
+## Dashboard Mock API Clients
+
+Mock-first clients (API_SPEC-aligned types in `src/types`):
+
+- `src/lib/api/analytics.ts` — overview
+- `src/lib/api/forecasts.ts`
+- `src/lib/api/recommendations.ts`
+- `src/lib/api/impact.ts`
+- `src/lib/api/inventory.ts`
+- `src/lib/api/donations.ts`
+- `src/lib/api/notifications.ts`
+
+Status:
+
+Ready for Integration
+
+---
+
+## Analytics Workspace Mock API Clients
+
+Mock-first clients (API_SPEC §26, types in `src/types/analytics.ts`):
+
+- `src/lib/api/analytics-waste.ts` — `GET /analytics/waste`
+- `src/lib/api/analytics-inventory.ts` — `GET /analytics/inventory`
+- `src/lib/api/analytics-attendance.ts` — `GET /analytics/attendance`
+- `src/lib/api/analytics-donations.ts` — `GET /analytics/donations`
+- `src/lib/api/analytics-impact.ts` — `GET /analytics/impact`
+
+Status:
+
+Ready for Integration
+
+Person A: swap mocks when backend analytics routes are live.
 
 ---
 
@@ -162,10 +207,43 @@ Requires:
 
 - Forecast Engine
 - Forecast API
+- Recommendation API
+- Simulation API
 
 Status:
 
-Waiting
+Ready for Integration (mocked clients in `src/lib/api`)
+
+Mock-first clients (API_SPEC §27–35, types in `src/types/forecast.ts`, `recommendation.ts`, `simulation.ts`):
+
+- `src/lib/api/forecasts.ts` — `GET/POST /forecasts`, `GET /forecasts/:id`
+- `src/lib/api/recommendations.ts` — `GET /recommendations`, `GET /recommendations/:id`, `POST /recommendations/:id/action`
+- `src/lib/api/simulations.ts` — `POST /simulations`, `/run`, `/compare`
+
+Person A: swap mocks when backend intelligence routes are live.
+
+---
+
+## Rescue Network Workspace
+
+Requires:
+
+- Donation Matching Engine
+- Donation API
+- Recipients API
+- Impact API
+
+Status:
+
+Ready for Integration (mocked clients in `src/lib/api`)
+
+Mock-first clients (API_SPEC §36–39, types in `src/types/donation.ts`, `recipient.ts`):
+
+- `src/lib/api/donations.ts` — opportunities, match, complete, dismiss, history
+- `src/lib/api/recipients.ts` — `GET/POST /recipients`
+- Reuses `src/lib/api/impact.ts` for impact tab
+
+Person A: swap mocks when donation matching and backend routes are live.
 
 ---
 
@@ -196,6 +274,70 @@ Waiting
 
 # Daily Sync Log
 
+## 2026-06-20 (Rescue Network)
+
+### Person B
+
+Completed:
+
+- Complete Rescue Network Workspace: 4 tabbed views (opportunities, recipients, history, impact)
+- Match review drawer with explainable ranked recipients
+- Donation completion and failure flows with human approval
+- Recipient directory with add-recipient dialog
+- Mock-first API clients for donations, recipients, match, complete, dismiss, history
+- Shared `donationKeys` with dashboard widget; deep links from dashboard and command palette
+- Unit and integration tests
+
+Working On:
+
+- Rescue Network PR review (`feature/rescue-network`)
+
+Blockers:
+
+- Person A donation matching backend — workspace uses mocks until live
+
+Ready For Integration:
+
+- Rescue mock API clients (`donations.ts` extended, `recipients.ts`)
+
+Milestone Status:
+
+- Rescue Network Workspace (Phase 13) — **Complete**, PR open
+
+---
+
+## 2026-06-19 (Predictions)
+
+### Person B
+
+Completed:
+
+- Complete Predictions Workspace: summary, explorer, recommendations, simulator tabs
+- Forecast detail drawer with explainable factors panel
+- Recommendations center with filters, bulk actions, assignment, accept/reject/snooze
+- Scenario simulator with run, save, duplicate, and compare flows
+- Mock-first API clients for forecasts, recommendations, and simulations
+- Shared TanStack Query keys with dashboard widgets; deep links from dashboard
+- Unit and integration tests
+
+Working On:
+
+- Predictions PR review (`feature/predictions-workspace`)
+
+Blockers:
+
+- Person A forecast/recommendation/simulation backends — workspace uses mocks until live
+
+Ready For Integration:
+
+- Predictions mock API clients (`forecasts.ts`, `recommendations.ts`, `simulations.ts`)
+
+Milestone Status:
+
+- Predictions Workspace (Phases 10–12) — **Complete**, PR open
+
+---
+
 ## 2026-06-19
 
 ### Person A
@@ -214,27 +356,28 @@ Ready For Integration:
 
 Completed:
 
-- Next.js 16 app scaffold with TypeScript strict, Tailwind v4, TanStack Query, Zustand, RHF, Zod, Vitest
-- Harvest design system tokens and component library
-- Supabase auth flows + dev mock auth mode
-- 5-step organization onboarding wizard
-- App shell: sidebar, header, org switcher, command palette, workspace placeholders
+- Complete Analytics Workspace: 5 tabbed analysis views (waste, inventory, attendance, donations, impact)
+- Charts, filters, hierarchy drill-down, AI root-cause panel, CSV export
+- Mock-first API clients for all `GET /api/v1/analytics/*` endpoints
+- Unit and integration tests
 
 Working On:
 
-- Awaiting PR review and merge to `master`
+- Analytics PR review (`feature/analytics-workspace`)
 
 Blockers:
 
-- Organization backend APIs (Person A) — using mocks
+- Person A analytics backend routes — workspace uses mocks until live
 
 Ready For Integration:
 
-- Organization API client (mocked, API_SPEC-aligned types in `src/types`)
+- Analytics mock API clients (5 endpoints in `src/lib/api/analytics-*.ts`)
 
 Milestone Status:
 
 - Application Platform Foundation (Phases 1–6) — **Complete**, PR open
+- Dashboard Workspace (Phase 7) — **Complete**, PR open
+- Analytics Workspace (Phase 9) — **Complete**, PR open
 
 ---
 
@@ -298,5 +441,6 @@ Merge Conflict Risks:
 
 Upcoming Integration Milestones:
 
-- Dashboard Workspace (`feature/dashboard-workspace`)
 - Person A organization API backend → swap mock client
+- Person A intelligence APIs → swap predictions, dashboard, and analytics mock clients
+- Person A donation APIs → swap rescue network mock clients

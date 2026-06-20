@@ -777,7 +777,87 @@ Large changes should be split.
 
 ---
 
-# Merge Conflict Policy
+# Post-Implementation Version Control (Mandatory for Agents)
+
+When an AI coding agent completes a feature milestone or implementation task, it **must** execute the full version control workflow **automatically** without waiting for the user to request commits, pushes, or pull requests.
+
+This is required even if the user does not explicitly ask for git operations in their message.
+
+---
+
+## Agent Workflow (Run Automatically After Implementation)
+
+1. **Verify quality gate** — all must pass:
+
+```bash
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+```
+
+2. **Stage and commit** — use small, focused commits per Commit Standards above.
+
+3. **Sync with default branch**:
+
+```bash
+git checkout master
+git pull origin master
+git checkout <feature-branch>
+git rebase master
+```
+
+Use `main` instead of `master` only if the repository default branch is `main`.
+
+4. **Push the feature branch**:
+
+```bash
+git push -u origin HEAD
+```
+
+5. **Open a pull request** using `docs/PR_TEMPLATE.md` and `gh pr create`.
+
+6. **Merge the pull request immediately** — do not wait for user approval:
+
+```bash
+gh pr merge --merge --delete-branch
+```
+
+If the repository requires checks to pass first, use:
+
+```bash
+gh pr merge --auto --merge --delete-branch
+```
+
+7. **Return the merged PR URL** to the user in the completion summary.
+
+---
+
+## What Agents Must Not Do Without Explicit User Request
+
+* Force push (`git push --force`)
+* Hard reset or other destructive git operations
+* Commit secrets (`.env`, credentials, API keys)
+
+---
+
+## Completion Criteria
+
+A milestone is not complete until:
+
+✓ Quality gate passes
+
+✓ Changes are committed
+
+✓ Branch is pushed to remote
+
+✓ Pull request is open
+
+✓ Pull request is merged
+
+✓ `docs/INTEGRATION_BOARD.md` is updated when applicable
+
+---
 
 Never overwrite another contributor's work.
 

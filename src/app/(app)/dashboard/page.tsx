@@ -1,13 +1,14 @@
 "use client";
 
 import { PageHeader } from "@/components/feedback/PageHeader";
-import { EmptyOrgDashboard } from "@/features/organizations/components/EmptyOrgDashboard";
+import { DashboardShell } from "@/features/dashboard/components/DashboardShell";
 import { useOrganizations } from "@/features/organizations/hooks/useOrganizations";
 import { PageLoadingState } from "@/components/feedback/LoadingState";
 import { ErrorState } from "@/components/feedback/ErrorState";
 
 export default function DashboardPage() {
-  const { activeOrg, isLoading, isError, refetch } = useOrganizations();
+  const { activeOrg, activeOrgId, isLoading, isError, refetch } =
+    useOrganizations();
 
   if (isLoading) return <PageLoadingState />;
 
@@ -30,7 +31,7 @@ export default function DashboardPage() {
             : "Your mission control for food waste intelligence"
         }
       />
-      <EmptyOrgDashboard />
+      <DashboardShell orgId={activeOrgId} />
     </div>
   );
 }
