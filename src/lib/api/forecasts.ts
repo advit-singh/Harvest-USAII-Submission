@@ -1,4 +1,9 @@
 import { apiClient } from "@/lib/api/client";
+import { isLiveIntelligenceApiEnabled } from "@/lib/api/api-mode";
+import {
+  resolveIntelligenceOrgId,
+  resolveIntelligenceSiteId,
+} from "@/lib/api/intelligence-org-bridge";
 import {
   getMockForecasts,
 } from "@/lib/mocks/dashboard-fixtures";
@@ -24,7 +29,7 @@ export interface ForecastFilters {
 export async function fetchForecasts(
   filters: ForecastFilters,
 ): Promise<ForecastSummary[]> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await new Promise((r) => setTimeout(r, 250));
     const all = getMockForecasts();
     return filterMockForecasts(all, {
@@ -33,15 +38,16 @@ export async function fetchForecasts(
     });
   }
 
-  const params = new URLSearchParams({ organizationId: filters.orgId });
+  const orgId = resolveIntelligenceOrgId(filters.orgId);
+  const params = new URLSearchParams({ organizationId: orgId });
   if (filters.forecastType) params.set("forecastType", filters.forecastType);
-  if (filters.siteId) params.set("siteId", filters.siteId);
+  if (filters.siteId) params.set("siteId", resolveIntelligenceSiteId(filters.siteId));
 
   return apiClient<ForecastSummary[]>(`/forecasts?${params.toString()}`);
 }
 
 export async function fetchForecastById(id: string): Promise<ForecastDetail> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await new Promise((r) => setTimeout(r, 200));
     const detail = getMockForecastDetail(id);
     if (!detail) {
@@ -56,7 +62,7 @@ export async function fetchForecastById(id: string): Promise<ForecastDetail> {
 export async function fetchForecastSummaryKpis(
   orgId: string,
 ): Promise<ForecastSummaryKpis> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await new Promise((r) => setTimeout(r, 180));
     if (orgId.startsWith("org_empty") || orgId === "org_new") {
       return {
@@ -73,8 +79,9 @@ export async function fetchForecastSummaryKpis(
     return getMockForecastSummaryKpis();
   }
 
+  const resolvedOrgId = resolveIntelligenceOrgId(orgId);
   return apiClient<ForecastSummaryKpis>(
-    `/forecasts/summary?organizationId=${orgId}`,
+    `/forecasts/summary?organizationId=${resolvedOrgId}`,
   );
 }
 
@@ -82,13 +89,18 @@ export async function generateForecast(
   orgId: string,
   input: GenerateForecastInput,
 ): Promise<GenerateForecastResponse> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await new Promise((r) => setTimeout(r, 800));
     return { forecastId: "fcst_001" };
   }
 
+  const resolvedOrgId = resolveIntelligenceOrgId(orgId);
   return apiClient<GenerateForecastResponse>("/forecasts/generate", {
     method: "POST",
-    body: JSON.stringify({ ...input, organizationId: orgId }),
+    body: JSON.stringify({
+      ...input,
+      organizationId: resolvedOrgId,
+      siteId: resolveIntelligenceSiteId(input.siteId),
+    }),
   });
 }

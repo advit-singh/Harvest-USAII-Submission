@@ -90,7 +90,7 @@ Production-demo ready.
 | Upload Pipeline | A | Complete | Yes | API routes + auto-process; OpenRouter/Gemini when `OPENROUTER_API_KEY` set |
 | AI Extraction Engine | A | Complete | Yes | Classification, extraction, normalization via `src/services/ai` + parsers |
 | Data Validation Engine | A | Complete | Yes | Validation anomalies + resolve API; never blocks pipeline |
-| Forecast Engine | A | Ready for Integration | Yes | Hybrid statistical + rules + AI factors in `src/services/forecast` |
+| Forecast Engine | A | Ready for Integration | Yes | Hybrid statistical + rules + AI factors; Open-Meteo weather + Nager.Date holidays when `externalDataEnabled` |
 | Recommendation Engine | A | Ready for Integration | Yes | Risk/opportunity detection + ranking in `src/services/recommendation` |
 | Scenario Simulator Engine | A | Ready for Integration | Yes | Baseline + delta simulation in `src/services/simulation` |
 | Impact Engine | A | Not Started | No | |

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { ForecastType } from "@/types/forecast";
+import type { ExternalDataContext } from "@/services/intelligence/external-data-service";
 
 export interface OperationalSnapshot {
   organizationId: string;
@@ -15,6 +16,7 @@ export interface OperationalSnapshot {
   avgAttendance: number;
   wasteTrend: number;
   attendanceTrend: number;
+  externalData: ExternalDataContext;
 }
 
 export interface ForecastComputation {
@@ -59,3 +61,13 @@ export const forecastReasoningSchema = z.object({
 });
 
 export type ForecastReasoningResult = z.infer<typeof forecastReasoningSchema>;
+
+export const EMPTY_EXTERNAL_DATA: ExternalDataContext = {
+  enabled: false,
+  locationName: null,
+  weather: null,
+  holidays: [],
+  holidayAttendanceImpact: 0,
+  combinedAttendanceImpact: 0,
+  sources: [],
+};

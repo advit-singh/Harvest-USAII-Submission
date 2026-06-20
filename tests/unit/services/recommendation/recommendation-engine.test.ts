@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { detectRecommendations } from "@/services/recommendation/recommendation-engine";
 import { computeForecast } from "@/services/forecast/forecast-models";
 import type { OperationalSnapshot } from "@/services/intelligence/intelligence-types";
+import { EMPTY_EXTERNAL_DATA } from "@/services/intelligence/intelligence-types";
 
 const snapshot: OperationalSnapshot = {
   organizationId: "org-1",
@@ -17,6 +18,7 @@ const snapshot: OperationalSnapshot = {
   avgAttendance: 270,
   wasteTrend: 15,
   attendanceTrend: -12,
+  externalData: { ...EMPTY_EXTERNAL_DATA },
 };
 
 describe("recommendation-engine", () => {

@@ -1,4 +1,6 @@
 import { apiClient } from "@/lib/api/client";
+import { isLiveIntelligenceApiEnabled } from "@/lib/api/api-mode";
+import { resolveIntelligenceOrgId, resolveIntelligenceSiteId } from "@/lib/api/intelligence-org-bridge";
 import {
   approveMockUpload,
   createMockUpload,
@@ -68,7 +70,7 @@ async function uploadFileMultipart(
 export async function fetchUploads(
   filters: UploadFilters,
 ): Promise<UploadSummary[]> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await mockDelay();
     let items = getMockUploads(filters.organizationId);
 
@@ -93,12 +95,14 @@ export async function fetchUploads(
   }
 
   const params = new URLSearchParams({
-    organizationId: filters.organizationId,
+    organizationId: resolveIntelligenceOrgId(filters.organizationId),
   });
   if (filters.status && filters.status !== "all") {
     params.set("status", filters.status);
   }
-  if (filters.siteId) params.set("siteId", filters.siteId);
+  if (filters.siteId) {
+    params.set("siteId", resolveIntelligenceSiteId(filters.siteId));
+  }
   if (filters.limit) params.set("limit", String(filters.limit));
 
   return apiClient<UploadSummary[]>(`/uploads?${params.toString()}`);
@@ -107,7 +111,7 @@ export async function fetchUploads(
 export async function uploadFile(
   input: UploadFileInput,
 ): Promise<UploadFileResponse> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await mockDelay();
     const upload = createMockUpload({
       organizationId: input.organizationId,
@@ -121,13 +125,17 @@ export async function uploadFile(
     return { uploadId: upload.id, status: upload.status };
   }
 
-  return uploadFileMultipart(input);
+  return uploadFileMultipart({
+    ...input,
+    organizationId: resolveIntelligenceOrgId(input.organizationId),
+    siteId: resolveIntelligenceSiteId(input.siteId),
+  });
 }
 
 export async function fetchUploadStatus(
   uploadId: string,
 ): Promise<UploadStatusDetail> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await mockDelay();
     const upload = getMockUploadById(uploadId);
     if (!upload) throw new Error(`Upload not found: ${uploadId}`);
@@ -147,7 +155,7 @@ export async function fetchUploadStatus(
 export async function triggerUploadProcess(
   uploadId: string,
 ): Promise<UploadStatusDetail> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await mockDelay();
     const upload = triggerMockProcessing(uploadId);
     if (!upload) throw new Error(`Upload not found: ${uploadId}`);
@@ -169,7 +177,7 @@ export async function triggerUploadProcess(
 export async function fetchUploadReview(
   uploadId: string,
 ): Promise<UploadReview> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await mockDelay();
     const review = getMockUploadReview(uploadId);
     if (!review) throw new Error(`Review not found: ${uploadId}`);
@@ -183,7 +191,7 @@ export async function approveUpload(
   uploadId: string,
   payload?: ApproveUploadPayload,
 ): Promise<UploadSummary> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await mockDelay();
     const upload = approveMockUpload(uploadId, payload);
     if (!upload) throw new Error(`Upload not found: ${uploadId}`);
@@ -200,7 +208,7 @@ export async function rejectUpload(
   uploadId: string,
   payload: RejectUploadPayload,
 ): Promise<UploadSummary> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await mockDelay();
     const upload = rejectMockUpload(uploadId, payload.reason);
     if (!upload) throw new Error(`Upload not found: ${uploadId}`);
@@ -216,7 +224,7 @@ export async function rejectUpload(
 export async function fetchValidationAnomalies(
   orgId: string,
 ): Promise<ValidationAnomaly[]> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await mockDelay();
     const uploadIds = new Set(
       getMockUploads(orgId).map((u) => u.id),
@@ -227,7 +235,7 @@ export async function fetchValidationAnomalies(
   }
 
   return apiClient<ValidationAnomaly[]>(
-    `/uploads/anomalies?organizationId=${orgId}`,
+    `/uploads/anomalies?organizationId=${resolveIntelligenceOrgId(orgId)}`,
   );
 }
 
@@ -235,7 +243,7 @@ export async function resolveValidationAnomaly(
   anomalyId: string,
   action: "accepted" | "corrected" | "ignored",
 ): Promise<ValidationAnomaly> {
-  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+  if (!isLiveIntelligenceApiEnabled()) {
     await mockDelay();
     const anomaly = resolveMockAnomaly(anomalyId, action);
     if (!anomaly) throw new Error(`Anomaly not found: ${anomalyId}`);

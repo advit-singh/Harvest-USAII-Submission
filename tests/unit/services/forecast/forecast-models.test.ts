@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { computeForecast } from "@/services/forecast/forecast-models";
 import type { OperationalSnapshot } from "@/services/intelligence/intelligence-types";
+import { EMPTY_EXTERNAL_DATA } from "@/services/intelligence/intelligence-types";
 
 function buildSnapshot(overrides: Partial<OperationalSnapshot> = {}): OperationalSnapshot {
   return {
@@ -17,6 +18,7 @@ function buildSnapshot(overrides: Partial<OperationalSnapshot> = {}): Operationa
     avgAttendance: 302,
     wasteTrend: 5,
     attendanceTrend: -2,
+    externalData: { ...EMPTY_EXTERNAL_DATA },
     ...overrides,
   };
 }

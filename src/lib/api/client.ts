@@ -1,4 +1,5 @@
 import type { ApiResponse } from "@/types/api";
+import { isMockApiEnabled as checkMockApiEnabled } from "@/lib/api/api-mode";
 
 export class ApiClientError extends Error {
   constructor(
@@ -10,11 +11,8 @@ export class ApiClientError extends Error {
   }
 }
 
-const USE_MOCK_API =
-  process.env.NEXT_PUBLIC_USE_MOCK_API !== "false";
-
 export function isMockApiEnabled(): boolean {
-  return USE_MOCK_API;
+  return checkMockApiEnabled();
 }
 
 export async function apiClient<T>(

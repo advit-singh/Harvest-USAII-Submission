@@ -83,6 +83,8 @@ export async function seedDatabase() {
       name: "Main Kitchen",
       site_type: "kitchen",
       address: "123 Campus Drive",
+      latitude: "41.8781",
+      longitude: "-87.6298",
       is_active: true,
     })
     .onConflictDoNothing();

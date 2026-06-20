@@ -8,6 +8,7 @@ import {
   waste_events,
 } from "@/db/schema";
 import type { OperationalSnapshot } from "./intelligence-types";
+import { loadExternalDataContext } from "./external-data-service";
 
 export interface LoadOperationalDataInput {
   organizationId: string;
@@ -24,7 +25,7 @@ export async function loadOperationalSnapshot(
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + windowDays);
 
-  const [wasteRows, attendanceRows, expiringLots, upcomingEvents, purchaseRows, inventoryAgg] =
+  const [wasteRows, attendanceRows, expiringLots, upcomingEvents, purchaseRows, inventoryAgg, externalData] =
     await Promise.all([
       db
         .select({
@@ -95,6 +96,11 @@ export async function loadOperationalSnapshot(
         })
         .from(inventory_lots)
         .where(eq(inventory_lots.site_id, input.siteId)),
+      loadExternalDataContext({
+        organizationId: input.organizationId,
+        siteId: input.siteId,
+        horizonDays: windowDays,
+      }),
     ]);
 
   const wasteMeals = wasteRows.map((row) => Number(row.quantity));
@@ -125,6 +131,7 @@ export async function loadOperationalSnapshot(
     avgAttendance,
     wasteTrend,
     attendanceTrend,
+    externalData,
   };
 }
 

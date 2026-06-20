@@ -6,7 +6,7 @@ import {
 
 describe("simulations mock API", () => {
   it("runs simulation preview with changes", async () => {
-    const result = await runSimulationPreview({
+    const result = await runSimulationPreview("org_demo_123", {
       attendanceChange: -10,
       productionChange: -5,
       inventoryChange: 0,
