@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getUploadById, updateUploadStatus } from "@/services/upload/upload-service";
+import { getUploadById } from "@/services/upload/upload-service";
+import { runUploadPipeline } from "@/services/upload/pipeline-service";
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   const supabase = await createClient();
@@ -35,7 +36,19 @@ export async function POST(request: Request, { params }: { params: { id: string 
     );
   }
 
-  await updateUploadStatus(params.id, "classifying");
-
-  return NextResponse.json({ success: true, data: { status: "classifying", progress: 0 } });
+  try {
+    const result = await runUploadPipeline(params.id);
+    return NextResponse.json({ success: true, data: result });
+  } catch (error: unknown) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: "PROCESSING_FAILED",
+          message: error instanceof Error ? error.message : "Upload processing failed.",
+        },
+      },
+      { status: 500 },
+    );
+  }
 }
