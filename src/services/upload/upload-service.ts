@@ -97,6 +97,13 @@ export async function updateUploadStatus(uploadId: string, status: UploadStatus,
     .where(eq(uploads.id, uploadId));
 }
 
+export async function updateUploadClassification(uploadId: string, classification: string, confidenceScore: number) {
+  return db
+    .update(uploads)
+    .set({ classification, confidence_score: confidenceScore })
+    .where(eq(uploads.id, uploadId));
+}
+
 export async function createExtractionResult(uploadId: string, rawText: string, structuredJson: string, confidenceScore: number, modelVersion: string) {
   return db.insert(extraction_results).values({
     upload_id: uploadId,
@@ -105,6 +112,60 @@ export async function createExtractionResult(uploadId: string, rawText: string, 
     confidence_score: confidenceScore,
     model_version: modelVersion,
   });
+}
+
+export async function createValidationAnomaly(
+  uploadId: string,
+  type: string,
+  severity: string,
+  reason: string,
+  confidence: number,
+  suggestedFix?: string,
+) {
+  const [anomaly] = await db
+    .insert(validation_anomalies)
+    .values({
+      upload_id: uploadId,
+      type,
+      severity,
+      reason,
+      confidence,
+      suggested_fix: suggestedFix,
+    })
+    .returning();
+
+  return anomaly;
+}
+
+export async function createUploadJob(uploadId: string, jobType: string) {
+  const [job] = await db
+    .insert(upload_jobs)
+    .values({
+      upload_id: uploadId,
+      job_type: jobType,
+      status: "pending",
+    })
+    .returning();
+
+  return job;
+}
+
+export async function updateUploadJobStatus(
+  jobId: string,
+  status: "pending" | "running" | "completed" | "failed",
+  errorMessage?: string,
+) {
+  return db
+    .update(upload_jobs)
+    .set({
+      status,
+      error_message: errorMessage,
+      ...(status === "running" ? { started_at: new Date() } : {}),
+      ...(status === "completed" || status === "failed"
+        ? { completed_at: new Date() }
+        : {}),
+    })
+    .where(eq(upload_jobs.id, jobId));
 }
 
 export async function listUploadAnomalies(organizationId: string) {
