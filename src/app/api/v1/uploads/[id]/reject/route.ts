@@ -1,67 +1,36 @@
-import { NextResponse } from "next/server";
+import { AuthError, requireAuthenticatedUser, requireOrgMembership } from "@/lib/api/auth";
+import { errorResponse, successResponse } from "@/lib/api/response";
+import { mapUploadSummary } from "@/lib/api/upload-mappers";
 import { getUploadById, updateUploadStatus } from "@/services/upload/upload-service";
 
-function toIsoString(value: string | Date) {
-  return value instanceof Date ? value.toISOString() : value;
-}
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
+    const user = await requireAuthenticatedUser();
+    const payload = await request.json().catch(() => ({}));
+    const reason = payload?.reason;
 
-function mapUploadSummary(upload: any) {
-  return {
-    id: upload.id,
-    organizationId: upload.organization_id,
-    siteId: upload.site_id,
-    fileName: upload.file_name,
-    fileType: upload.file_type,
-    fileSize: upload.file_size,
-    status: upload.processing_status,
-    stage: upload.processing_status === "rejected" ? "completed" : "validated",
-    progress: 100,
-    classification: upload.classification,
-    confidence: upload.confidence_score,
-    description: upload.description ?? undefined,
-    createdAt: toIsoString(upload.created_at),
-    updatedAt: toIsoString(upload.updated_at),
-    failureReason: upload.failure_reason ?? undefined,
-  };
-}
+    if (!reason || typeof reason !== "string") {
+      return errorResponse("VALIDATION_ERROR", "Rejection reason is required.", 400);
+    }
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
-  const payload = await request.json();
-  const reason = payload?.reason;
+    const upload = await getUploadById(id);
+    if (!upload) {
+      return errorResponse("NOT_FOUND", "Upload not found.", 404);
+    }
 
-  if (!reason || typeof reason !== "string") {
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: "VALIDATION_ERROR",
-          message: "Rejection reason is required.",
-        },
-      },
-      { status: 400 },
+    await requireOrgMembership(upload.organization_id, user.id);
+
+    await updateUploadStatus(id, "rejected", reason);
+    const updatedUpload = await getUploadById(id);
+
+    return successResponse(
+      updatedUpload ? mapUploadSummary(updatedUpload) : mapUploadSummary(upload),
     );
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return errorResponse(error.code, error.message, error.code === "UNAUTHORIZED" ? 401 : 403);
+    }
+    throw error;
   }
-
-  const upload = await getUploadById(params.id);
-
-  if (!upload) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: "NOT_FOUND",
-          message: "Upload not found.",
-        },
-      },
-      { status: 404 },
-    );
-  }
-
-  await updateUploadStatus(params.id, "rejected", reason);
-  const updatedUpload = await getUploadById(params.id);
-
-  return NextResponse.json({
-    success: true,
-    data: updatedUpload ? mapUploadSummary(updatedUpload) : mapUploadSummary(upload),
-  });
 }

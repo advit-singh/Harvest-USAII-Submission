@@ -1,67 +1,36 @@
-import { NextResponse } from "next/server";
+import { AuthError, requireAuthenticatedUser, requireOrgMembership } from "@/lib/api/auth";
+import { toApiConfidence } from "@/lib/api/confidence";
+import { errorResponse, successResponse } from "@/lib/api/response";
+import {
+  mapProcessingStatusToProgress,
+  mapProcessingStatusToStage,
+} from "@/lib/api/upload-mappers";
 import { getUploadById } from "@/services/upload/upload-service";
 
-function mapProcessingStatusToStage(status: string) {
-  switch (status) {
-    case "uploaded":
-      return "uploaded";
-    case "classifying":
-      return "classified";
-    case "extracting":
-      return "extracted";
-    case "normalizing":
-    case "validating":
-    case "review_required":
-      return "validated";
-    default:
-      return "completed";
-  }
-}
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
+    const user = await requireAuthenticatedUser();
+    const upload = await getUploadById(id);
 
-function mapProcessingStatusToProgress(status: string) {
-  switch (status) {
-    case "uploaded":
-      return 0;
-    case "classifying":
-      return 20;
-    case "extracting":
-      return 40;
-    case "normalizing":
-      return 60;
-    case "validating":
-      return 80;
-    case "review_required":
-      return 90;
-    default:
-      return 100;
-  }
-}
+    if (!upload) {
+      return errorResponse("NOT_FOUND", "Upload not found.", 404);
+    }
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const upload = await getUploadById(params.id);
+    await requireOrgMembership(upload.organization_id, user.id);
 
-  if (!upload) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: "NOT_FOUND",
-          message: "Upload not found.",
-        },
-      },
-      { status: 404 },
-    );
-  }
-
-  return NextResponse.json({
-    success: true,
-    data: {
+    return successResponse({
       id: upload.id,
       status: upload.processing_status,
       stage: mapProcessingStatusToStage(upload.processing_status),
       progress: mapProcessingStatusToProgress(upload.processing_status),
       classification: upload.classification,
-      confidence: upload.confidence_score,
-    },
-  });
+      confidence: toApiConfidence(upload.confidence_score),
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return errorResponse(error.code, error.message, error.code === "UNAUTHORIZED" ? 401 : 403);
+    }
+    throw error;
+  }
 }

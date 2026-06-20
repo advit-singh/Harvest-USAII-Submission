@@ -1,54 +1,34 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { AuthError, requireAuthenticatedUser, requireOrgMembership } from "@/lib/api/auth";
+import { errorResponse, successResponse } from "@/lib/api/response";
+import { toApiConfidence } from "@/lib/api/confidence";
 import { getUploadById } from "@/services/upload/upload-service";
 import { runUploadPipeline } from "@/services/upload/pipeline-service";
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: "UNAUTHORIZED",
-          message: "Authentication required.",
-        },
-      },
-      { status: 401 },
-    );
-  }
-
-  const upload = await getUploadById(params.id);
-  if (!upload) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: "NOT_FOUND",
-          message: "Upload not found.",
-        },
-      },
-      { status: 404 },
-    );
-  }
-
+export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const result = await runUploadPipeline(params.id);
-    return NextResponse.json({ success: true, data: result });
-  } catch (error: unknown) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: "PROCESSING_FAILED",
-          message: error instanceof Error ? error.message : "Upload processing failed.",
-        },
-      },
-      { status: 500 },
+    const { id } = await params;
+    const user = await requireAuthenticatedUser();
+    const upload = await getUploadById(id);
+
+    if (!upload) {
+      return errorResponse("NOT_FOUND", "Upload not found.", 404);
+    }
+
+    await requireOrgMembership(upload.organization_id, user.id);
+
+    const result = await runUploadPipeline(id);
+    return successResponse({
+      ...result,
+      confidence: toApiConfidence(result.confidence),
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return errorResponse(error.code, error.message, error.code === "UNAUTHORIZED" ? 401 : 403);
+    }
+    return errorResponse(
+      "PROCESSING_FAILED",
+      error instanceof Error ? error.message : "Upload processing failed.",
+      500,
     );
   }
 }
