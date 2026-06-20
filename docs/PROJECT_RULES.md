@@ -817,13 +817,24 @@ git push -u origin HEAD
 
 5. **Open a pull request** using `docs/PR_TEMPLATE.md` and `gh pr create`.
 
-6. **Return the PR URL** to the user in the completion summary.
+6. **Merge the pull request immediately** — do not wait for user approval:
+
+```bash
+gh pr merge --merge --delete-branch
+```
+
+If the repository requires checks to pass first, use:
+
+```bash
+gh pr merge --auto --merge --delete-branch
+```
+
+7. **Return the merged PR URL** to the user in the completion summary.
 
 ---
 
 ## What Agents Must Not Do Without Explicit User Request
 
-* Merge pull requests
 * Force push (`git push --force`)
 * Hard reset or other destructive git operations
 * Commit secrets (`.env`, credentials, API keys)
@@ -841,6 +852,8 @@ A milestone is not complete until:
 ✓ Branch is pushed to remote
 
 ✓ Pull request is open
+
+✓ Pull request is merged
 
 ✓ `docs/INTEGRATION_BOARD.md` is updated when applicable
 

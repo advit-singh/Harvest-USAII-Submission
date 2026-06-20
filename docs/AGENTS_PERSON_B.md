@@ -482,13 +482,14 @@ After completing any implementation milestone, **do not wait for the user to app
 
 5. Open a PR with `gh pr create` using `docs/PR_TEMPLATE.md`.
 
-6. Report the PR URL in your final response.
+6. Merge the PR immediately: `gh pr merge --merge --delete-branch` (or `--auto` if checks must pass first).
+
+7. Report the merged PR URL in your final response.
 
 ---
 
 ## Do Not Do Without Explicit User Request
 
-* Merge the PR
 * Force push
 * Destructive git resets
 
