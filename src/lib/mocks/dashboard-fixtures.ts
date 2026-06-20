@@ -179,7 +179,7 @@ export function getMockNotifications(): HarvestNotification[] {
       type: "upload.completed",
       title: "Receipt upload processed",
       message: "Lincoln Elementary lunch receipt extracted successfully.",
-      href: "/uploads",
+      href: "/uploads?id=upl_001&tab=queue",
       isRead: false,
       createdAt: new Date(Date.now() - 1800000).toISOString(),
     },

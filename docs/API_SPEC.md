@@ -338,6 +338,62 @@ Critical subsystem.
 
 ---
 
+## List Uploads
+
+```http
+GET /api/v1/uploads
+```
+
+Query parameters:
+
+```txt
+organizationId (required)
+status (optional)
+limit (optional)
+```
+
+---
+
+Response:
+
+```json
+[
+  {
+    "id": "uuid",
+    "organizationId": "uuid",
+    "siteId": "uuid",
+    "fileName": "inventory-march.csv",
+    "fileType": "text/csv",
+    "fileSize": 245760,
+    "status": "review_required",
+    "stage": "validated",
+    "progress": 92,
+    "classification": "inventory_sheet",
+    "confidence": 0.87,
+    "createdAt": "2026-06-20T10:30:00Z",
+    "updatedAt": "2026-06-20T10:32:00Z"
+  }
+]
+```
+
+---
+
+Status values:
+
+```txt
+uploaded
+classifying
+extracting
+normalizing
+validating
+review_required
+completed
+failed
+rejected
+```
+
+---
+
 ## Upload File
 
 ```http

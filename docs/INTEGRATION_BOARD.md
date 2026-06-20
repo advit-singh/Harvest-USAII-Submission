@@ -108,6 +108,7 @@ Production-demo ready.
 | Recommendations Workspace | B | Complete | Yes | Part of Predictions workspace (`/predictions?tab=recommendations`) |
 | Simulator Workspace | B | Complete | Yes | Part of Predictions workspace (`/predictions?tab=simulator`) |
 | Rescue Network Workspace | B | Complete | Yes | 4 tabs: opportunities, recipients, history, impact; match/complete/dismiss flows; mock API clients |
+| Uploads Workspace | B | Complete | Yes | 4 tabs: upload, queue, history, validation; extraction review; mock API clients |
 | AI Assistant Workspace | B | Not Started | No | |
 | Reports Workspace | B | Not Started | No | |
 | Settings Workspace | B | Not Started | No | |
@@ -124,6 +125,7 @@ Production-demo ready.
 | feature/analytics-workspace | B | PR Open |
 | feature/predictions-workspace | B | PR Open |
 | feature/rescue-network | B | PR Open |
+| feature/uploads-workspace | B | PR Open |
 
 ---
 
@@ -247,6 +249,27 @@ Person A: swap mocks when donation matching and backend routes are live.
 
 ---
 
+## Uploads Workspace
+
+Requires:
+
+- Upload Pipeline
+- AI Extraction Engine
+- Data Validation Engine
+- Upload API
+
+Status:
+
+Ready for Integration (mocked clients in `src/lib/api`)
+
+Mock-first clients (API_SPEC §14–19, types in `src/types/upload.ts`):
+
+- `src/lib/api/uploads.ts` — list, upload, status, process, review, approve, reject, anomalies
+
+Person A: swap mocks when upload pipeline and backend routes are live.
+
+---
+
 ## Assistant Workspace
 
 Requires:
@@ -273,6 +296,39 @@ Waiting
 ---
 
 # Daily Sync Log
+
+## 2026-06-20 (Uploads Workspace)
+
+### Person B
+
+Completed:
+
+- Complete Uploads Workspace: 4 tabbed views (upload, processing queue, history, validation)
+- Upload dropzone with drag-and-drop and file picker
+- Processing queue with live polling and stage progression
+- Extraction review drawer with approve, edit, and reject flows
+- Validation center with anomaly accept/correct/ignore actions
+- Mock-first API clients for all upload endpoints + `GET /api/v1/uploads` list
+- Shared Table component; dashboard and command palette deep links
+- Unit and integration tests
+
+Working On:
+
+- Uploads PR review (`feature/uploads-workspace`)
+
+Blockers:
+
+- Person A upload pipeline backend — workspace uses mocks until live
+
+Ready For Integration:
+
+- Upload mock API clients (`uploads.ts`)
+
+Milestone Status:
+
+- Uploads Workspace (Phase 8) — **Complete**, PR open
+
+---
 
 ## 2026-06-20 (Rescue Network)
 
