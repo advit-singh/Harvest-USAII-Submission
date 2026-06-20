@@ -234,6 +234,16 @@ export function getMockNotifications(): HarvestNotification[] {
       isRead: false,
       createdAt: new Date(Date.now() - 5400000).toISOString(),
     },
+    {
+      id: "notif_007",
+      type: "report.generated",
+      severity: "informational",
+      title: "Monthly summary ready",
+      message: "Your monthly summary report is ready to download.",
+      href: "/reports?tab=generated&id=rpt_001",
+      isRead: false,
+      createdAt: new Date(Date.now() - 43200000).toISOString(),
+    },
   ];
 }
 

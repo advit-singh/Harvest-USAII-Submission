@@ -4,6 +4,7 @@ import {
   getMockOrganizationSettings,
 } from "@/lib/mocks/settings-fixtures";
 import type { HarvestNotification, NotificationSeverity } from "@/types/notification";
+import type { ReportDetail } from "@/types/report";
 
 export interface NotificationFilters {
   orgId: string;
@@ -101,6 +102,25 @@ export function countUnreadNotifications(
   items: HarvestNotification[],
 ): number {
   return items.filter((n) => !n.isRead).length;
+}
+
+export function pushMockReportNotification(report: ReportDetail): void {
+  if (process.env.NEXT_PUBLIC_USE_MOCK_API === "false") return;
+
+  const notification: HarvestNotification = {
+    id: `notif_report_${report.id}`,
+    type: "report.generated",
+    severity: "informational",
+    title: "Report ready",
+    message: `${report.templateName} is ready to download.`,
+    href: `/reports?tab=generated&id=${report.id}`,
+    isRead: false,
+    createdAt: new Date().toISOString(),
+  };
+
+  const items = getNotificationsState();
+  const withoutDup = items.filter((n) => n.id !== notification.id);
+  mockNotificationsState = [notification, ...withoutDup];
 }
 
 export function severityForType(
