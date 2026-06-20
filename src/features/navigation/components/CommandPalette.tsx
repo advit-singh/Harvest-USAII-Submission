@@ -80,6 +80,38 @@ export function CommandPalette() {
                   );
                 })}
               </Command.Group>
+              <Command.Group heading="Rescue Network">
+                <Command.Item
+                  value="donation opportunities"
+                  onSelect={() => {
+                    router.push("/rescue?tab=opportunities");
+                    setOpen(false);
+                  }}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                >
+                  <div>
+                    <p>Donation opportunities</p>
+                    <p className="text-xs text-muted-foreground">
+                      Review surplus ready for rescue
+                    </p>
+                  </div>
+                </Command.Item>
+                <Command.Item
+                  value="recipient directory"
+                  onSelect={() => {
+                    router.push("/rescue?tab=recipients");
+                    setOpen(false);
+                  }}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                >
+                  <div>
+                    <p>Recipient directory</p>
+                    <p className="text-xs text-muted-foreground">
+                      Browse rescue network partners
+                    </p>
+                  </div>
+                </Command.Item>
+              </Command.Group>
             </Command.List>
           </Command>
         </DialogContent>

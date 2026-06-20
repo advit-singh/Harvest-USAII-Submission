@@ -12,7 +12,7 @@ export function GlobalSearch() {
       />
       <Input
         type="search"
-        placeholder="Search inventory, forecasts, reports..."
+        placeholder="Search inventory, forecasts, donations, rescue..."
         className="pl-9"
         aria-label="Global search"
         readOnly

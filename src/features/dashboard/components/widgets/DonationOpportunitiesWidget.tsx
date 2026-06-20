@@ -50,7 +50,10 @@ export function DonationOpportunitiesWidget({
                 key={opp.id}
                 className="flex items-start justify-between gap-2 rounded-md border p-2 text-sm"
               >
-                <div className="min-w-0">
+                <Link
+                  href={`/rescue?tab=opportunities&id=${opp.id}`}
+                  className="min-w-0 flex-1 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+                >
                   <p className="font-medium truncate">{opp.item}</p>
                   <p className="text-xs text-muted-foreground">
                     {opp.quantity} · expires{" "}
@@ -59,7 +62,7 @@ export function DonationOpportunitiesWidget({
                   <p className="text-xs text-muted-foreground">
                     {opp.suggestedRecipientCount} potential recipients
                   </p>
-                </div>
+                </Link>
                 <Badge variant={PRIORITY_VARIANT[opp.priority]}>
                   {opp.priority}
                 </Badge>
