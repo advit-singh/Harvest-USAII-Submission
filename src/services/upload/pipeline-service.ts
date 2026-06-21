@@ -3,6 +3,11 @@ import { extractUploadContent } from "./extraction-service";
 import { normalizeUploadContent } from "./normalization-service";
 import { validateUpload } from "./validation-service";
 import {
+  evaluateUploadAutoCommit,
+  finalizeUpload,
+  notifyReviewRequiredWarnings,
+} from "./upload-orchestration-service";
+import {
   createUploadJob,
   getUploadById,
   updateUploadJobStatus,
@@ -72,21 +77,52 @@ export async function runUploadPipeline(uploadId: string) {
       normalized,
     );
 
-    if (issues.length > 0) {
-      await updateUploadStatus(uploadId, "review_required");
+    const validationIssues = issues.map((issue) => ({
+      type: issue.type,
+      severity: issue.severity,
+      reason: issue.reason,
+    }));
+
+    const eligibility = await evaluateUploadAutoCommit({
+      organizationId: upload.organization_id,
+      normalized,
+      validationIssues,
+    });
+
+    if (eligibility.eligible) {
+      const finalized = await finalizeUpload(uploadId, {
+        userId: upload.uploaded_by,
+        triggerNotifications: true,
+      });
       await updateUploadJobStatus(job.id, "completed");
+
       return {
         uploadId,
-        status: "review_required" as const,
-        stage: "validated",
-        progress: 90,
+        status: "completed" as const,
+        stage: "completed",
+        progress: 100,
         classification: classification.classification,
         confidence: classification.confidence,
+        committed: finalized.committed,
+        intelligenceRefreshed: true,
       };
     }
 
     await updateUploadStatus(uploadId, "review_required");
     await updateUploadJobStatus(job.id, "completed");
+
+    const hasReviewWarnings = validationIssues.some(
+      (issue) => issue.severity === "warning" || issue.severity === "informational",
+    );
+
+    if (upload.uploaded_by && hasReviewWarnings) {
+      void notifyReviewRequiredWarnings({
+        organizationId: upload.organization_id,
+        userId: upload.uploaded_by,
+        uploadId,
+        validationIssues,
+      });
+    }
 
     return {
       uploadId,
@@ -95,6 +131,7 @@ export async function runUploadPipeline(uploadId: string) {
       progress: 90,
       classification: classification.classification,
       confidence: classification.confidence,
+      reviewReasons: eligibility.reasons,
     };
   } catch (error: unknown) {
     await updateUploadStatus(
