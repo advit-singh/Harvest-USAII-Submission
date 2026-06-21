@@ -7,6 +7,8 @@ export interface AiSettings {
   memoryEnabled: boolean;
   recommendationAggressiveness: RecommendationAggressiveness;
   assistantEnabled: boolean;
+  autoCommitEnabled: boolean;
+  autoCommitConfidenceThreshold: number;
 }
 
 export interface ForecastSettings {
