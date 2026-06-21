@@ -612,6 +612,28 @@ export const reports = pgTable("reports", {
   created_by: uuid("created_by"),
 });
 
+export const report_schedules = pgTable("report_schedules", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  organization_id: uuid("organization_id")
+    .notNull()
+    .references(() => organizations.id),
+  site_id: uuid("site_id")
+    .notNull()
+    .references(() => organization_sites.id),
+  template_id: varchar("template_id", { length: 64 }).notNull(),
+  format: varchar("format", { length: 16 }).notNull(),
+  cadence: varchar("cadence", { length: 16 }).notNull(),
+  day_of_week: integer("day_of_week"),
+  day_of_month: integer("day_of_month"),
+  timezone: varchar("timezone", { length: 64 }).notNull().default("UTC"),
+  is_active: boolean("is_active").notNull().default(true),
+  last_run_at: timestamp("last_run_at"),
+  next_run_at: timestamp("next_run_at"),
+  created_by: uuid("created_by").references(() => users.id),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const conversations = pgTable("conversations", {
   id: uuid("id").defaultRandom().primaryKey(),
   organization_id: uuid("organization_id")
@@ -737,6 +759,7 @@ export const schema = {
   simulation_runs,
   impact_metrics,
   reports,
+  report_schedules,
   conversations,
   messages,
   organization_settings,

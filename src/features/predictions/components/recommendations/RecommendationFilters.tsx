@@ -7,18 +7,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SITE_OPTIONS } from "@/features/predictions/config/predictions-tabs";
+import { useOrgSites } from "@/features/organizations/hooks/useOrgSites";
 import type { RecommendationFiltersInput } from "@/features/predictions/schemas/recommendation-filters.schema";
 
 interface RecommendationFiltersProps {
+  orgId: string;
   filters: RecommendationFiltersInput;
   onFiltersChange: (partial: Partial<RecommendationFiltersInput>) => void;
 }
 
 export function RecommendationFilters({
+  orgId,
   filters,
   onFiltersChange,
 }: RecommendationFiltersProps) {
+  const { siteOptions } = useOrgSites(orgId);
   return (
     <div className="flex flex-wrap gap-2">
       <Select
@@ -74,7 +77,7 @@ export function RecommendationFilters({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {SITE_OPTIONS.map((opt) => (
+          {siteOptions.map((opt) => (
             <SelectItem key={opt.value} value={opt.value}>
               {opt.label}
             </SelectItem>

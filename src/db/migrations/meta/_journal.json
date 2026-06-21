@@ -43,6 +43,13 @@
       "when": 1781980460666,
       "tag": "0005_platform_permissions_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1781980460667,
+      "tag": "0006_report_schedules",
+      "breakpoints": true
     }
   ]
 }

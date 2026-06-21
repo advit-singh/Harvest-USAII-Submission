@@ -73,10 +73,11 @@ export function toReportDateRange(
 export function defaultGenerateInput(
   template: ReportTemplateId = "monthly_summary",
   format: ReportFormat = "pdf",
+  siteId = "",
 ): ReportGenerateInput {
   return {
     template,
-    siteId: "site_001",
+    siteId,
     format,
     dateRangePreset: "month",
   };

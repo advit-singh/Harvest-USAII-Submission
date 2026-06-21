@@ -6,11 +6,12 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useOrganizations } from "@/features/organizations/hooks/useOrganizations";
 import { OnboardingWizard } from "@/features/organizations/components/OnboardingWizard";
 import { PageLoadingState } from "@/components/feedback/LoadingState";
+import { ErrorState } from "@/components/feedback/ErrorState";
 
 export default function OnboardingPage() {
   const router = useRouter();
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const { organizations, isLoading: orgsLoading } = useOrganizations();
+  const { organizations, isLoading: orgsLoading, isError: orgsError, refetch } = useOrganizations();
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -20,6 +21,17 @@ export default function OnboardingPage() {
       router.replace("/dashboard");
     }
   }, [authLoading, isAuthenticated, orgsLoading, organizations.length, router]);
+
+  if (orgsError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <ErrorState
+          message="We couldn't load your organizations."
+          onRetry={() => refetch()}
+        />
+      </div>
+    );
+  }
 
   if (authLoading || orgsLoading) {
     return (

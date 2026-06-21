@@ -21,9 +21,18 @@ export function OriginalContentPanel({
       </CardHeader>
       <CardContent>
         {contentType === "image" ? (
-          <p className="text-sm text-muted-foreground">
-            Image preview unavailable in demo mode. File: {fileName}
-          </p>
+          content.startsWith("http") || content.startsWith("/") ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={content}
+              alt={`Preview of ${fileName}`}
+              className="max-h-64 w-full rounded-md object-contain"
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Image preview unavailable. File: {fileName}
+            </p>
+          )
         ) : (
           <pre className="max-h-48 overflow-auto whitespace-pre-wrap rounded-md bg-muted p-3 text-xs">
             {content}

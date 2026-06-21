@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { sendMessage } from "@/lib/api/assistant";
 import { assistantKeys } from "@/features/assistant/config/assistant-keys";
 import type { AssistantConversationDetail } from "@/types/assistant";
@@ -41,6 +42,7 @@ export function useAssistantChat(orgId: string | null) {
       if (context?.previous && context.key) {
         queryClient.setQueryData(context.key, context.previous);
       }
+      toast.error("Message failed to send", { description: "Please try again." });
     },
     onSuccess: (_data, input) => {
       if (!orgId) return;

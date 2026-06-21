@@ -88,6 +88,7 @@ export function AnalyticsShell({ orgId }: AnalyticsShellProps) {
   return (
     <div className="space-y-6">
       <AnalyticsToolbar
+        orgId={orgId}
         filters={filters}
         onFiltersChange={updateFilters}
         onReset={reset}

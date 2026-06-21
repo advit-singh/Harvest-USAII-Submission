@@ -92,3 +92,50 @@ export interface ReportFilters {
 export function isProcessingReportStatus(status: ReportStatus): boolean {
   return status === "queued" || status === "generating";
 }
+
+export type ReportCadence = "daily" | "weekly" | "monthly";
+
+export interface ReportSchedule {
+  id: string;
+  organizationId: string;
+  siteId: string;
+  siteName: string;
+  template: ReportTemplateId;
+  templateName: string;
+  format: ReportFormat;
+  cadence: ReportCadence;
+  dayOfWeek: number | null;
+  dayOfMonth: number | null;
+  timezone: string;
+  isActive: boolean;
+  lastRunAt: string | null;
+  nextRunAt: string | null;
+  createdAt: string;
+}
+
+export interface CreateReportSchedulePayload {
+  organizationId: string;
+  siteId: string;
+  template: ReportTemplateId;
+  format: ReportFormat;
+  cadence: ReportCadence;
+  dayOfWeek?: number | null;
+  dayOfMonth?: number | null;
+  timezone: string;
+}
+
+export interface UpdateReportSchedulePayload {
+  siteId?: string;
+  template?: ReportTemplateId;
+  format?: ReportFormat;
+  cadence?: ReportCadence;
+  dayOfWeek?: number | null;
+  dayOfMonth?: number | null;
+  timezone?: string;
+  isActive?: boolean;
+}
+
+export interface RunDueSchedulesResult {
+  processed: number;
+  reportIds: string[];
+}

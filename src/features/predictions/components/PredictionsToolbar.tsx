@@ -10,10 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useOrgSites } from "@/features/organizations/hooks/useOrgSites";
 import {
   CATEGORY_OPTIONS,
   FORECAST_TYPE_OPTIONS,
-  SITE_OPTIONS,
   TIME_RANGE_OPTIONS,
 } from "@/features/predictions/config/predictions-tabs";
 import { useGenerateForecast } from "@/features/predictions/hooks/useGenerateForecast";
@@ -34,6 +34,7 @@ export function PredictionsToolbar({
   onFiltersChange,
   onReset,
 }: PredictionsToolbarProps) {
+  const { siteOptions } = useOrgSites(orgId);
   const generateMutation = useGenerateForecast(orgId);
 
   const handleGenerate = () => {
@@ -93,7 +94,7 @@ export function PredictionsToolbar({
             <SelectValue placeholder="All sites" />
           </SelectTrigger>
           <SelectContent>
-            {SITE_OPTIONS.map((opt) => (
+            {siteOptions.map((opt) => (
               <SelectItem key={opt.value} value={opt.value}>
                 {opt.label}
               </SelectItem>

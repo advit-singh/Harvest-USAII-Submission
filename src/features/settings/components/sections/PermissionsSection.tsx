@@ -54,7 +54,7 @@ export function PermissionsSection({ orgId }: PermissionsSectionProps) {
                 <CardContent>
                   <PermissionMatrix
                     permissionIds={selected.permissionIds}
-                    readOnly
+                    readOnly={Boolean(selected.isSystem)}
                   />
                 </CardContent>
               </Card>

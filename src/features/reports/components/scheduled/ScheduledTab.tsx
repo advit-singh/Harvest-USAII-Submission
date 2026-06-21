@@ -1,14 +1,37 @@
 "use client";
 
-import { CalendarClock } from "lucide-react";
-import { EmptyState } from "@/components/feedback/EmptyState";
+import { useState } from "react";
+import { ScheduledReportsList } from "@/features/reports/components/scheduled/ScheduledReportsList";
+import { ScheduleReportDrawer } from "@/features/reports/components/scheduled/ScheduleReportDrawer";
+import type { ReportSchedule } from "@/types/report";
 
-export function ScheduledTab() {
+interface ScheduledTabProps {
+  orgId: string;
+}
+
+export function ScheduledTab({ orgId }: ScheduledTabProps) {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [editing, setEditing] = useState<ReportSchedule | null>(null);
+
+  const openCreate = () => {
+    setEditing(null);
+    setDrawerOpen(true);
+  };
+
+  const openEdit = (schedule: ReportSchedule) => {
+    setEditing(schedule);
+    setDrawerOpen(true);
+  };
+
   return (
-    <EmptyState
-      icon={CalendarClock}
-      title="Scheduled reports coming soon"
-      description="Automated report scheduling will be available when the reporting service adds schedule APIs. For now, generate reports on demand from the Templates tab."
-    />
+    <>
+      <ScheduledReportsList orgId={orgId} onEdit={openEdit} onCreate={openCreate} />
+      <ScheduleReportDrawer
+        orgId={orgId}
+        open={drawerOpen}
+        schedule={editing}
+        onOpenChange={setDrawerOpen}
+      />
+    </>
   );
 }

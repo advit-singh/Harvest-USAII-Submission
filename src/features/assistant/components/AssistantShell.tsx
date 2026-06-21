@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { fetchDashboardOverview } from "@/lib/api/analytics";
 import { EmptyOrgDashboard } from "@/features/organizations/components/EmptyOrgDashboard";
 import { PageLoadingState } from "@/components/feedback/LoadingState";
+import { ErrorState } from "@/components/feedback/ErrorState";
 import { AssistantQueryState } from "@/features/assistant/components/AssistantQueryState";
 import { ConversationSidebar } from "@/features/assistant/components/ConversationSidebar";
 import { ChatPanel } from "@/features/assistant/components/ChatPanel";
@@ -117,6 +118,15 @@ export function AssistantShell({ orgId }: AssistantShellProps) {
     return <EmptyOrgDashboard />;
   }
 
+  if (overviewQuery.isError) {
+    return (
+      <ErrorState
+        message="We couldn't load the assistant workspace."
+        onRetry={() => overviewQuery.refetch()}
+      />
+    );
+  }
+
   if (overviewQuery.isLoading) {
     return <PageLoadingState />;
   }
@@ -126,6 +136,15 @@ export function AssistantShell({ orgId }: AssistantShellProps) {
     !overviewQuery.data.hasOperationalData
   ) {
     return <EmptyOrgDashboard />;
+  }
+
+  if (conversationsQuery.isError) {
+    return (
+      <ErrorState
+        message="We couldn't load conversations."
+        onRetry={() => conversationsQuery.refetch()}
+      />
+    );
   }
 
   if (conversationsQuery.isLoading && !conversationsQuery.data) {

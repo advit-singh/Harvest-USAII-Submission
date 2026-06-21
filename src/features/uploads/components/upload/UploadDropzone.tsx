@@ -7,10 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ACCEPTED_FILE_TYPES } from "@/features/uploads/config/upload-stages";
 import { useUploadFile } from "@/features/uploads/hooks/useUploads";
+import { useOrgSites } from "@/features/organizations/hooks/useOrgSites";
 import { cn } from "@/lib/utils";
-import { DEMO_SITE_ID } from "@/lib/mocks/uploads-fixtures";
 
 interface UploadDropzoneProps {
   orgId: string;
@@ -21,17 +28,24 @@ export function UploadDropzone({ orgId, onUploadSuccess }: UploadDropzoneProps) 
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [description, setDescription] = useState("");
+  const { siteOptions, defaultSiteId } = useOrgSites(orgId);
+  const [siteId, setSiteId] = useState("");
+  const effectiveSiteId = siteId || defaultSiteId;
   const uploadMutation = useUploadFile(orgId);
 
   const handleFiles = useCallback(
     async (files: FileList | File[]) => {
       const file = files[0];
       if (!file) return;
+      if (!effectiveSiteId) {
+        toast.error("No site available. Add a site to your organization first.");
+        return;
+      }
 
       try {
         const result = await uploadMutation.mutateAsync({
           file,
-          siteId: DEMO_SITE_ID,
+          siteId: effectiveSiteId,
           description: description || undefined,
         });
         toast.success(`${file.name} uploaded successfully`);
@@ -41,7 +55,7 @@ export function UploadDropzone({ orgId, onUploadSuccess }: UploadDropzoneProps) 
         toast.error(`Failed to upload ${file.name}`);
       }
     },
-    [uploadMutation, description, onUploadSuccess],
+    [uploadMutation, description, onUploadSuccess, effectiveSiteId],
   );
 
   const onDrop = useCallback(
@@ -113,6 +127,24 @@ export function UploadDropzone({ orgId, onUploadSuccess }: UploadDropzoneProps) 
               }
             }}
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="upload-site">Site</Label>
+          <Select value={effectiveSiteId} onValueChange={setSiteId}>
+            <SelectTrigger id="upload-site" aria-label="Select site">
+              <SelectValue placeholder="Select site" />
+            </SelectTrigger>
+            <SelectContent>
+              {siteOptions
+                .filter((s) => s.value !== "all")
+                .map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">

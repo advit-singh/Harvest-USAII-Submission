@@ -48,7 +48,7 @@ export function RecommendationsSection({
 
   return (
     <div className="space-y-4">
-      <RecommendationFilters filters={filters} onFiltersChange={onFiltersChange} />
+      <RecommendationFilters orgId={orgId} filters={filters} onFiltersChange={onFiltersChange} />
 
       <PredictionsQueryState
         query={query}

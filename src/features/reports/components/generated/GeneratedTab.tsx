@@ -14,7 +14,7 @@ import { ReportsQueryState } from "@/features/reports/components/ReportsQuerySta
 import { GeneratedReportsTable } from "@/features/reports/components/generated/GeneratedReportsTable";
 import { useReportsList } from "@/features/reports/hooks/useReports";
 import { useReportDownload } from "@/features/reports/hooks/useReportDownload";
-import { REPORT_SITE_OPTIONS } from "@/features/reports/config/report-tabs";
+import { useOrgSites } from "@/features/organizations/hooks/useOrgSites";
 import type { ReportFilters } from "@/types/report";
 import type { ReportFiltersInput } from "@/features/reports/schemas/report-filters.schema";
 
@@ -35,6 +35,7 @@ export function GeneratedTab({
 }: GeneratedTabProps) {
   const query = useReportsList(orgId, apiFilters);
   const download = useReportDownload();
+  const { siteOptions } = useOrgSites(orgId);
 
   return (
     <div className="space-y-4">
@@ -71,7 +72,7 @@ export function GeneratedTab({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {REPORT_SITE_OPTIONS.map((opt) => (
+              {siteOptions.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}
                 </SelectItem>
