@@ -93,8 +93,9 @@ Production-demo ready.
 | Forecast Engine | A | Ready for Integration | Yes | Hybrid statistical + rules + AI factors; Open-Meteo weather + Nager.Date holidays when `externalDataEnabled` |
 | Recommendation Engine | A | Ready for Integration | Yes | Risk/opportunity detection + ranking in `src/services/recommendation` |
 | Scenario Simulator Engine | A | Ready for Integration | Yes | Baseline + delta simulation in `src/services/simulation` |
-| Impact Engine | A | Not Started | No | |
-| Donation Matching Engine | A | Not Started | No | |
+| Impact Engine | A | Ready for Integration | Yes | Formulas + aggregation in `src/services/impact`; `GET /api/v1/impact` |
+| Donation Matching Engine | A | Ready for Integration | Yes | Opportunity detection, weighted matching, completion in `src/services/donation` |
+| Analytics API | A | Ready for Integration | Yes | `GET /api/v1/analytics/*` (overview + 5 tabs) |
 | AI Assistant Backend | A | Not Started | No | |
 | Report Generation Backend | A | Not Started | No | |
 | Authentication | B | Complete | Yes | Supabase SSR + dev mock mode; login/register/reset flows |
@@ -128,7 +129,8 @@ Production-demo ready.
 | feature/reports-workspace | B | Merged (PR #10) |
 | feature/complete-upload-pipeline-backend | A | Merged (PR #11) |
 | feature/complete-upload-intelligence-pipeline | A | Merged (PR #12) |
-| feature/complete-prediction-intelligence-platform | A | In Progress |
+| feature/complete-prediction-intelligence-platform | A | Merged (PR #13) |
+| feature/complete-action-measurement-platform | A | In Progress |
 
 ---
 
@@ -240,15 +242,9 @@ Requires:
 
 Status:
 
-Ready for Integration (mocked clients in `src/lib/api`)
+Ready for Integration (live backends in `src/app/api/v1/donations`, `recipients`, `impact`)
 
-Mock-first clients (API_SPEC §36–39, types in `src/types/donation.ts`, `recipient.ts`):
-
-- `src/lib/api/donations.ts` — opportunities, match, complete, dismiss, history
-- `src/lib/api/recipients.ts` — `GET/POST /recipients`
-- Reuses `src/lib/api/impact.ts` for impact tab
-
-Person A: swap mocks when donation matching and backend routes are live.
+Person B: set `NEXT_PUBLIC_USE_MOCK_API=false` to use live donation and impact APIs.
 
 ---
 
@@ -353,6 +349,39 @@ Person A: swap mocks when notification backend routes are live.
 ---
 
 # Daily Sync Log
+
+## 2026-06-20 (Action & Measurement Platform — Person A)
+
+### Person A
+
+Completed:
+
+- Impact Engine: environmental/financial/community formulas, `impact_metrics` persistence, time-range aggregation
+- Donation Matching Engine: opportunity detection from expiring inventory + surplus forecasts, weighted recipient ranking
+- Donation completion flow with human confirmation gate and impact delta recording
+- Analytics aggregation layer: overview + waste/inventory/attendance/donations/impact endpoints
+- Full API routes: `/api/v1/analytics/*`, `/impact`, `/donations/*`, `/recipients`
+- Post-upload intelligence sync for donation opportunities + impact snapshot
+- Demo seeds: recipients with coordinates, open opportunity, donation event, impact metrics
+- Unit tests for impact formulas, matching engine, analytics queries, geo distance
+
+Working On:
+
+- PR `feature/complete-action-measurement-platform`
+
+Blockers:
+
+- None
+
+Ready For Integration:
+
+- Impact, Donation Matching, Analytics backends — Person B can set `NEXT_PUBLIC_USE_MOCK_API=false` for Rescue, Analytics, and Dashboard widgets
+
+Milestone Status:
+
+- Complete Action & Measurement Intelligence Platform — **Ready for Integration**, PR in progress
+
+---
 
 ## 2026-06-20 (Prediction Intelligence Platform — Person A)
 
