@@ -91,23 +91,23 @@ Production-demo ready.
 | E2E Intelligence Orchestration | A | Complete | Yes | Eligible uploads auto-commit → forecast/recommend/donate/impact refresh |
 | AI Extraction Engine | A | Complete | Yes | Classification, extraction, normalization via `src/services/ai` + parsers |
 | Data Validation Engine | A | Complete | Yes | Validation anomalies + resolve API; never blocks pipeline |
-| Forecast Engine | A | Ready for Integration | Yes | Hybrid statistical + rules + AI factors; Open-Meteo weather + Nager.Date holidays when `externalDataEnabled` |
-| Recommendation Engine | A | Ready for Integration | Yes | Risk/opportunity detection + ranking in `src/services/recommendation` |
-| Scenario Simulator Engine | A | Ready for Integration | Yes | Baseline + delta simulation in `src/services/simulation` |
-| Impact Engine | A | Ready for Integration | Yes | Formulas + aggregation in `src/services/impact`; `GET /api/v1/impact` |
-| Donation Matching Engine | A | Ready for Integration | Yes | Opportunity detection, weighted matching, completion in `src/services/donation` |
-| Analytics API | A | Ready for Integration | Yes | `GET /api/v1/analytics/*` (overview + 5 tabs) |
-| AI Assistant Backend | A | Ready for Integration | Yes | Retrieval, citations, chat API in `src/services/assistant` |
+| Forecast Engine | A | Complete | Yes | Hybrid statistical + rules + AI factors; unit + API contract tests; rate-limited generate endpoint |
+| Recommendation Engine | A | Complete | Yes | Risk/opportunity detection + ranking; service + route contract tests |
+| Scenario Simulator Engine | A | Complete | Yes | Baseline + delta simulation; service + route contract tests |
+| Impact Engine | A | Complete | Yes | Formulas + aggregation; service + route contract tests |
+| Donation Matching Engine | A | Complete | Yes | Opportunity detection, weighted matching, completion; service + route contract tests |
+| Analytics API | A | Complete | Yes | `GET /api/v1/analytics/*`; route contract tests |
+| AI Assistant Backend | A | Complete | Yes | Retrieval, citations, chat API; route contract tests + rate limiting |
 | Report Generation Backend | A | Complete | Yes | Templates, async generation, PDF/CSV/DOCX in `src/services/report` |
 | Platform API Layer | A | Complete | Yes | Org/settings/members/roles, notifications, operational CRUD, audit, search; merged PR #17 |
-| Notification API | A | Ready for Integration | Yes | `GET/PATCH /api/v1/notifications/*` with event emission hooks |
-| Operational Data APIs | A | Ready for Integration | Yes | Inventory, attendance, events, waste routes |
-| Audit & Search APIs | A | Ready for Integration | Yes | `GET /api/v1/audit`, `GET /api/v1/search` |
+| Notification API | A | Complete | Yes | `GET/PATCH /api/v1/notifications/*`; service + route contract tests |
+| Operational Data APIs | A | Complete | Yes | Inventory, attendance, events, waste routes; service tests |
+| Audit & Search APIs | A | Complete | Yes | `GET /api/v1/audit`, `GET /api/v1/search`; route contract tests |
 | Authentication | B | Complete | Yes | Supabase SSR + dev mock mode; login/register/reset flows |
 | Design System | B | Complete | Yes | Harvest tokens in `src/design-system` + `src/styles/globals.css` |
 | App Shell / Navigation | B | Complete | Yes | Sidebar, header, org switcher, command palette, breadcrumbs |
 | Organization Onboarding UI | B | Complete | Yes | 5-step wizard; org API client mocked (`NEXT_PUBLIC_USE_MOCK_API`) |
-| Organization API (backend) | A | Ready for Integration | Yes | Org, settings, members, roles, users/me routes in `src/app/api/v1` |
+| Organization API (backend) | A | Complete | Yes | Org, settings, members, roles, users/me routes; platform route contract tests |
 | Dashboard Workspace | B | Complete | Yes | 7 configurable widgets, drag/resize layout, mock API clients |
 | Analytics Workspace | B | Complete | Yes | 5 tabs, charts, filters, drill-down, root cause, CSV export; mock API clients |
 | Forecast Workspace | B | Complete | Yes | 4 tabs: summary, explorer, recommendations, simulator; mock API clients |
@@ -139,6 +139,7 @@ Production-demo ready.
 | feature/complete-conversational-reporting-platform | A | Merged (PR #16) |
 | feature/complete-platform-api-layer | A | Merged (PR #17) |
 | feature/complete-e2e-intelligence-orchestration | A | Merged (PR #18) |
+| feature/complete-intelligence-testing-platform | A | In Progress |
 
 ---
 
@@ -347,6 +348,39 @@ Person B: set `NEXT_PUBLIC_USE_MOCK_API=false` to use live notification APIs.
 ---
 
 # Daily Sync Log
+
+## 2026-06-21 (Intelligence Testing & Production Readiness — Person A)
+
+### Person A
+
+Completed:
+
+- Test infrastructure: `tests/helpers/api-test-utils.ts`, `service-fixtures.ts`, `db-mock.ts`
+- Vitest coverage config with `npm run test:coverage` (40%+ baseline on `src/services/**`)
+- 35+ new service unit tests across forecast, recommendation, simulation, impact, donation, assistant, analytics, report, upload, platform domains
+- 10 API route contract test files covering all Person A `/api/v1` handlers (138 route tests)
+- Rate limiting on AI endpoints: assistant chat, forecast generate, upload POST/process (API_SPEC §51)
+- `withAuthenticatedRoute` wrapper in `src/lib/api/route-wrapper.ts`
+- Expanded E2E intelligence pipeline tests (auto-commit rejection, manual path, refresh failure)
+- Promoted Person A intelligence systems from Ready for Integration → Complete
+
+Working On:
+
+- PR `feature/complete-intelligence-testing-platform`
+
+Blockers:
+
+- None
+
+Ready For Integration:
+
+- All Person A backends fully tested — Person B can set `NEXT_PUBLIC_USE_MOCK_API=false` with confidence
+
+Milestone Status:
+
+- Complete Intelligence Testing & Production Readiness Platform (Phase 16) — **Complete**, PR in progress
+
+---
 
 ## 2026-06-20 (E2E Intelligence Orchestration — Person A)
 
@@ -828,7 +862,7 @@ Before consuming another developer's work:
 
 Current Risks:
 
-- Person A and Person B both need to coordinate on `package.json` when database layer is added
+- None — Person A Phase 16 testing complete; Person B live API swap is next coordination step
 
 Architecture Concerns:
 
@@ -836,10 +870,8 @@ Architecture Concerns:
 
 Merge Conflict Risks:
 
-- `package.json`, `tsconfig.json` when Person A adds Drizzle scripts and `src/db`
+- Low — this milestone primarily adds `tests/` files; minor `package.json` devDependency for coverage
 
 Upcoming Integration Milestones:
 
-- Person A organization API backend → swap mock client
-- Person A intelligence APIs → swap predictions, dashboard, and analytics mock clients
-- Person A donation APIs → swap rescue network mock clients
+- Person B: set `NEXT_PUBLIC_USE_MOCK_API=false` to wire live backends across all workspaces

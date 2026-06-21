@@ -1,4 +1,5 @@
 import { AuthError, requireAuthenticatedUser, requireOrgMembership } from "@/lib/api/auth";
+import { checkRateLimit } from "@/lib/api/rate-limit";
 import { errorResponse, successResponse } from "@/lib/api/response";
 import { toApiConfidence } from "@/lib/api/confidence";
 import { getUploadById } from "@/services/upload/upload-service";
@@ -8,6 +9,11 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   try {
     const { id } = await params;
     const user = await requireAuthenticatedUser();
+    const aiLimit = checkRateLimit(`ai:upload-process:${user.id}`, 20, 60_000);
+    if (!aiLimit.allowed) {
+      return errorResponse("RATE_LIMITED", "Too many upload processing requests. Try again shortly.", 429);
+    }
+
     const upload = await getUploadById(id);
 
     if (!upload) {

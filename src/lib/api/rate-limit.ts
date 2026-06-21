@@ -1,5 +1,10 @@
 const buckets = new Map<string, { count: number; resetAt: number }>();
 
+/** Clears all rate-limit buckets (for tests). */
+export function resetRateLimitBuckets(): void {
+  buckets.clear();
+}
+
 export function checkRateLimit(
   key: string,
   limit: number,

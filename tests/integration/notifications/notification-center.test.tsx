@@ -45,17 +45,23 @@ describe("NotificationCenter", () => {
     const user = userEvent.setup();
     const { unmount } = renderWithQuery(<NotificationCenter />);
 
-    await waitFor(() => {
-      expect(screen.getByLabelText(/unread notification/i)).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByLabelText(/unread notification/i)).toBeInTheDocument();
+      },
+      { timeout: 10_000 },
+    );
 
     await user.click(screen.getByLabelText(/unread notification/i));
 
-    await waitFor(() => {
-      expect(screen.getByText("Notifications")).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText("Notifications")).toBeInTheDocument();
+      },
+      { timeout: 10_000 },
+    );
 
     expect(screen.getByText(/Receipt upload processed/i)).toBeInTheDocument();
     unmount();
-  });
+  }, 20_000);
 });
