@@ -47,7 +47,7 @@ async function fetchAiReasoning(
       {
         role: "system",
         content:
-          "You are Project Harvest forecast intelligence. Return valid JSON only. Never take autonomous actions.",
+          "You are Harvest forecast intelligence. Return valid JSON only. Never take autonomous actions.",
       },
       {
         role: "user",

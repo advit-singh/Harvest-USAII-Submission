@@ -31,7 +31,7 @@ describe("UploadShell", () => {
 
   it("shows empty org dashboard when org id is missing", () => {
     const { unmount } = renderWithQuery(<UploadShell orgId={null} />);
-    expect(screen.getByText("Welcome to Project Harvest")).toBeInTheDocument();
+    expect(screen.getByText("Welcome to Harvest")).toBeInTheDocument();
     unmount();
   });
 

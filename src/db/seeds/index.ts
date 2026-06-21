@@ -79,7 +79,7 @@ export async function seedDatabase() {
       id: DEMO_ORG_ID,
       name: "Northside High School",
       organization_type: "school",
-      description: "Demo organization for Project Harvest",
+      description: "Demo organization for Harvest",
       timezone: "America/Chicago",
       country: "US",
       state: "IL",

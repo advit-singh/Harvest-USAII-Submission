@@ -1,6 +1,6 @@
 # IMPLEMENTATION_PLAN_PERSON_B.md
 
-# Project Harvest
+# Harvest
 
 ## Application Platform & Experience Lead
 

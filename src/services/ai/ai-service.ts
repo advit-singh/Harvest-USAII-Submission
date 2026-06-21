@@ -10,7 +10,7 @@ import { buildExtractionPrompt } from "@/lib/ai/prompts/extraction";
 import { buildNormalizationPrompt } from "@/lib/ai/prompts/normalization";
 
 const SYSTEM_PROMPT =
-  "You are Project Harvest AI, an expert at understanding food service operational documents. Always respond with valid JSON when requested. Never take autonomous actions.";
+  "You are Harvest AI, an expert at understanding food service operational documents. Always respond with valid JSON when requested. Never take autonomous actions.";
 
 export async function classifyWithAi(input: {
   fileName: string;

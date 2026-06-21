@@ -1,6 +1,5 @@
 "use client";
 
-import { GripVertical } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { getWidgetDefinition } from "@/features/dashboard/config/widget-registry";
@@ -26,13 +25,6 @@ export function WidgetShell({
     <Card className={cn("flex h-full flex-col overflow-hidden", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b px-4 py-3">
         <div className="flex min-w-0 items-center gap-2">
-          <button
-            type="button"
-            className="widget-drag-handle cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing"
-            aria-label={`Drag ${definition?.title ?? "widget"}`}
-          >
-            <GripVertical className="h-4 w-4" aria-hidden />
-          </button>
           {Icon && <Icon className="h-4 w-4 shrink-0 text-primary" aria-hidden />}
           <CardTitle className="truncate text-sm font-semibold">
             {definition?.title}

@@ -1,6 +1,8 @@
+"use client";
+
 import { apiClient } from "@/lib/api/client";
 import {
-  appendMockMessage,
+  appendMockMessageWithResponse,
   createMockConversation,
   getMockConversationById,
   getMockConversations,
@@ -63,6 +65,7 @@ export async function fetchConversation(
 export interface SendMessageInput {
   conversationId: string;
   message: string;
+  orgId?: string;
 }
 
 export interface SendMessageResult {
@@ -75,16 +78,34 @@ export async function sendMessage(
   input: SendMessageInput,
 ): Promise<SendMessageResult> {
   if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
-    await mockDelay(300);
-    const { userMsg, assistantMsg } = appendMockMessage(
+    const conv = getMockConversationById(input.conversationId);
+    if (!conv) {
+      throw new Error("Conversation not found");
+    }
+
+    const orgId = input.orgId ?? conv.organizationId;
+    const history = conv.messages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    const { generateLocalAssistantResponse } = await import(
+      "@/lib/ai/local/client-assistant"
+    );
+    const response = await generateLocalAssistantResponse({
+      orgId,
+      message: input.message,
+      history,
+    });
+
+    const { userMsg, assistantMsg } = appendMockMessageWithResponse(
       input.conversationId,
       input.message,
+      response,
     );
-    if (!assistantMsg.response) {
-      throw new Error("Assistant response missing");
-    }
+
     return {
-      response: assistantMsg.response,
+      response,
       userMessage: userMsg,
       assistantMessage: assistantMsg,
     };

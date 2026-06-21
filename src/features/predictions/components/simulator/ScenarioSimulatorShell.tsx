@@ -13,6 +13,11 @@ import { useSimulations } from "@/features/predictions/hooks/useSimulations";
 import { useRunSimulation } from "@/features/predictions/hooks/useRunSimulation";
 import { useCompareSimulations } from "@/features/predictions/hooks/useCompareSimulations";
 import { usePredictionsStore } from "@/store/predictions-store";
+import { DEFAULT_SIMULATION_INPUT } from "@/features/predictions/schemas/simulation-input.schema";
+import { useOrganizations } from "@/features/organizations/hooks/useOrganizations";
+import { useExternalWeather } from "@/features/intelligence/hooks/useExternalData";
+import { Badge } from "@/components/ui/badge";
+import { Cloud } from "lucide-react";
 import type { SimulationResult } from "@/types/simulation";
 import type { SimulationInputForm } from "@/features/predictions/schemas/simulation-input.schema";
 
@@ -21,15 +26,21 @@ interface ScenarioSimulatorShellProps {
 }
 
 export function ScenarioSimulatorShell({ orgId }: ScenarioSimulatorShellProps) {
-  const getStateForOrg = usePredictionsStore((s) => s.getStateForOrg);
+  const draft = usePredictionsStore((s) => {
+    const stored = s.orgStates[orgId]?.simulatorDraft;
+    return stored
+      ? { ...DEFAULT_SIMULATION_INPUT, ...stored }
+      : { ...DEFAULT_SIMULATION_INPUT };
+  });
+  const compareIds = usePredictionsStore(
+    (s) => s.orgStates[orgId]?.compareScenarioIds ?? [],
+  );
   const setSimulatorDraft = usePredictionsStore((s) => s.setSimulatorDraft);
   const setCompareScenarioIds = usePredictionsStore(
     (s) => s.setCompareScenarioIds,
   );
-
-  const orgState = getStateForOrg(orgId);
-  const draft = orgState.simulatorDraft;
-  const compareIds = orgState.compareScenarioIds;
+  const { activeOrg } = useOrganizations();
+  const weatherQuery = useExternalWeather(activeOrg?.city);
 
   const [previewResult, setPreviewResult] = useState<SimulationResult | null>(
     null,
@@ -129,6 +140,15 @@ export function ScenarioSimulatorShell({ orgId }: ScenarioSimulatorShellProps) {
 
   return (
     <div className="space-y-6">
+      {weatherQuery.data && (
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary" className="gap-1">
+            <Cloud className="h-3 w-3" aria-hidden />
+            {weatherQuery.data.rainyDays} rainy days in forecast ·{" "}
+            {weatherQuery.data.totalPrecipitationMm.toFixed(1)} mm precip
+          </Badge>
+        </div>
+      )}
       <ScenarioInputPanel values={draft} onChange={updateDraft} />
 
       <div className="flex flex-wrap gap-2">

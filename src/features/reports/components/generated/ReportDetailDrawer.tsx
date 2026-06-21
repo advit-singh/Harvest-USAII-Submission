@@ -135,7 +135,7 @@ export function ReportDetailDrawer({
   onRegenerated,
 }: ReportDetailDrawerProps) {
   const detailQuery = useReportDetail(open ? reportId : null);
-  const download = useReportDownload();
+  const download = useReportDownload(orgId);
   const regenerate = useGenerateReport(orgId);
 
   useEffect(() => {

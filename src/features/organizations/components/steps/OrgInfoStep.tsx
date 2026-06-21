@@ -49,42 +49,6 @@ export function OrgInfoStep() {
           </SelectContent>
         </Select>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="city">City</Label>
-          <Input id="city" {...register("city")} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="state">State</Label>
-          <Input id="state" {...register("state")} />
-        </div>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="timezone">Timezone</Label>
-        <Input id="timezone" {...register("timezone")} />
-        {errors.timezone && (
-          <p className="text-sm text-destructive">{errors.timezone.message}</p>
-        )}
-      </div>
-      <div className="space-y-2">
-        <Label>Unit system</Label>
-        <Select
-          value={watch("defaultUnitSystem")}
-          onValueChange={(v) =>
-            setValue("defaultUnitSystem", v as "metric" | "imperial", {
-              shouldValidate: true,
-            })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="imperial">Imperial</SelectItem>
-            <SelectItem value="metric">Metric</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
     </div>
   );
 }

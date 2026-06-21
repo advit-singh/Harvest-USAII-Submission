@@ -1,6 +1,6 @@
 # API_SPEC.md
 
-# Project Harvest
+# Harvest
 
 ## Backend API Specification
 

@@ -54,7 +54,12 @@ export function WasteAnalysisTab({ orgId, filters }: WasteAnalysisTabProps) {
               <CardTitle className="text-base">Waste Over Time</CardTitle>
             </CardHeader>
             <CardContent>
-              <TimeSeriesChart data={data.timeSeries} variant="area" />
+              <TimeSeriesChart
+                data={data.timeSeries}
+                variant="area"
+                yAxisLabel="kg"
+                xAxisLabel="Period"
+              />
             </CardContent>
           </Card>
 
@@ -67,6 +72,8 @@ export function WasteAnalysisTab({ orgId, filters }: WasteAnalysisTabProps) {
                 <BreakdownBarChart
                   data={data.byCategory}
                   onBarClick={handleBarClick}
+                  xAxisLabel="Category"
+                  yAxisLabel="kg"
                 />
               </CardContent>
             </Card>
@@ -80,6 +87,7 @@ export function WasteAnalysisTab({ orgId, filters }: WasteAnalysisTabProps) {
                   data={data.byItem}
                   layout="horizontal"
                   onBarClick={handleBarClick}
+                  xAxisLabel="kg"
                 />
               </CardContent>
             </Card>

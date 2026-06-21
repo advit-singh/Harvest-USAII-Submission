@@ -30,6 +30,12 @@ export const navItems: NavItem[] = [
     description: "Convert raw data into intelligence",
   },
   {
+    title: "AI Assistant",
+    href: "/assistant",
+    icon: Bot,
+    description: "Natural-language intelligence access",
+  },
+  {
     title: "Analytics",
     href: "/analytics",
     icon: BarChart3,
@@ -52,12 +58,6 @@ export const navItems: NavItem[] = [
     href: "/reports",
     icon: FileText,
     description: "Generate organizational reporting",
-  },
-  {
-    title: "AI Assistant",
-    href: "/assistant",
-    icon: Bot,
-    description: "Natural-language intelligence access",
   },
   {
     title: "Settings",

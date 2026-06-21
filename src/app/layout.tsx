@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Project Harvest",
+  title: "Harvest",
   description:
     "AI-powered food waste intelligence platform — upload anything, understand everything, prevent waste before it happens.",
 };

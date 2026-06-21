@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Toaster } from "sonner";
 import { ThemeSync } from "@/components/layout/ThemeSync";
 import { GithubPagesBootstrap } from "@/components/layout/GithubPagesBootstrap";
+import { LiveDataSync } from "@/lib/query/live-sync";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -25,6 +26,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <GithubPagesBootstrap />
         <ThemeSync />
+        <LiveDataSync />
         {children}
         <Toaster position="top-right" richColors closeButton />
       </ThemeProvider>

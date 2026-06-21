@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, ChevronsUpDown } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,8 +14,14 @@ import { LoadingState } from "@/components/feedback/LoadingState";
 import { cn } from "@/lib/utils";
 
 export function OrgSwitcher() {
+  const queryClient = useQueryClient();
   const { organizations, activeOrg, setActiveOrgId, isLoading } =
     useOrganizations();
+
+  const handleSwitch = (orgId: string) => {
+    setActiveOrgId(orgId);
+    void queryClient.invalidateQueries();
+  };
 
   if (isLoading) {
     return <LoadingState rows={1} className="w-40" />;
@@ -42,7 +49,7 @@ export function OrgSwitcher() {
         {organizations.map((org) => (
           <DropdownMenuItem
             key={org.id}
-            onClick={() => setActiveOrgId(org.id)}
+            onClick={() => handleSwitch(org.id)}
             className="justify-between"
           >
             <span className="truncate">{org.name}</span>

@@ -1,6 +1,6 @@
 # DATABASE_SCHEMA.md
 
-# Project Harvest
+# Harvest
 
 ## Database Schema Specification
 

@@ -14,7 +14,7 @@ import { InventoryHealthWidget } from "@/features/dashboard/components/widgets/I
 import { ImpactSnapshotWidget } from "@/features/dashboard/components/widgets/ImpactSnapshotWidget";
 import { DonationOpportunitiesWidget } from "@/features/dashboard/components/widgets/DonationOpportunitiesWidget";
 import { RecentActivityWidget } from "@/features/dashboard/components/widgets/RecentActivityWidget";
-import type { WidgetId } from "@/types/dashboard";
+import type { GridLayoutItem, WidgetId } from "@/types/dashboard";
 
 import "react-grid-layout/css/styles.css";
 
@@ -46,8 +46,14 @@ interface DashboardGridProps {
 
 export function DashboardGrid({ orgId }: DashboardGridProps) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const { layoutState, visibleLayouts, onLayoutChange, toggleWidget, resetLayout } =
-    useDashboardLayout(orgId);
+  const {
+    layoutState,
+    visibleLayouts,
+    onLayoutChange,
+    toggleWidget,
+    resetLayout,
+    setLayouts,
+  } = useDashboardLayout(orgId);
 
   const layouts = useMemo((): ResponsiveLayouts => {
     const mobileLayout: LayoutItem[] = visibleLayouts.map((item, index) => ({
@@ -72,16 +78,26 @@ export function DashboardGrid({ orgId }: DashboardGridProps) {
     [isDesktop, onLayoutChange],
   );
 
+  const handleFullLayoutUpdate = useCallback(
+    (newLayouts: GridLayoutItem[]) => {
+      setLayouts(newLayouts);
+    },
+    [setLayouts],
+  );
+
   if (!layoutState) return null;
 
   const visibility = layoutState.visibility;
+  const gridKey = layoutState.updatedAt;
 
   if (!isDesktop) {
     return (
       <div className="space-y-4">
         <DashboardToolbar
           visibility={visibility}
+          layouts={layoutState.layouts}
           onToggleWidget={toggleWidget}
+          onLayoutChange={handleFullLayoutUpdate}
           onResetLayout={resetLayout}
         />
         <div className="grid gap-4">
@@ -102,22 +118,24 @@ export function DashboardGrid({ orgId }: DashboardGridProps) {
     <div className="space-y-4">
       <DashboardToolbar
         visibility={visibility}
+        layouts={layoutState.layouts}
         onToggleWidget={toggleWidget}
+        onLayoutChange={handleFullLayoutUpdate}
         onResetLayout={resetLayout}
       />
       <ResponsiveGridLayout
+        key={gridKey}
         className="layout"
         layouts={layouts}
         breakpoints={{ lg: 1024, md: 768, sm: 0 }}
         cols={{ lg: 12, md: 12, sm: 12 }}
         rowHeight={80}
-        draggableHandle=".widget-drag-handle"
         onLayoutChange={handleLayoutChange}
         margin={[16, 16]}
         containerPadding={[0, 0]}
         compactType="vertical"
-        isResizable
-        isDraggable
+        isResizable={false}
+        isDraggable={false}
         useCSSTransforms
       >
         {visibleLayouts.map((item) => {

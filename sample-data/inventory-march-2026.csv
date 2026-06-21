@@ -1,0 +1,11 @@
+date,item_name,quantity,unit,category,location
+2026-03-01,Whole milk,48,gallons,dairy,Cold Storage A
+2026-03-01,Fresh apples,120,lbs,produce,Walk-in Cooler
+2026-03-02,Whole wheat bread,80,loaves,grains,Dry Storage
+2026-03-02,Grilled chicken,45,lbs,protein,Hot Line
+2026-03-03,Mixed vegetables,60,lbs,produce,Walk-in Cooler
+2026-03-03,Orange juice,24,gallons,beverages,Cold Storage A
+2026-03-04,Cheddar cheese,18,lbs,dairy,Walk-in Cooler
+2026-03-04,Brown rice,50,lbs,grains,Dry Storage
+2026-03-05,Turkey slices,30,lbs,protein,Hot Line
+2026-03-05,Bananas,90,lbs,produce,Walk-in Cooler

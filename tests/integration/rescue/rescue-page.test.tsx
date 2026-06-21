@@ -35,7 +35,7 @@ describe("RescueShell", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Welcome to Project Harvest")).toBeInTheDocument();
+      expect(screen.getByText("Welcome to Harvest")).toBeInTheDocument();
     });
     unmount();
   });

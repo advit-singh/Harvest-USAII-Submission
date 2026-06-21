@@ -51,7 +51,7 @@ export function RegisterForm() {
       <CardHeader>
         <CardTitle>Create your account</CardTitle>
         <CardDescription>
-          Start preventing food waste with Project Harvest
+          Start preventing food waste with Harvest
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>

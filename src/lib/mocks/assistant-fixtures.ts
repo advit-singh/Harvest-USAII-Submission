@@ -135,7 +135,7 @@ const GENERIC_RESPONSES: Record<string, AssistantChatResponse> = {
   },
 };
 
-function matchResponse(message: string): AssistantChatResponse {
+export function matchFixtureResponse(message: string): AssistantChatResponse {
   const lower = message.toLowerCase();
   if (
     lower.includes("waste") &&
@@ -250,6 +250,47 @@ export function createMockConversation(orgId: string): AssistantConversationDeta
   return conv;
 }
 
+export function appendMockMessageWithResponse(
+  conversationId: string,
+  userMessage: string,
+  response: AssistantChatResponse,
+): { userMsg: AssistantMessage; assistantMsg: AssistantMessage } {
+  const conv = mockConversations.find((c) => c.id === conversationId);
+  if (!conv) {
+    throw new Error("Conversation not found");
+  }
+
+  const now = Date.now();
+  const userMsg: AssistantMessage = {
+    id: `msg_${now}_user`,
+    role: "user",
+    content: userMessage,
+    createdAt: new Date(now).toISOString(),
+  };
+
+  const assistantMsg: AssistantMessage = {
+    id: `msg_${now}_assistant`,
+    role: "assistant",
+    content: response.answer,
+    createdAt: new Date(now + 500).toISOString(),
+    response,
+  };
+
+  conv.messages = [...conv.messages, userMsg, assistantMsg];
+  conv.updatedAt = assistantMsg.createdAt;
+  conv.preview = response.answer.slice(0, 80) + (response.answer.length > 80 ? "..." : "");
+  if (conv.messages.length <= 2) {
+    conv.title =
+      userMessage.length > 48 ? userMessage.slice(0, 48) + "..." : userMessage;
+  }
+
+  mockConversations = mockConversations.map((c) =>
+    c.id === conversationId ? conv : c,
+  );
+
+  return { userMsg, assistantMsg };
+}
+
 export function appendMockMessage(
   conversationId: string,
   userMessage: string,
@@ -267,7 +308,7 @@ export function appendMockMessage(
     createdAt: new Date(now).toISOString(),
   };
 
-  const response = matchResponse(userMessage);
+  const response = matchFixtureResponse(userMessage);
   const assistantMsg: AssistantMessage = {
     id: `msg_${now}_assistant`,
     role: "assistant",
@@ -292,5 +333,5 @@ export function appendMockMessage(
 }
 
 export function getMockChatResponse(message: string): AssistantChatResponse {
-  return matchResponse(message);
+  return matchFixtureResponse(message);
 }

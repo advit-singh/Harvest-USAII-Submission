@@ -2,7 +2,6 @@
 
 import { LogOut, Moon, Sun, User } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,18 +17,13 @@ export function UserMenu() {
   const { user, signOut } = useAuth();
   const { setTheme, theme } = useTheme();
 
-  const initials =
-    user?.email?.slice(0, 2).toUpperCase() ??
-    user?.user_metadata?.full_name?.slice(0, 2).toUpperCase() ??
-    "U";
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full" aria-label="User menu">
-          <Avatar className="h-9 w-9">
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted">
+            <User className="h-5 w-5 text-muted-foreground" aria-hidden />
+          </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

@@ -1,6 +1,6 @@
 # INTEGRATION_BOARD.md
 
-Project Harvest
+Harvest
 
 Purpose:
 Single source of truth for cross-team coordination,
@@ -901,4 +901,22 @@ Merge Conflict Risks:
 
 Upcoming Integration Milestones:
 
-- None — final sprint complete
+- None — Harvest MVP comprehensive polish complete (local AI, onboarding, dashboard customize, uploads validation, analytics charts, predictions weather, reports export, settings integrations, GitHub Pages deploy)
+
+---
+
+# Harvest MVP Comprehensive Polish
+
+Status: **Complete**
+
+Scope:
+
+- Rebrand Project Harvest → Harvest; multi-org demo; Zustand filter reactivity fixes
+- Local WebLLM assistant in mock mode; Open-Meteo / Nager.Date client hooks
+- 7-step onboarding wizard with persistence; auth guard routing
+- Dashboard customize dialog (reorder/hide widgets); grid no longer draggable on main view
+- Upload sample data; validation accept/correct/dismiss UX
+- Analytics chart axis labels and org-scoped fixtures
+- Predictions simulator reactivity; weather badge
+- Report downloads from mock analytics; live query invalidation
+- Settings integrations section; comprehensive README

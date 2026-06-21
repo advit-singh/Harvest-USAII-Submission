@@ -8,6 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
   Cell,
+  Label,
 } from "recharts";
 import { ChartContainer } from "@/components/charts/ChartContainer";
 import type { BreakdownItem } from "@/types/analytics";
@@ -25,36 +26,52 @@ interface BreakdownBarChartProps {
   height?: number;
   onBarClick?: (item: BreakdownItem) => void;
   layout?: "horizontal" | "vertical";
+  xAxisLabel?: string;
+  yAxisLabel?: string;
 }
 
 export function BreakdownBarChart({
   data,
-  height = 280,
+  height,
   onBarClick,
   layout = "vertical",
+  xAxisLabel,
+  yAxisLabel,
 }: BreakdownBarChartProps) {
   if (data.length === 0) return null;
 
   const isHorizontal = layout === "horizontal";
+  const computedHeight = height ?? (isHorizontal ? Math.max(280, data.length * 44) : 280);
+  const longestLabel = Math.max(...data.map((d) => d.name.length), 8);
+  const yAxisWidth = isHorizontal ? Math.min(160, longestLabel * 7) : undefined;
 
   return (
-    <ChartContainer height={height}>
+    <ChartContainer height={computedHeight}>
       <BarChart
         data={data}
         layout={isHorizontal ? "vertical" : "horizontal"}
-        margin={{ top: 8, right: 8, left: isHorizontal ? 80 : 0, bottom: 0 }}
+        margin={{
+          top: 16,
+          right: 16,
+          left: isHorizontal ? (yAxisWidth ?? 80) : 8,
+          bottom: xAxisLabel ? 28 : 8,
+        }}
       >
         <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
         {isHorizontal ? (
           <>
-            <XAxis type="number" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+            <XAxis type="number" tick={{ fontSize: 11 }} axisLine={false} tickLine={false}>
+              {xAxisLabel && (
+                <Label value={xAxisLabel} offset={0} position="insideBottom" fontSize={11} />
+              )}
+            </XAxis>
             <YAxis
               type="category"
               dataKey="name"
               tick={{ fontSize: 11 }}
               axisLine={false}
               tickLine={false}
-              width={75}
+              width={yAxisWidth}
             />
           </>
         ) : (
@@ -64,8 +81,20 @@ export function BreakdownBarChart({
               tick={{ fontSize: 11 }}
               axisLine={false}
               tickLine={false}
-            />
-            <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+              interval={0}
+              angle={data.length > 4 ? -25 : 0}
+              textAnchor={data.length > 4 ? "end" : "middle"}
+              height={data.length > 4 ? 60 : 30}
+            >
+              {xAxisLabel && (
+                <Label value={xAxisLabel} offset={-4} position="insideBottom" fontSize={11} />
+              )}
+            </XAxis>
+            <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false}>
+              {yAxisLabel && (
+                <Label value={yAxisLabel} angle={-90} position="insideLeft" fontSize={11} />
+              )}
+            </YAxis>
           </>
         )}
         <Tooltip

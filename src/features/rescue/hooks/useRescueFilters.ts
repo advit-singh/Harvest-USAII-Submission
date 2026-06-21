@@ -1,16 +1,20 @@
 "use client";
 
+import { useMemo } from "react";
 import { useRescueStore } from "@/store/rescue-store";
 import { toRescueFilters } from "@/features/rescue/config/rescue-tabs";
-import type { RescueTabId } from "@/types/rescue";
-import type {
-  DonationHistoryFiltersInput,
-  RecipientFiltersInput,
-  RescueFiltersInput,
+import {
+  DEFAULT_DONATION_HISTORY_FILTERS,
+  DEFAULT_RECIPIENT_FILTERS,
+  DEFAULT_RESCUE_FILTERS,
+  type DonationHistoryFiltersInput,
+  type RecipientFiltersInput,
+  type RescueFiltersInput,
 } from "@/features/rescue/schemas/rescue-filters.schema";
+import type { RescueTabId } from "@/types/rescue";
 
 export function useRescueFilters(orgId: string | null) {
-  const getStateForOrg = useRescueStore((s) => s.getStateForOrg);
+  const stored = useRescueStore((s) => (orgId ? s.orgStates[orgId] : undefined));
   const setFilters = useRescueStore((s) => s.setFilters);
   const setRecipientFilters = useRescueStore((s) => s.setRecipientFilters);
   const setHistoryFilters = useRescueStore((s) => s.setHistoryFilters);
@@ -22,7 +26,32 @@ export function useRescueFilters(orgId: string | null) {
   const setImpactTimeRange = useRescueStore((s) => s.setImpactTimeRange);
   const resetFilters = useRescueStore((s) => s.resetFilters);
 
-  const orgState = orgId ? getStateForOrg(orgId) : null;
+  const orgState = useMemo(() => {
+    if (!orgId) return null;
+    const defaults = {
+      filters: { ...DEFAULT_RESCUE_FILTERS },
+      recipientFilters: { ...DEFAULT_RECIPIENT_FILTERS },
+      historyFilters: { ...DEFAULT_DONATION_HISTORY_FILTERS },
+      activeTab: "opportunities" as RescueTabId,
+      selectedOpportunityId: null as string | null,
+      selectedRecipientId: null as string | null,
+      impactTimeRange: "week" as const,
+    };
+    if (!stored) return defaults;
+    return {
+      ...defaults,
+      ...stored,
+      filters: { ...defaults.filters, ...stored.filters },
+      recipientFilters: {
+        ...defaults.recipientFilters,
+        ...stored.recipientFilters,
+      },
+      historyFilters: {
+        ...defaults.historyFilters,
+        ...stored.historyFilters,
+      },
+    };
+  }, [orgId, stored]);
 
   const updateFilters = (partial: Partial<RescueFiltersInput>) => {
     if (!orgId) return;

@@ -20,6 +20,7 @@ import {
 import { useAssistantConversation } from "@/features/assistant/hooks/useAssistantConversation";
 import { useAssistantChat } from "@/features/assistant/hooks/useAssistantChat";
 import { useAssistantStore } from "@/store/assistant-store";
+import { AiModelStatus } from "@/features/ai/components/AiModelStatus";
 import type { AssistantCitation } from "@/types/assistant";
 
 interface AssistantShellProps {
@@ -103,6 +104,7 @@ export function AssistantShell({ orgId }: AssistantShellProps) {
       await chatMutation.mutateAsync({
         conversationId: convId,
         message,
+        orgId,
       });
     },
     [
@@ -153,6 +155,9 @@ export function AssistantShell({ orgId }: AssistantShellProps) {
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center justify-between gap-2">
+        <AiModelStatus />
+      </div>
       <div className="flex gap-2 md:hidden">
         <Button
           variant={mobileView === "history" ? "default" : "outline"}

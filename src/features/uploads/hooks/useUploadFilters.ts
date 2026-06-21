@@ -1,18 +1,33 @@
 "use client";
 
+import { useMemo } from "react";
 import { useUploadsStore } from "@/store/uploads-store";
 import { toUploadFilters } from "@/features/uploads/config/upload-tabs";
+import { DEFAULT_UPLOAD_FILTERS } from "@/features/uploads/schemas/upload-filters.schema";
 import type { UploadTabId } from "@/types/upload";
 import type { UploadFiltersInput } from "@/features/uploads/schemas/upload-filters.schema";
 
 export function useUploadFilters(orgId: string | null) {
-  const getStateForOrg = useUploadsStore((s) => s.getStateForOrg);
+  const stored = useUploadsStore((s) => (orgId ? s.orgStates[orgId] : undefined));
   const setFilters = useUploadsStore((s) => s.setFilters);
   const setActiveTab = useUploadsStore((s) => s.setActiveTab);
   const setSelectedUploadId = useUploadsStore((s) => s.setSelectedUploadId);
   const resetFilters = useUploadsStore((s) => s.resetFilters);
 
-  const orgState = orgId ? getStateForOrg(orgId) : null;
+  const orgState = useMemo(() => {
+    if (!orgId) return null;
+    const defaults = {
+      filters: { ...DEFAULT_UPLOAD_FILTERS },
+      activeTab: "upload" as UploadTabId,
+      selectedUploadId: null as string | null,
+    };
+    if (!stored) return defaults;
+    return {
+      ...defaults,
+      ...stored,
+      filters: { ...defaults.filters, ...stored.filters },
+    };
+  }, [orgId, stored]);
 
   const updateFilters = (partial: Partial<UploadFiltersInput>) => {
     if (!orgId) return;

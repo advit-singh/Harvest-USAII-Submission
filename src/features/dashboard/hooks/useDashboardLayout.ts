@@ -2,24 +2,36 @@
 
 import { useCallback, useMemo } from "react";
 import type { Layout, LayoutItem } from "react-grid-layout/legacy";
-import { useDashboardStore } from "@/store/dashboard-store";
+import {
+  useDashboardStore,
+  DEFAULT_LAYOUTS,
+  DEFAULT_VISIBILITY,
+} from "@/store/dashboard-store";
 import type { GridLayoutItem, WidgetId } from "@/types/dashboard";
 
 export function useDashboardLayout(orgId: string | null) {
-  const getLayoutForOrg = useDashboardStore((s) => s.getLayoutForOrg);
+  const stored = useDashboardStore((s) =>
+    orgId ? s.orgLayouts[orgId] : undefined,
+  );
   const setLayouts = useDashboardStore((s) => s.setLayouts);
   const setWidgetVisibility = useDashboardStore((s) => s.setWidgetVisibility);
   const resetLayout = useDashboardStore((s) => s.resetLayout);
 
-  const layoutState = useMemo(
-    () => (orgId ? getLayoutForOrg(orgId) : null),
-    [orgId, getLayoutForOrg],
-  );
+  const layoutState = useMemo(() => {
+    if (!orgId) return null;
+    if (!stored) {
+      return {
+        layouts: DEFAULT_LAYOUTS,
+        visibility: { ...DEFAULT_VISIBILITY },
+        updatedAt: new Date(0).toISOString(),
+      };
+    }
+    return stored;
+  }, [orgId, stored]);
 
-  const visibleLayouts = useMemo((): LayoutItem[] => {
-    if (!layoutState) return [];
-    return layoutState.layouts.filter((item) => layoutState.visibility[item.i]);
-  }, [layoutState]);
+  const visibleLayouts: LayoutItem[] = layoutState
+    ? layoutState.layouts.filter((item) => layoutState.visibility[item.i])
+    : [];
 
   const onLayoutChange = useCallback(
     (newLayout: Layout) => {
@@ -57,5 +69,9 @@ export function useDashboardLayout(orgId: string | null) {
     onLayoutChange,
     toggleWidget,
     resetLayout: handleReset,
+    setLayouts: (layouts: GridLayoutItem[]) => {
+      if (!orgId) return;
+      setLayouts(orgId, layouts);
+    },
   };
 }
