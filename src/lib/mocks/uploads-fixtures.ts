@@ -393,10 +393,15 @@ export function rejectMockUpload(
 export function resolveMockAnomaly(
   anomalyId: string,
   action: "accepted" | "corrected" | "ignored",
+  correctedValue?: string,
 ): ValidationAnomaly | null {
   const idx = mockAnomalies.findIndex((a) => a.id === anomalyId);
   if (idx === -1) return null;
-  mockAnomalies[idx] = { ...mockAnomalies[idx], status: action };
+  mockAnomalies[idx] = {
+    ...mockAnomalies[idx],
+    status: action,
+    ...(correctedValue ? { correctedValue } : {}),
+  };
   return mockAnomalies[idx];
 }
 

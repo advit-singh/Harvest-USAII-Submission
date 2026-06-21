@@ -132,10 +132,12 @@ export function useResolveAnomaly(orgId: string) {
     mutationFn: ({
       anomalyId,
       action,
+      correctedValue,
     }: {
       anomalyId: string;
       action: "accepted" | "corrected" | "ignored";
-    }) => resolveValidationAnomaly(anomalyId, action),
+      correctedValue?: string;
+    }) => resolveValidationAnomaly(anomalyId, action, correctedValue),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: uploadKeys.anomalies(orgId) });
       queryClient.invalidateQueries({ queryKey: uploadKeys.all });

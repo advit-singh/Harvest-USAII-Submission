@@ -223,35 +223,39 @@ export async function rejectUpload(
 
 export async function fetchValidationAnomalies(
   orgId: string,
+  status: "open" | "resolved" = "open",
 ): Promise<ValidationAnomaly[]> {
   if (!isLiveIntelligenceApiEnabled()) {
     await mockDelay();
     const uploadIds = new Set(
       getMockUploads(orgId).map((u) => u.id),
     );
-    return getMockAnomalies().filter(
-      (a) => uploadIds.has(a.uploadId) && a.status === "open",
-    );
+    return getMockAnomalies().filter((a) => {
+      if (!uploadIds.has(a.uploadId)) return false;
+      if (status === "open") return a.status === "open";
+      return a.status !== "open";
+    });
   }
 
   return apiClient<ValidationAnomaly[]>(
-    `/uploads/anomalies?organizationId=${resolveIntelligenceOrgId(orgId)}`,
+    `/uploads/anomalies?organizationId=${resolveIntelligenceOrgId(orgId)}&status=${status}`,
   );
 }
 
 export async function resolveValidationAnomaly(
   anomalyId: string,
   action: "accepted" | "corrected" | "ignored",
+  correctedValue?: string,
 ): Promise<ValidationAnomaly> {
   if (!isLiveIntelligenceApiEnabled()) {
     await mockDelay();
-    const anomaly = resolveMockAnomaly(anomalyId, action);
+    const anomaly = resolveMockAnomaly(anomalyId, action, correctedValue);
     if (!anomaly) throw new Error(`Anomaly not found: ${anomalyId}`);
     return anomaly;
   }
 
   return apiClient<ValidationAnomaly>(`/uploads/anomalies/${anomalyId}`, {
     method: "PATCH",
-    body: JSON.stringify({ action }),
+    body: JSON.stringify({ action, correctedValue }),
   });
 }

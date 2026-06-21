@@ -1,0 +1,8 @@
+2026-03-01 | WASTE | Whole milk | 8 gallons | Expired before use | dairy
+2026-03-02 | WASTE | Fresh apples | 12 lbs | Browning / low uptake | produce
+2026-03-03 | WASTE | Whole wheat bread | 6 loaves | Overproduction | grains
+2026-03-04 | WASTE | Grilled chicken | 5 lbs | Rain day attendance drop | protein
+2026-03-05 | WASTE | Orange juice | 3 gallons | Expiration | beverages
+2026-03-06 | WASTE | Mixed vegetables | 8 lbs | Trim waste | produce
+2026-03-07 | DONATION | Whole milk | 10 gallons | Redirected to food bank | dairy
+2026-03-08 | WASTE | Cheddar cheese | 4 lbs | Near expiration | dairy

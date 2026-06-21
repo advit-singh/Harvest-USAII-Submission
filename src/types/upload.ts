@@ -86,6 +86,7 @@ export interface ValidationAnomaly {
   confidence: number;
   suggestedFix: string;
   status: "open" | "accepted" | "corrected" | "ignored";
+  correctedValue?: string;
 }
 
 export interface UploadReview {

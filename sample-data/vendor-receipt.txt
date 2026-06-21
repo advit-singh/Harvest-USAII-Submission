@@ -1,0 +1,19 @@
+VENDOR RECEIPT - Fresh Foods Supply Co.
+Date: 2026-03-01
+Site: Lincoln Elementary Cafeteria
+
+Item                    Qty     Unit Price    Total
+-------------------------------------------------------
+Whole milk (1 gal)       24      $3.49         $83.76
+Fresh apples             60 lbs  $1.29/lb      $77.40
+Whole wheat bread        40      $2.19         $87.60
+Grilled chicken          25 lbs  $4.99/lb      $124.75
+Cheddar cheese           12 lbs  $5.49/lb      $65.88
+Mixed vegetables         30 lbs  $2.29/lb      $68.70
+
+Subtotal:                                        $507.09
+Tax:                                              $40.57
+TOTAL:                                            $547.66
+
+PO Number: PO-2026-0847
+Delivery: Cold Storage A
