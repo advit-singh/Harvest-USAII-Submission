@@ -22,6 +22,18 @@ function isEmptyOrg(orgId: string): boolean {
   return orgId.startsWith("org_empty") || orgId === "org_new";
 }
 
+function orgScale(orgId: string): number {
+  if (orgId === "org_demo_456") return 1.4;
+  if (orgId === "org_demo_789") return 2.1;
+  return 1;
+}
+
+function orgSiteName(orgId: string): string {
+  if (orgId === "org_demo_456") return "Riverside Main Kitchen";
+  if (orgId === "org_demo_789") return "Metro University Dining Hall";
+  return DEMO_SITE;
+}
+
 function scale(value: number, timeRange: AnalyticsFilters["timeRange"]): number {
   return Math.round(value * TIME_MULTIPLIERS[timeRange]);
 }
@@ -54,29 +66,31 @@ export function getMockWasteAnalytics(
   }
 
   const m = TIME_MULTIPLIERS[filters.timeRange];
+  const scaleFactor = orgScale(orgId);
+  const siteName = orgSiteName(orgId);
 
   return {
     timeSeries: [
-      { date: "Week 1", value: scale(42, filters.timeRange) / m },
-      { date: "Week 2", value: scale(38, filters.timeRange) / m },
-      { date: "Week 3", value: scale(51, filters.timeRange) / m },
-      { date: "Week 4", value: scale(47, filters.timeRange) / m },
+      { date: "Week 1", value: Math.round((scale(42, filters.timeRange) / m) * scaleFactor) },
+      { date: "Week 2", value: Math.round((scale(38, filters.timeRange) / m) * scaleFactor) },
+      { date: "Week 3", value: Math.round((scale(51, filters.timeRange) / m) * scaleFactor) },
+      { date: "Week 4", value: Math.round((scale(47, filters.timeRange) / m) * scaleFactor) },
     ],
     byCategory: [
-      { id: "cat_dairy", name: "Dairy", value: scale(34, filters.timeRange), unit: "kg", percent: 38 },
-      { id: "cat_produce", name: "Produce", value: scale(22, filters.timeRange), unit: "kg", percent: 25 },
-      { id: "cat_grains", name: "Grains", value: scale(18, filters.timeRange), unit: "kg", percent: 20 },
-      { id: "cat_protein", name: "Protein", value: scale(15, filters.timeRange), unit: "kg", percent: 17 },
+      { id: "cat_dairy", name: "Dairy", value: Math.round(scale(34, filters.timeRange) * scaleFactor), unit: "kg", percent: 38 },
+      { id: "cat_produce", name: "Produce", value: Math.round(scale(22, filters.timeRange) * scaleFactor), unit: "kg", percent: 25 },
+      { id: "cat_grains", name: "Grains", value: Math.round(scale(18, filters.timeRange) * scaleFactor), unit: "kg", percent: 20 },
+      { id: "cat_protein", name: "Protein", value: Math.round(scale(15, filters.timeRange) * scaleFactor), unit: "kg", percent: 17 },
     ],
     byItem: [
-      { id: "item_milk", name: "Whole milk", value: scale(24, filters.timeRange), unit: "kg", percent: 28 },
-      { id: "item_bread", name: "Whole wheat bread", value: scale(16, filters.timeRange), unit: "kg", percent: 19 },
-      { id: "item_apples", name: "Fresh apples", value: scale(12, filters.timeRange), unit: "kg", percent: 14 },
-      { id: "item_chicken", name: "Grilled chicken", value: scale(10, filters.timeRange), unit: "kg", percent: 12 },
+      { id: "item_milk", name: "Whole milk", value: Math.round(scale(24, filters.timeRange) * scaleFactor), unit: "kg", percent: 28 },
+      { id: "item_bread", name: "Whole wheat bread", value: Math.round(scale(16, filters.timeRange) * scaleFactor), unit: "kg", percent: 19 },
+      { id: "item_apples", name: "Fresh apples", value: Math.round(scale(12, filters.timeRange) * scaleFactor), unit: "kg", percent: 14 },
+      { id: "item_chicken", name: "Grilled chicken", value: Math.round(scale(10, filters.timeRange) * scaleFactor), unit: "kg", percent: 12 },
     ],
     bySite: [
-      { id: DEMO_SITE_ID, name: DEMO_SITE, value: scale(89, filters.timeRange), unit: "kg", percent: 72 },
-      { id: "site_002", name: "Lincoln Middle Cafeteria", value: scale(34, filters.timeRange), unit: "kg", percent: 28 },
+      { id: DEMO_SITE_ID, name: siteName, value: Math.round(scale(89, filters.timeRange) * scaleFactor), unit: "kg", percent: 72 },
+      { id: "site_002", name: orgId === "org_demo_789" ? "North Campus Cafeteria" : "Secondary Site", value: Math.round(scale(34, filters.timeRange) * scaleFactor), unit: "kg", percent: 28 },
     ],
     byEvent: [
       { id: "evt_rain", name: "Rain day lunch", value: scale(28, filters.timeRange), unit: "kg", percent: 32 },
