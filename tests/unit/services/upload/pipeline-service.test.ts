@@ -29,12 +29,23 @@ vi.mock("@/services/upload/normalization-service", () => ({
     }),
     entities: [{ id: "e1", entity_type: "inventory_item", name: "Milk", confidence: 0.8 }],
     contentType: "table",
-    overallConfidence: 0.8,
+    overallConfidence: 0.9,
   }),
 }));
 
+const mockValidateUpload = vi.fn();
 vi.mock("@/services/upload/validation-service", () => ({
-  validateUpload: vi.fn().mockResolvedValue([]),
+  validateUpload: (...args: unknown[]) => mockValidateUpload(...args),
+}));
+
+const mockEvaluateUploadAutoCommit = vi.fn();
+const mockFinalizeUpload = vi.fn();
+const mockNotifyReviewRequiredWarnings = vi.fn();
+
+vi.mock("@/services/upload/upload-orchestration-service", () => ({
+  evaluateUploadAutoCommit: (...args: unknown[]) => mockEvaluateUploadAutoCommit(...args),
+  finalizeUpload: (...args: unknown[]) => mockFinalizeUpload(...args),
+  notifyReviewRequiredWarnings: (...args: unknown[]) => mockNotifyReviewRequiredWarnings(...args),
 }));
 
 const mockGetUploadById = vi.fn();
@@ -61,6 +72,7 @@ describe("pipeline-service", () => {
     mockGetUploadById.mockResolvedValue({
       id: "upload-1",
       organization_id: "org-1",
+      uploaded_by: "user-1",
       file_name: "inventory.csv",
       file_type: "text/csv",
       storage_path: "uploads/test/inventory.csv",
@@ -68,15 +80,69 @@ describe("pipeline-service", () => {
       description: null,
     });
     mockCreateJob.mockResolvedValue({ id: "job-1" });
+    mockValidateUpload.mockResolvedValue([]);
+    mockEvaluateUploadAutoCommit.mockResolvedValue({ eligible: true, reasons: [] });
+    mockFinalizeUpload.mockResolvedValue({
+      uploadId: "upload-1",
+      status: "completed",
+      committed: {
+        inventoryItems: 1,
+        inventoryLots: 1,
+        attendanceRecords: 0,
+        wasteEvents: 0,
+        events: 0,
+        purchases: 0,
+      },
+      intelligenceRefresh: null,
+    });
   });
 
-  it("runs full pipeline and returns review_required", async () => {
+  it("auto-commits eligible uploads and returns completed", async () => {
+    const result = await runUploadPipeline("upload-1");
+    expect(result.status).toBe("completed");
+    expect(result.intelligenceRefreshed).toBe(true);
+    expect(mockFinalizeUpload).toHaveBeenCalledWith("upload-1", {
+      userId: "user-1",
+      triggerNotifications: true,
+    });
+    expect(mockUpdateJobStatus).toHaveBeenCalledWith("job-1", "completed");
+  });
+
+  it("returns review_required when auto-commit is not eligible", async () => {
+    mockEvaluateUploadAutoCommit.mockResolvedValue({
+      eligible: false,
+      reasons: ["Overall confidence below threshold."],
+    });
+
     const result = await runUploadPipeline("upload-1");
     expect(result.status).toBe("review_required");
-    expect(result.classification).toBe("inventory_sheet");
-    expect(mockUpdateStatus).toHaveBeenCalled();
-    expect(mockCreateExtraction).toHaveBeenCalled();
-    expect(mockUpdateJobStatus).toHaveBeenCalledWith("job-1", "completed");
+    expect(result.reviewReasons).toContain("Overall confidence below threshold.");
+    expect(mockFinalizeUpload).not.toHaveBeenCalled();
+    expect(mockUpdateStatus).toHaveBeenCalledWith("upload-1", "review_required");
+    expect(mockNotifyReviewRequiredWarnings).not.toHaveBeenCalled();
+  });
+
+  it("notifies validation warnings when review is required", async () => {
+    mockEvaluateUploadAutoCommit.mockResolvedValue({
+      eligible: false,
+      reasons: ["Duplicate upload detected."],
+    });
+    mockValidateUpload.mockResolvedValue([
+      {
+        type: "duplicate_upload",
+        severity: "warning",
+        reason: "Duplicate upload detected.",
+      },
+    ]);
+
+    await runUploadPipeline("upload-1");
+
+    expect(mockNotifyReviewRequiredWarnings).toHaveBeenCalledWith(
+      expect.objectContaining({
+        uploadId: "upload-1",
+        userId: "user-1",
+      }),
+    );
   });
 
   it("throws when upload not found", async () => {
