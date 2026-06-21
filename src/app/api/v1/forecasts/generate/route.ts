@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { AuthError, requireAuthenticatedUser, requireOrgMembership } from "@/lib/api/auth";
+import { checkRateLimit } from "@/lib/api/rate-limit";
 import { errorResponse, successResponse } from "@/lib/api/response";
 import { generateForecast } from "@/services/forecast/forecast-service";
 
@@ -13,6 +14,11 @@ const generateSchema = z.object({
 export async function POST(request: Request) {
   try {
     const user = await requireAuthenticatedUser();
+    const aiLimit = checkRateLimit(`ai:forecast:${user.id}`, 20, 60_000);
+    if (!aiLimit.allowed) {
+      return errorResponse("RATE_LIMITED", "Too many forecast requests. Try again shortly.", 429);
+    }
+
     const body = await request.json();
     const parsed = generateSchema.safeParse(body);
 
