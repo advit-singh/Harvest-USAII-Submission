@@ -203,6 +203,8 @@ export async function seedDatabase() {
           memoryEnabled: true,
           recommendationAggressiveness: "medium",
           assistantEnabled: true,
+          autoCommitEnabled: true,
+          autoCommitConfidenceThreshold: 0.85,
         },
         forecast: { defaultHorizonDays: 7, externalDataEnabled: true },
         notifications: {

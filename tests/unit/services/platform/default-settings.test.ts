@@ -8,6 +8,8 @@ describe("default-settings", () => {
     const settings = buildDefaultSettingsJson("org-1");
     expect(settings.organizationId).toBe("org-1");
     expect(settings.ai.assistantEnabled).toBe(true);
+    expect(settings.ai.autoCommitEnabled).toBe(true);
+    expect(settings.ai.autoCommitConfidenceThreshold).toBe(0.85);
     expect(settings.forecast.defaultHorizonDays).toBe(7);
     expect(settings.notifications.critical).toBe(true);
   });

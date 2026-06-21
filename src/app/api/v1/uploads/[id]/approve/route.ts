@@ -1,10 +1,8 @@
 import { AuthError, requireAuthenticatedUser, requireOrgMembership } from "@/lib/api/auth";
 import { errorResponse, successResponse } from "@/lib/api/response";
 import { mapUploadSummary } from "@/lib/api/upload-mappers";
-import { commitUploadData } from "@/services/upload/commit-service";
-import { getUploadById, updateUploadStatus } from "@/services/upload/upload-service";
-import { refreshSiteIntelligence } from "@/services/intelligence/intelligence-trigger";
-import { notifyUploadCompleted } from "@/services/notification/notification-emitter";
+import { finalizeUpload } from "@/services/upload/upload-orchestration-service";
+import { getUploadById } from "@/services/upload/upload-service";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -21,22 +19,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const payload = await request.json().catch(() => ({}));
     const entityEdits = payload?.entities as Array<{ id: string; value: string }> | undefined;
 
-    const committed = await commitUploadData(id, entityEdits);
-    await updateUploadStatus(id, "completed");
-
-    void refreshSiteIntelligence(upload.organization_id, upload.site_id, user.id);
-    void notifyUploadCompleted({
-      organizationId: upload.organization_id,
+    const finalized = await finalizeUpload(id, {
+      entityEdits,
       userId: user.id,
-      uploadId: id,
-      fileName: upload.file_name,
+      triggerNotifications: true,
     });
 
     const updatedUpload = await getUploadById(id);
 
     return successResponse({
       ...(updatedUpload ? mapUploadSummary(updatedUpload) : mapUploadSummary(upload)),
-      committed,
+      committed: finalized.committed,
     });
   } catch (error) {
     if (error instanceof AuthError) {

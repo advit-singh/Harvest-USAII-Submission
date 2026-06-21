@@ -8,6 +8,8 @@ export function buildDefaultSettingsJson(organizationId: string): OrganizationSe
       memoryEnabled: true,
       recommendationAggressiveness: "medium",
       assistantEnabled: true,
+      autoCommitEnabled: true,
+      autoCommitConfidenceThreshold: 0.85,
     },
     forecast: {
       defaultHorizonDays: 7,
