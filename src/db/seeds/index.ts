@@ -29,7 +29,10 @@ import {
   conversations,
   messages,
   reports,
+  notifications,
+  audit_logs,
 } from "../schema";
+import { ALL_PERMISSION_CATALOG } from "@/services/platform/system-roles";
 
 const DEMO_ORG_ID = "00000000-0000-4000-8000-000000000001";
 const DEMO_SITE_ID = "00000000-0000-4000-8000-000000000002";
@@ -49,14 +52,11 @@ const DEMO_DONATION_EVENT_001_ID = "00000000-0000-4000-8000-000000000051";
 const DEMO_CONVERSATION_ID = "00000000-0000-4000-8000-000000000060";
 const DEMO_REPORT_ID = "00000000-0000-4000-8000-000000000061";
 
-const DEFAULT_PERMISSIONS = [
-  { key: "uploads.read", name: "Read Uploads", description: "View uploads" },
-  { key: "uploads.write", name: "Write Uploads", description: "Create and process uploads" },
-  { key: "inventory.read", name: "Read Inventory", description: "View inventory" },
-  { key: "analytics.read", name: "Read Analytics", description: "View analytics" },
-  { key: "reports.generate", name: "Generate Reports", description: "Generate and download reports" },
-  { key: "settings.manage", name: "Manage Settings", description: "Manage organization settings" },
-];
+const DEFAULT_PERMISSIONS = ALL_PERMISSION_CATALOG.map((perm) => ({
+  key: perm.key,
+  name: perm.name,
+  description: perm.description,
+}));
 
 const WASTE_REASONS = [
   "Expiration",
@@ -587,6 +587,45 @@ export async function seedDatabase() {
       progress: 100,
       file_path: `local://${DEMO_ORG_ID}/${DEMO_REPORT_ID}/monthly-summary-2026-05.pdf`,
       generated_at: new Date(),
+      created_by: DEMO_USER_ID,
+    })
+    .onConflictDoNothing();
+
+  await db
+    .insert(notifications)
+    .values([
+      {
+        organization_id: DEMO_ORG_ID,
+        user_id: DEMO_USER_ID,
+        type: "forecast.generated",
+        title: "Forecasts updated",
+        message: "New surplus and waste forecasts are available.",
+        metadata: { href: "/predictions?tab=explorer" },
+        is_read: false,
+        created_by: DEMO_USER_ID,
+      },
+      {
+        organization_id: DEMO_ORG_ID,
+        user_id: DEMO_USER_ID,
+        type: "report.generated",
+        title: "Report ready",
+        message: "Monthly Summary report is ready to download.",
+        metadata: { href: `/reports?tab=generated&id=${DEMO_REPORT_ID}` },
+        is_read: false,
+        created_by: DEMO_USER_ID,
+      },
+    ])
+    .onConflictDoNothing();
+
+  await db
+    .insert(audit_logs)
+    .values({
+      organization_id: DEMO_ORG_ID,
+      user_id: DEMO_USER_ID,
+      entity_type: "organization",
+      entity_id: DEMO_ORG_ID,
+      action: "seeded",
+      new_value: { source: "demo_seed" },
       created_by: DEMO_USER_ID,
     })
     .onConflictDoNothing();

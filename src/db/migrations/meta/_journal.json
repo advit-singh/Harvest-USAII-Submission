@@ -29,6 +29,20 @@
       "when": 1781980460664,
       "tag": "0003_prediction_intelligence_extensions",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1781980460665,
+      "tag": "0004_assistant_report_extensions",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1781980460666,
+      "tag": "0005_platform_permissions_notifications",
+      "breakpoints": true
     }
   ]
 }

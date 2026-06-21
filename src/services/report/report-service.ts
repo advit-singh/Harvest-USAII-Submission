@@ -20,6 +20,7 @@ import {
 } from "./report-mappers";
 import { createReportDownloadUrl, uploadReportFile } from "./report-storage";
 import { getReportTemplate, getTemplateName, isFormatSupported, listReportTemplates } from "./template-registry";
+import { notifyReportGenerated } from "@/services/notification/notification-emitter";
 
 export function getTemplates(): ReportTemplate[] {
   return listReportTemplates();
@@ -163,6 +164,13 @@ async function runReportGeneration(
         error_message: null,
       })
       .where(eq(reports.id, reportId));
+
+    void notifyReportGenerated({
+      organizationId: payload.organizationId,
+      userId,
+      reportId,
+      templateName: getTemplateName(payload.template),
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Report generation failed.";
     await db

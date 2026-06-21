@@ -97,12 +97,16 @@ Production-demo ready.
 | Donation Matching Engine | A | Ready for Integration | Yes | Opportunity detection, weighted matching, completion in `src/services/donation` |
 | Analytics API | A | Ready for Integration | Yes | `GET /api/v1/analytics/*` (overview + 5 tabs) |
 | AI Assistant Backend | A | Ready for Integration | Yes | Retrieval, citations, chat API in `src/services/assistant` |
-| Report Generation Backend | A | Ready for Integration | Yes | Templates, async generation, PDF/CSV/DOCX in `src/services/report` |
+| Report Generation Backend | A | Complete | Yes | Templates, async generation, PDF/CSV/DOCX in `src/services/report` |
+| Platform API Layer | A | Ready for Integration | Yes | Org/settings/members/roles, notifications, operational CRUD, audit, search |
+| Notification API | A | Ready for Integration | Yes | `GET/PATCH /api/v1/notifications/*` with event emission hooks |
+| Operational Data APIs | A | Ready for Integration | Yes | Inventory, attendance, events, waste routes |
+| Audit & Search APIs | A | Ready for Integration | Yes | `GET /api/v1/audit`, `GET /api/v1/search` |
 | Authentication | B | Complete | Yes | Supabase SSR + dev mock mode; login/register/reset flows |
 | Design System | B | Complete | Yes | Harvest tokens in `src/design-system` + `src/styles/globals.css` |
 | App Shell / Navigation | B | Complete | Yes | Sidebar, header, org switcher, command palette, breadcrumbs |
 | Organization Onboarding UI | B | Complete | Yes | 5-step wizard; org API client mocked (`NEXT_PUBLIC_USE_MOCK_API`) |
-| Organization API (backend) | A | Not Started | No | Person B consuming mocks until A delivers |
+| Organization API (backend) | A | Ready for Integration | Yes | Org, settings, members, roles, users/me routes in `src/app/api/v1` |
 | Dashboard Workspace | B | Complete | Yes | 7 configurable widgets, drag/resize layout, mock API clients |
 | Analytics Workspace | B | Complete | Yes | 5 tabs, charts, filters, drill-down, root cause, CSV export; mock API clients |
 | Forecast Workspace | B | Complete | Yes | 4 tabs: summary, explorer, recommendations, simulator; mock API clients |
@@ -131,7 +135,8 @@ Production-demo ready.
 | feature/complete-upload-intelligence-pipeline | A | Merged (PR #12) |
 | feature/complete-prediction-intelligence-platform | A | Merged (PR #13) |
 | feature/complete-action-measurement-platform | A | Merged (PR #15) |
-| feature/complete-conversational-reporting-platform | A | In Progress |
+| feature/complete-conversational-reporting-platform | A | Merged (PR #16) |
+| feature/complete-platform-api-layer | A | In Progress |
 
 ---
 
@@ -148,9 +153,9 @@ Requires:
 
 Status:
 
-Ready for Integration (mocked client in `src/lib/api`)
+Ready for Integration (live backends in `src/app/api/v1/organizations`, `users`, `roles`, `notifications`)
 
-Person A: swap mocks when backend routes are live.
+Person B: set `NEXT_PUBLIC_USE_MOCK_API=false` to use live organization and notification APIs.
 
 ---
 
@@ -319,14 +324,9 @@ Requires:
 
 Status:
 
-Ready for Integration (mocked clients in `src/lib/api`)
+Ready for Integration (live backends in `src/app/api/v1/organizations`, `organization-settings`)
 
-Mock-first clients (API_SPEC §10–13, types in `src/types/settings.ts`):
-
-- `src/lib/api/organization-settings.ts` — `GET/PATCH /organizations/:id/settings`
-- `src/lib/api/organizations.ts` — extended with `fetchMembers`, `removeMember`, `createRole`, `fetchRolesWithPermissions`
-
-Person A: swap mocks when organization backend routes are live.
+Person B: set `NEXT_PUBLIC_USE_MOCK_API=false` to use live organization settings APIs.
 
 ---
 
@@ -338,18 +338,45 @@ Requires:
 
 Status:
 
-Ready for Integration (mocked clients in `src/lib/api`)
+Ready for Integration (live backends in `src/app/api/v1/notifications`)
 
-Mock-first clients (API_SPEC §46, types in `src/types/notification.ts`):
-
-- `src/lib/api/notifications.ts` — `GET /notifications`, `PATCH /notifications/:id/read`, `PATCH /notifications/read-all`
-- Preferences filtering via organization settings mock
-
-Person A: swap mocks when notification backend routes are live.
+Person B: set `NEXT_PUBLIC_USE_MOCK_API=false` to use live notification APIs.
 
 ---
 
 # Daily Sync Log
+
+## 2026-06-20 (Platform API Layer — Person A)
+
+### Person A
+
+Completed:
+
+- Organization platform: list/create orgs with transactional bootstrap (site, system roles, admin member, default settings)
+- Settings, members, roles, and user profile services + routes
+- Notification service with preference filtering, mark-read, and intelligence pipeline event emission
+- Operational data APIs: inventory, lots, attendance, events, waste
+- Audit log service and global search service
+- Auth sync for Supabase/dev users; permission catalog alignment (migration `0005`)
+- Unit tests for platform, organization, notification, and search helpers
+
+Working On:
+
+- PR `feature/complete-platform-api-layer`
+
+Blockers:
+
+- None
+
+Ready For Integration:
+
+- Organization, Settings, Members, Roles, Notifications, Operational Data, Audit, Search APIs — Person B can set `NEXT_PUBLIC_USE_MOCK_API=false`
+
+Milestone Status:
+
+- Complete Platform API Layer — **Ready for Integration**, PR in progress
+
+---
 
 ## 2026-06-20 (Conversational & Reporting Platform — Person A)
 
