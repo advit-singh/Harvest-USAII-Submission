@@ -907,7 +907,7 @@ Upcoming Integration Milestones:
 
 # Harvest MVP Comprehensive Polish
 
-Status: **Complete**
+Status: **Complete** — PR [#21](https://github.com/advit-singh/USAII-submission/pull/21) merged to `master`; GitHub Pages deploy succeeded.
 
 Scope:
 
