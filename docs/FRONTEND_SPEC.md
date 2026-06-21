@@ -1,6 +1,6 @@
 # FRONTEND_SPEC.md
 
-# Project Harvest
+# Harvest
 
 ## Frontend Functional Specification
 
@@ -15,7 +15,7 @@ This document serves as the source of truth for frontend development.
 
 # 1. Frontend Philosophy
 
-Project Harvest is an intelligence platform.
+Harvest is an intelligence platform.
 
 The frontend exists to:
 

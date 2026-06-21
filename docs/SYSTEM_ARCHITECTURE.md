@@ -1,6 +1,6 @@
 # SYSTEM_ARCHITECTURE.md
 
-# Project Harvest
+# Harvest
 
 ## System Architecture Specification
 
@@ -10,7 +10,7 @@ Version: 1.0
 
 # 1. Purpose
 
-This document defines the technical architecture of Project Harvest.
+This document defines the technical architecture of Harvest.
 
 It serves as the authoritative reference for:
 
@@ -33,7 +33,7 @@ System responsibilities should not.
 
 # 2. Architecture Philosophy
 
-Project Harvest follows five core principles.
+Harvest follows five core principles.
 
 ---
 
@@ -133,7 +133,7 @@ Service     Services
 
 # 4. Major System Layers
 
-Project Harvest consists of six primary layers.
+Harvest consists of six primary layers.
 
 ---
 
@@ -658,7 +658,7 @@ Assistant knowledge updates
 
 # 7. Intelligence Layer Architecture
 
-Project Harvest uses a unified intelligence architecture.
+Harvest uses a unified intelligence architecture.
 
 Not multiple visible agents.
 

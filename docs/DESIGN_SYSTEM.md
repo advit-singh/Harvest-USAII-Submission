@@ -1,6 +1,6 @@
 # DESIGN_SYSTEM.md
 
-# Project Harvest
+# Harvest
 
 ## Design System Specification
 
@@ -12,7 +12,7 @@ Status: Source of Truth for Visual Design
 
 # 1. Design Philosophy
 
-Project Harvest should feel like:
+Harvest should feel like:
 
 "A trusted operations center for preventing food waste."
 
@@ -62,7 +62,7 @@ Manipulated
 
 # 2. Brand Personality
 
-Project Harvest combines:
+Harvest combines:
 
 ### Notion
 
@@ -112,7 +112,7 @@ If Notion feels like:
 
 "A beautifully organized desk"
 
-Project Harvest should feel like:
+Harvest should feel like:
 
 "A beautifully organized sustainability operations center."
 

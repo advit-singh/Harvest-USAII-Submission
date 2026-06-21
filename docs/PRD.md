@@ -1,6 +1,6 @@
 # PRD.md
 
-# Project Harvest
+# Harvest
 
 ### AI-Powered Food Waste Intelligence Platform
 
@@ -13,7 +13,7 @@ Status: Approved for Development
 
 ## Vision
 
-Project Harvest transforms fragmented operational data into actionable food waste intelligence.
+Harvest transforms fragmented operational data into actionable food waste intelligence.
 
 Organizations upload information in whatever format they already use. The platform automatically extracts operational data, identifies waste patterns, predicts future waste, recommends interventions, and coordinates surplus redistribution.
 
@@ -41,7 +41,7 @@ The problem is that this information is scattered across:
 * PDFs
 * Spreadsheets
 
-Project Harvest acts as an intelligence layer that converts fragmented information into operational decisions.
+Harvest acts as an intelligence layer that converts fragmented information into operational decisions.
 
 Food waste prevention becomes a byproduct of better decision-making.
 
@@ -712,7 +712,7 @@ Priority score factors:
 
 # 21. AI Operations Assistant
 
-Project Harvest AI
+Harvest AI
 
 Single organizational intelligence agent.
 
@@ -1004,9 +1004,9 @@ simultaneously.
 
 # 32. Product Positioning
 
-Project Harvest is not a food waste tracker.
+Harvest is not a food waste tracker.
 
-Project Harvest is an AI-powered operational intelligence platform that helps organizations understand, predict, prevent, and redirect food waste before it occurs.
+Harvest is an AI-powered operational intelligence platform that helps organizations understand, predict, prevent, and redirect food waste before it occurs.
 
 Core Value Proposition:
 

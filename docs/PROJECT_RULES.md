@@ -1,6 +1,6 @@
 # PROJECT_RULES.md
 
-# Project Harvest
+# Harvest
 
 Global Engineering Rules & Development Standards
 
@@ -12,7 +12,7 @@ Status: Immutable Repository Rules
 
 # Purpose
 
-This document defines the universal rules that apply to every engineer, AI coding agent, contributor, branch, feature, and pull request within Project Harvest.
+This document defines the universal rules that apply to every engineer, AI coding agent, contributor, branch, feature, and pull request within Harvest.
 
 These rules exist to:
 
@@ -28,7 +28,7 @@ All implementation decisions must comply with this document.
 
 # Core Product Mission
 
-Project Harvest exists to help organizations:
+Harvest exists to help organizations:
 
 1. Understand food waste
 2. Predict future waste
@@ -183,7 +183,7 @@ Choose the free alternative.
 
 # Architecture Principles
 
-Project Harvest follows:
+Harvest follows:
 
 Monolithic Architecture
 
@@ -933,7 +933,7 @@ A task is complete only when:
 
 # Two-Person Development Protocol
 
-Project Harvest is developed by two engineers working asynchronously.
+Harvest is developed by two engineers working asynchronously.
 
 All work must respect ownership boundaries.
 

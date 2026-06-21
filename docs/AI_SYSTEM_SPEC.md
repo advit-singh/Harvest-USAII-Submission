@@ -1,6 +1,6 @@
 # AI_SYSTEM_SPEC.md
 
-# Project Harvest
+# Harvest
 
 ## Artificial Intelligence System Specification
 
@@ -12,13 +12,13 @@ Status: Source of Truth for All AI Functionality
 
 # 1. Purpose
 
-This document defines every AI capability inside Project Harvest.
+This document defines every AI capability inside Harvest.
 
 The AI layer is the core product differentiator.
 
-Project Harvest is not a dashboard application.
+Harvest is not a dashboard application.
 
-Project Harvest is an intelligence platform.
+Harvest is an intelligence platform.
 
 The purpose of the AI layer is to transform fragmented operational data into actionable food waste prevention decisions.
 
@@ -112,7 +112,7 @@ Users never see separate agents.
 
 Users interact with a single intelligence layer called:
 
-Project Harvest AI
+Harvest AI
 
 ---
 

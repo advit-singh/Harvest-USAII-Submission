@@ -1,6 +1,6 @@
 # USER_FLOWS.md
 
-# Project Harvest
+# Harvest
 
 ## User Flow Specification
 
@@ -21,7 +21,7 @@ This document defines:
 * Success states
 * Failure states
 
-For every major workflow inside Project Harvest.
+For every major workflow inside Harvest.
 
 ---
 

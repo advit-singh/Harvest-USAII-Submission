@@ -1,6 +1,6 @@
 # IMPLEMENTATION_PLAN_PERSON_A.md
 
-# Project Harvest
+# Harvest
 
 ## Intelligence & Data Platform Lead
 
@@ -8,7 +8,7 @@ Owner: Person A
 
 Mission:
 
-Build the complete intelligence layer of Project Harvest.
+Build the complete intelligence layer of Harvest.
 
 You own everything that turns raw operational data into insights.
 

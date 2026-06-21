@@ -1,8 +1,8 @@
 # AGENTS.md
 
-# Project Harvest
+# Harvest
 
-You are working on **Project Harvest**, an AI-powered food waste intelligence platform.
+You are working on **Harvest**, an AI-powered food waste intelligence platform.
 
 This repository is developed by **two contributors working asynchronously** on different parts of the system. This file is the **single agent guide** for both roles. Follow the section that matches your current contributor.
 
@@ -44,7 +44,7 @@ Do not guess across ownership boundaries.
 
 # Shared Mission
 
-Project Harvest helps organizations **understand food waste**, **predict future waste**, **reduce preventable waste**, **redistribute surplus**, and **measure impact**.
+Harvest helps organizations **understand food waste**, **predict future waste**, **reduce preventable waste**, **redistribute surplus**, and **measure impact**.
 
 Person A moves the pipeline: **Upload → Understand → Predict → Recommend → Act → Measure**
 

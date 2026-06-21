@@ -22,7 +22,7 @@ describe("DashboardShell", () => {
     const { unmount } = renderWithQuery(<DashboardShell orgId="org_empty_test" />);
 
     await waitFor(() => {
-      expect(screen.getByText("Welcome to Project Harvest")).toBeInTheDocument();
+      expect(screen.getByText("Welcome to Harvest")).toBeInTheDocument();
     });
     unmount();
   });
