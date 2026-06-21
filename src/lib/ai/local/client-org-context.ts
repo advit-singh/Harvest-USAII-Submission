@@ -2,6 +2,7 @@
 
 import { getMockWasteAnalytics } from "@/lib/mocks/analytics-fixtures";
 import { getMockForecasts, getMockRecommendations } from "@/lib/mocks/dashboard-fixtures";
+import { getOrgContext } from "@/lib/demo/org-context";
 import { DEFAULT_ANALYTICS_FILTERS } from "@/features/analytics/schemas/analytics-filters.schema";
 import { toAnalyticsFilters } from "@/features/analytics/config/analytics-tabs";
 
@@ -19,8 +20,8 @@ export function buildClientOrgContext(orgId: string): {
 } {
   const waste = getMockWasteAnalytics(orgId, toAnalyticsFilters(DEFAULT_ANALYTICS_FILTERS));
 
-  const forecasts = getMockForecasts();
-  const recommendations = getMockRecommendations();
+  const forecasts = getMockForecasts(orgId);
+  const recommendations = getMockRecommendations(orgId);
 
   const citations: OrgContextCitation[] = [];
 
@@ -65,6 +66,7 @@ export function buildClientOrgContext(orgId: string): {
   });
 
   const context = [
+    `ORGANIZATION: ${getOrgContext(orgId).orgName}`,
     "WASTE SUMMARY:",
     waste.summary.map((m) => `- ${m.label}: ${m.value}${m.unit ? ` ${m.unit}` : ""}`).join("\n"),
     "",

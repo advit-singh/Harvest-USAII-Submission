@@ -30,9 +30,12 @@ import {
   type OnboardingFormValues,
 } from "@/features/organizations/schemas/organization.schema";
 import { updateOrganizationSettings } from "@/lib/api/organization-settings";
+import { createMockSite } from "@/lib/api/sites";
 import { markOnboardingComplete } from "@/lib/demo/onboarding";
 import { seedGithubPagesDemoData } from "@/lib/demo/bootstrap";
+import { setOrgMeta } from "@/lib/demo/mock-persistence";
 import { setMockUser } from "@/lib/api/users";
+import { useOrgStore } from "@/store/org-store";
 
 const STEPS = [
   { id: "user", title: "Your profile", component: UserProfileStep },
@@ -56,6 +59,7 @@ export function OnboardingWizard() {
   const [error, setError] = useState<string | null>(null);
   const createOrg = useCreateOrganization();
   const inviteMemberMutation = useInviteMember();
+  const setActiveOrgId = useOrgStore((s) => s.setActiveOrgId);
 
   const methods = useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingSchema),
@@ -123,6 +127,24 @@ export function OnboardingWizard() {
         country: data.country,
         defaultUnitSystem: data.defaultUnitSystem,
       });
+
+      setOrgMeta(org.id, { operationalFocus: data.operationalFocus });
+
+      const siteCount = Math.max(1, data.sitesCount);
+      for (let i = 0; i < siteCount; i++) {
+        const suffix =
+          siteCount === 1
+            ? "Main Kitchen"
+            : i === 0
+              ? "Main Kitchen"
+              : `Site ${i + 1}`;
+        createMockSite({
+          organizationId: org.id,
+          name: `${data.name} — ${suffix}`,
+        });
+      }
+
+      setActiveOrgId(org.id);
 
       await updateOrganizationSettings(org.id, {
         ai: {

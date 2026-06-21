@@ -7,9 +7,11 @@ import type {
 import type { Recipient, CreateRecipientPayload } from "@/types/recipient";
 import type { DonationHistoryFilters } from "@/types/rescue";
 
-const DEMO_SITE = "Lincoln Elementary Cafeteria";
-const DEMO_SITE_ID = "site_001";
+import { patchSiteFieldsList } from "@/lib/demo/apply-org-context";
+
 const DEMO_ORG = "org_demo_123";
+
+const DEMO_SITE_ID = "site_001";
 
 let mockOpportunities: DonationOpportunity[] = [
   {
@@ -22,8 +24,8 @@ let mockOpportunities: DonationOpportunity[] = [
     priorityScore: 92,
     predictedMealsSaved: 48,
     status: "open",
-    siteName: DEMO_SITE,
-    siteId: DEMO_SITE_ID,
+    siteName: "Main Kitchen",
+    siteId: "site_001",
     createdAt: new Date(Date.now() - 3600000).toISOString(),
   },
   {
@@ -36,8 +38,8 @@ let mockOpportunities: DonationOpportunity[] = [
     priorityScore: 68,
     predictedMealsSaved: 35,
     status: "open",
-    siteName: DEMO_SITE,
-    siteId: DEMO_SITE_ID,
+    siteName: "Main Kitchen",
+    siteId: "site_001",
     createdAt: new Date(Date.now() - 7200000).toISOString(),
   },
   {
@@ -50,8 +52,8 @@ let mockOpportunities: DonationOpportunity[] = [
     priorityScore: 88,
     predictedMealsSaved: 36,
     status: "open",
-    siteName: DEMO_SITE,
-    siteId: DEMO_SITE_ID,
+    siteName: "Main Kitchen",
+    siteId: "site_001",
     createdAt: new Date(Date.now() - 10800000).toISOString(),
   },
 ];
@@ -118,7 +120,7 @@ let mockDonationHistory: DonationRecord[] = [
     status: "completed",
     mealsRescued: 24,
     completedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-    siteName: DEMO_SITE,
+    siteName: "Main Kitchen",
   },
   {
     id: "donation_002",
@@ -130,7 +132,7 @@ let mockDonationHistory: DonationRecord[] = [
     status: "completed",
     mealsRescued: 18,
     completedAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-    siteName: DEMO_SITE,
+    siteName: "Main Kitchen",
   },
   {
     id: "donation_003",
@@ -142,7 +144,7 @@ let mockDonationHistory: DonationRecord[] = [
     status: "failed",
     mealsRescued: 0,
     completedAt: new Date(Date.now() - 86400000 * 7).toISOString(),
-    siteName: DEMO_SITE,
+    siteName: "Main Kitchen",
     failureReason: "Recipient unavailable — capacity exceeded",
   },
 ];
@@ -194,8 +196,8 @@ function buildMatchResult(opportunityId: string): DonationMatchResult {
   return result;
 }
 
-export function getMockRescueOpportunities(): DonationOpportunity[] {
-  return mockOpportunities.filter((o) => o.status === "open");
+export function getMockRescueOpportunities(orgId: string = DEMO_ORG): DonationOpportunity[] {
+  return patchSiteFieldsList(orgId, mockOpportunities.filter((o) => o.status === "open"));
 }
 
 export function getAllMockOpportunities(): DonationOpportunity[] {
@@ -342,7 +344,7 @@ export function resetRescueMocks(): void {
       priorityScore: 92,
       predictedMealsSaved: 48,
       status: "open",
-      siteName: DEMO_SITE,
+      siteName: "Main Kitchen",
       siteId: DEMO_SITE_ID,
       createdAt: new Date(Date.now() - 3600000).toISOString(),
     },
@@ -356,7 +358,7 @@ export function resetRescueMocks(): void {
       priorityScore: 68,
       predictedMealsSaved: 35,
       status: "open",
-      siteName: DEMO_SITE,
+      siteName: "Main Kitchen",
       siteId: DEMO_SITE_ID,
       createdAt: new Date(Date.now() - 7200000).toISOString(),
     },
@@ -370,7 +372,7 @@ export function resetRescueMocks(): void {
       priorityScore: 88,
       predictedMealsSaved: 36,
       status: "open",
-      siteName: DEMO_SITE,
+      siteName: "Main Kitchen",
       siteId: DEMO_SITE_ID,
       createdAt: new Date(Date.now() - 10800000).toISOString(),
     },
@@ -378,6 +380,6 @@ export function resetRescueMocks(): void {
 }
 
 /** Backward-compatible export for dashboard fixtures */
-export function getMockDonationOpportunitiesFromRescue(): DonationOpportunity[] {
-  return getMockRescueOpportunities();
+export function getMockDonationOpportunitiesFromRescue(orgId: string = DEMO_ORG): DonationOpportunity[] {
+  return getMockRescueOpportunities(orgId);
 }

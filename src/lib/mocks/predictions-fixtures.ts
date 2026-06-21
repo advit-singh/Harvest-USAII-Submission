@@ -8,8 +8,10 @@ import type {
   SimulationResult,
 } from "@/types/simulation";
 import { getMockForecasts } from "@/lib/mocks/dashboard-fixtures";
+import { getOrgContext } from "@/lib/demo/org-context";
+import { patchSiteFields, patchSiteFieldsList } from "@/lib/demo/apply-org-context";
 
-const DEMO_SITE = "Lincoln Elementary Cafeteria";
+const DEFAULT_ORG = "org_demo_123";
 
 const FORECAST_FACTORS = [
   {
@@ -34,7 +36,8 @@ const FORECAST_FACTORS = [
   },
 ];
 
-export function getMockForecastSummaryKpis(): ForecastSummaryKpis {
+export function getMockForecastSummaryKpis(orgId: string = DEFAULT_ORG): ForecastSummaryKpis {
+  const ctx = getOrgContext(orgId);
   return {
     predictedSurplusMeals: 142,
     predictedWasteMeals: 47,
@@ -43,12 +46,12 @@ export function getMockForecastSummaryKpis(): ForecastSummaryKpis {
     purchasingForecast: 2840,
     confidence: 0.87,
     forecastWindowDays: 7,
-    siteName: DEMO_SITE,
+    siteName: ctx.primarySiteName,
   };
 }
 
-export function getMockForecastDetail(id: string): ForecastDetail | null {
-  const summary = getMockForecasts().find((f) => f.id === id);
+export function getMockForecastDetail(id: string, orgId: string = DEFAULT_ORG): ForecastDetail | null {
+  const summary = getMockForecasts(orgId).find((f) => f.id === id);
   if (!summary) return null;
 
   return {
@@ -62,14 +65,15 @@ export function getMockForecastDetail(id: string): ForecastDetail | null {
   };
 }
 
-export function getMockForecastDetails(): ForecastDetail[] {
-  return getMockForecasts()
-    .map((f) => getMockForecastDetail(f.id))
+export function getMockForecastDetails(orgId: string = DEFAULT_ORG): ForecastDetail[] {
+  return getMockForecasts(orgId)
+    .map((f) => getMockForecastDetail(f.id, orgId))
     .filter((f): f is ForecastDetail => f !== null);
 }
 
 export function getMockRecommendationDetail(
   id: string,
+  orgId: string = DEFAULT_ORG,
 ): RecommendationDetail | null {
   const details: Record<string, RecommendationDetail> = {
     rec_001: {
@@ -82,7 +86,7 @@ export function getMockRecommendationDetail(
       priority: "high",
       status: "open",
       siteId: "site_001",
-      siteName: DEMO_SITE,
+      siteName: "Main Kitchen",
       createdAt: new Date(Date.now() - 3600000).toISOString(),
       problem:
         "Milk inventory exceeds projected demand for the next 7 days due to attendance decline.",
@@ -108,7 +112,7 @@ export function getMockRecommendationDetail(
       priority: "medium",
       status: "open",
       siteId: "site_001",
-      siteName: DEMO_SITE,
+      siteName: "Main Kitchen",
       createdAt: new Date(Date.now() - 7200000).toISOString(),
       problem: "Day-old bread inventory approaching expiration.",
       evidence: [
@@ -132,7 +136,7 @@ export function getMockRecommendationDetail(
       priority: "high",
       status: "open",
       siteId: "site_001",
-      siteName: DEMO_SITE,
+      siteName: "Main Kitchen",
       createdAt: new Date(Date.now() - 10800000).toISOString(),
       problem: "Fresh produce surplus with short shelf life.",
       evidence: [
@@ -150,7 +154,9 @@ export function getMockRecommendationDetail(
     },
   };
 
-  return details[id] ?? null;
+  const detail = details[id];
+  if (!detail) return null;
+  return patchSiteFields(orgId, detail);
 }
 
 let mockSimulations: Simulation[] = [

@@ -11,14 +11,16 @@ import {
   Label,
 } from "recharts";
 import { ChartContainer } from "@/components/charts/ChartContainer";
+import { ChartTooltip } from "@/components/charts/ChartTooltip";
+import { CHART_PRIMARY } from "@/components/charts/chart-theme";
 import type { BreakdownItem } from "@/types/analytics";
 
 const CHART_COLORS = [
-  "var(--color-primary)",
-  "var(--primary)",
-  "var(--color-secondary)",
-  "var(--color-accent)",
-  "var(--color-muted-foreground)",
+  CHART_PRIMARY,
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
 ];
 
 interface BreakdownBarChartProps {
@@ -98,15 +100,16 @@ export function BreakdownBarChart({
           </>
         )}
         <Tooltip
-          contentStyle={{
-            background: "var(--color-card)",
-            border: "1px solid var(--color-border)",
-            borderRadius: "6px",
-            fontSize: "12px",
-          }}
+          content={
+            <ChartTooltip
+              valueLabel={yAxisLabel ?? xAxisLabel ?? "Amount"}
+              unit={data[0]?.unit}
+            />
+          }
         />
         <Bar
           dataKey="value"
+          name={yAxisLabel ?? "Value"}
           radius={[4, 4, 0, 0]}
           cursor={onBarClick ? "pointer" : undefined}
           onClick={(entry) => {

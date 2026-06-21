@@ -1,4 +1,5 @@
-import { callOpenRouter, isOpenRouterConfigured } from "@/lib/ai/openrouter-client";
+import { callLlm } from "@/lib/ai/llm-provider";
+import { isAiConfigured } from "@/services/ai/ai-service";
 import { parseJsonResponse } from "@/lib/ai/response-parser";
 import { buildForecastReasoningPrompt } from "@/lib/ai/prompts/forecast-reasoning";
 import {
@@ -13,7 +14,7 @@ export async function enrichForecastWithAi(
   computation: ForecastComputation,
   snapshot: OperationalSnapshot,
 ): Promise<ForecastComputation> {
-  if (!isOpenRouterConfigured()) {
+  if (!isAiConfigured()) {
     return computation;
   }
 
@@ -42,24 +43,15 @@ async function fetchAiReasoning(
   computation: ForecastComputation,
   snapshot: OperationalSnapshot,
 ) {
-  const response = await callOpenRouter({
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are Harvest forecast intelligence. Return valid JSON only. Never take autonomous actions.",
-      },
-      {
-        role: "user",
-        content: buildForecastReasoningPrompt({
-          forecastType: computation.forecastType,
-          predictedValue: computation.predictedValue,
-          snapshot,
-        }),
-      },
-    ],
-    responseFormat: "json_object",
-    maxTokens: 1024,
+  const response = await callLlm({
+    system: "Harvest forecast intelligence. Return valid JSON only.",
+    user: buildForecastReasoningPrompt({
+      forecastType: computation.forecastType,
+      predictedValue: computation.predictedValue,
+      snapshot,
+    }),
+    jsonMode: true,
+    maxTokens: 512,
   });
 
   return parseJsonResponse(response.content, forecastReasoningSchema);

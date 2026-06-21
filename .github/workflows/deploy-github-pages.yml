@@ -35,6 +35,8 @@ jobs:
         run: npm run build:gh-pages
         env:
           GITHUB_PAGES_BASE_PATH: ${{ github.event.repository.name }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NEXT_PUBLIC_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

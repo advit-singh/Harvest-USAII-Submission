@@ -31,7 +31,7 @@ export async function fetchForecasts(
 ): Promise<ForecastSummary[]> {
   if (!isLiveIntelligenceApiEnabled()) {
     await new Promise((r) => setTimeout(r, 250));
-    const all = getMockForecasts();
+    const all = getMockForecasts(filters.orgId);
     return filterMockForecasts(all, {
       forecastType: filters.forecastType,
       siteId: filters.siteId,
@@ -76,7 +76,7 @@ export async function fetchForecastSummaryKpis(
         siteName: "",
       };
     }
-    return getMockForecastSummaryKpis();
+    return getMockForecastSummaryKpis(orgId);
   }
 
   const resolvedOrgId = resolveIntelligenceOrgId(orgId);

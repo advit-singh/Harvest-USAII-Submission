@@ -42,7 +42,13 @@ export function AttendanceAnalysisTab({ orgId, filters }: AttendanceAnalysisTabP
               <CardTitle className="text-base">Attendance Trends</CardTitle>
             </CardHeader>
             <CardContent>
-              <TimeSeriesChart data={data.trends} variant="area" />
+              <TimeSeriesChart
+                data={data.trends}
+                variant="area"
+                xAxisLabel="Day"
+                yAxisLabel="Attendance"
+                valueLabel="Attendance"
+              />
             </CardContent>
           </Card>
 
@@ -56,6 +62,9 @@ export function AttendanceAnalysisTab({ orgId, filters }: AttendanceAnalysisTabP
                   data={data.seasonality}
                   variant="bar"
                   height={220}
+                  xAxisLabel="Season"
+                  yAxisLabel="Avg attendance"
+                  valueLabel="Attendance"
                 />
               </CardContent>
             </Card>
@@ -73,6 +82,7 @@ export function AttendanceAnalysisTab({ orgId, filters }: AttendanceAnalysisTabP
                 <BreakdownBarChart
                   data={data.eventImpact}
                   layout="horizontal"
+                  xAxisLabel="Impact %"
                 />
                 <p className="mt-3 text-xs text-muted-foreground">
                   Event impact on attendance variance

@@ -44,7 +44,13 @@ export function InventoryAnalysisTab({ orgId, filters }: InventoryAnalysisTabPro
               <CardTitle className="text-base">Inventory Trends</CardTitle>
             </CardHeader>
             <CardContent>
-              <TimeSeriesChart data={data.trends} variant="line" />
+              <TimeSeriesChart
+                data={data.trends}
+                variant="line"
+                xAxisLabel="Week"
+                yAxisLabel="Units"
+                valueLabel="Inventory"
+              />
             </CardContent>
           </Card>
 
@@ -54,7 +60,11 @@ export function InventoryAnalysisTab({ orgId, filters }: InventoryAnalysisTabPro
                 <CardTitle className="text-base">Expiration Risk</CardTitle>
               </CardHeader>
               <CardContent>
-                <BreakdownBarChart data={data.expirationRisk} />
+                <BreakdownBarChart
+                  data={data.expirationRisk}
+                  yAxisLabel="Items"
+                  xAxisLabel="Category"
+                />
               </CardContent>
             </Card>
 
@@ -66,6 +76,7 @@ export function InventoryAnalysisTab({ orgId, filters }: InventoryAnalysisTabPro
                 <BreakdownBarChart
                   data={data.categoryUtilization}
                   layout="horizontal"
+                  xAxisLabel="Utilization %"
                 />
               </CardContent>
             </Card>

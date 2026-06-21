@@ -13,15 +13,19 @@ export interface NotificationFilters {
 
 let mockNotificationsState: HarvestNotification[] | null = null;
 
-function getNotificationsState(): HarvestNotification[] {
-  if (!mockNotificationsState) {
-    mockNotificationsState = getMockNotifications().map((n) => ({ ...n }));
+let mockNotificationsOrgId: string | null = null;
+
+function getNotificationsState(orgId: string): HarvestNotification[] {
+  if (!mockNotificationsState || mockNotificationsOrgId !== orgId) {
+    mockNotificationsState = getMockNotifications(orgId).map((n) => ({ ...n }));
+    mockNotificationsOrgId = orgId;
   }
   return mockNotificationsState;
 }
 
 export function resetMockNotifications(): void {
   mockNotificationsState = null;
+  mockNotificationsOrgId = null;
 }
 
 function filterByPreferences(
@@ -42,7 +46,7 @@ export async function fetchNotifications(
 ): Promise<HarvestNotification[]> {
   if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
     await new Promise((r) => setTimeout(r, 150));
-    const filtered = filterByPreferences(getNotificationsState(), filters.orgId);
+    const filtered = filterByPreferences(getNotificationsState(filters.orgId), filters.orgId);
     return filters.limit ? filtered.slice(0, filters.limit) : filtered;
   }
 
@@ -56,10 +60,11 @@ export async function fetchNotifications(
 
 export async function markNotificationRead(
   notificationId: string,
+  orgId?: string,
 ): Promise<{ id: string; isRead: boolean }> {
   if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
     await new Promise((r) => setTimeout(r, 80));
-    const items = getNotificationsState();
+    const items = orgId ? getNotificationsState(orgId) : mockNotificationsState ?? [];
     const index = items.findIndex((n) => n.id === notificationId);
     if (index >= 0) {
       items[index] = { ...items[index], isRead: true };
@@ -77,7 +82,7 @@ export async function markAllNotificationsRead(
 ): Promise<{ updatedCount: number }> {
   if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
     await new Promise((r) => setTimeout(r, 100));
-    const items = getNotificationsState();
+    const items = getNotificationsState(orgId);
     const allowed = new Set(
       filterByPreferences(items, orgId).map((n) => n.id),
     );
@@ -118,7 +123,7 @@ export function pushMockReportNotification(report: ReportDetail): void {
     createdAt: new Date().toISOString(),
   };
 
-  const items = getNotificationsState();
+  const items = getNotificationsState(report.organizationId);
   const withoutDup = items.filter((n) => n.id !== notification.id);
   mockNotificationsState = [notification, ...withoutDup];
 }

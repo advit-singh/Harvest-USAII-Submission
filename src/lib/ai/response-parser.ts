@@ -95,6 +95,12 @@ export type ExtractedEntity = z.infer<typeof extractedEntitySchema>;
 export type ExtractionResponse = z.infer<typeof extractionResponseSchema>;
 export type NormalizationResponse = z.infer<typeof normalizationResponseSchema>;
 
+export const combinedUploadResponseSchema = classificationResponseSchema.merge(
+  extractionResponseSchema,
+);
+
+export type CombinedUploadResponse = z.infer<typeof combinedUploadResponseSchema>;
+
 export const assistantResponseSchema = z.object({
   answer: z.string(),
   reasoning: z.string(),

@@ -28,7 +28,7 @@ export async function generateLocalAssistantResponse(input: {
         citationIds,
       }),
       jsonMode: true,
-      maxTokens: 800,
+      maxTokens: 512,
     });
 
     const parsed = parseJsonResponse(content, assistantResponseSchema);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bell, Calendar, Cloud, Webhook } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +13,7 @@ import { useOrganizationSettings } from "@/features/settings/hooks/useOrganizati
 import { updateOrganizationSettings } from "@/lib/api/organization-settings";
 import { useExternalHolidays, useExternalWeather } from "@/features/intelligence/hooks/useExternalData";
 import { useOrganizations } from "@/features/organizations/hooks/useOrganizations";
+import { getOrgMeta, setOrgMeta } from "@/lib/demo/mock-persistence";
 
 interface IntegrationsSectionProps {
   orgId: string;
@@ -23,6 +24,10 @@ export function IntegrationsSection({ orgId }: IntegrationsSectionProps) {
   const { activeOrg } = useOrganizations();
   const [webhookUrl, setWebhookUrl] = useState("");
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setWebhookUrl(getOrgMeta(orgId).webhookUrl ?? "");
+  }, [orgId]);
 
   const weatherQuery = useExternalWeather(activeOrg?.city);
   const holidaysQuery = useExternalHolidays(activeOrg?.country ?? "US");
@@ -44,15 +49,20 @@ export function IntegrationsSection({ orgId }: IntegrationsSectionProps) {
     }
   };
 
+  const saveWebhook = () => {
+    setOrgMeta(orgId, { webhookUrl: webhookUrl.trim() });
+    toast.success("Webhook URL saved");
+  };
+
   const testWebhook = async () => {
     if (!webhookUrl.trim()) {
       toast.error("Enter a webhook URL first");
       return;
     }
+    setOrgMeta(orgId, { webhookUrl: webhookUrl.trim() });
     try {
-      await fetch(webhookUrl, {
+      const response = await fetch(webhookUrl.trim(), {
         method: "POST",
-        mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           event: "harvest.test",
@@ -60,9 +70,12 @@ export function IntegrationsSection({ orgId }: IntegrationsSectionProps) {
           timestamp: new Date().toISOString(),
         }),
       });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
       toast.success("Test event sent");
     } catch {
-      toast.error("Webhook test failed");
+      toast.error("Webhook test failed — URL saved for later retries");
     }
   };
 
@@ -140,9 +153,14 @@ export function IntegrationsSection({ orgId }: IntegrationsSectionProps) {
                 value={webhookUrl}
                 onChange={(e) => setWebhookUrl(e.target.value)}
               />
-              <Button size="sm" variant="outline" onClick={() => void testWebhook()}>
-                Send test event
-              </Button>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={saveWebhook}>
+                  Save URL
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => void testWebhook()}>
+                  Send test event
+                </Button>
+              </div>
             </div>
           </div>
         </div>

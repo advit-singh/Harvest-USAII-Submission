@@ -7,10 +7,16 @@ import type {
   UploadSummary,
   ValidationAnomaly,
 } from "@/types/upload";
+import { getOrgContext } from "@/lib/demo/org-context";
+import { getMockSitesForOrg } from "@/lib/api/sites";
+
+function siteNameFor(orgId: string, siteId: string): string {
+  const site = getMockSitesForOrg(orgId).find((s) => s.id === siteId);
+  return site?.name ?? getOrgContext(orgId).primarySiteName;
+}
 
 const DEMO_ORG = "org_demo_123";
 const DEMO_SITE_ID = "site_001";
-const DEMO_SITE_NAME = "Lincoln Elementary Cafeteria";
 
 const STATUS_PROGRESSION: UploadStatus[] = [
   "uploaded",
@@ -50,7 +56,7 @@ let mockUploads: UploadSummary[] = [
     id: "upl_001",
     organizationId: DEMO_ORG,
     siteId: DEMO_SITE_ID,
-    siteName: DEMO_SITE_NAME,
+    siteName: siteNameFor(DEMO_ORG, DEMO_SITE_ID),
     fileName: "inventory-march-2026.csv",
     fileType: "text/csv",
     fileSize: 245760,
@@ -67,7 +73,7 @@ let mockUploads: UploadSummary[] = [
     id: "upl_002",
     organizationId: DEMO_ORG,
     siteId: DEMO_SITE_ID,
-    siteName: DEMO_SITE_NAME,
+    siteName: siteNameFor(DEMO_ORG, DEMO_SITE_ID),
     fileName: "attendance-week12.xlsx",
     fileType:
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -84,7 +90,7 @@ let mockUploads: UploadSummary[] = [
     id: "upl_003",
     organizationId: DEMO_ORG,
     siteId: DEMO_SITE_ID,
-    siteName: DEMO_SITE_NAME,
+    siteName: siteNameFor(DEMO_ORG, DEMO_SITE_ID),
     fileName: "receipt-vendor-042.pdf",
     fileType: "application/pdf",
     fileSize: 512000,
@@ -100,7 +106,7 @@ let mockUploads: UploadSummary[] = [
     id: "upl_004",
     organizationId: DEMO_ORG,
     siteId: DEMO_SITE_ID,
-    siteName: DEMO_SITE_NAME,
+    siteName: siteNameFor(DEMO_ORG, DEMO_SITE_ID),
     fileName: "damaged-scan.png",
     fileType: "image/png",
     fileSize: 2048000,
@@ -117,7 +123,7 @@ let mockUploads: UploadSummary[] = [
     id: "upl_005",
     organizationId: DEMO_ORG,
     siteId: DEMO_SITE_ID,
-    siteName: DEMO_SITE_NAME,
+    siteName: siteNameFor(DEMO_ORG, DEMO_SITE_ID),
     fileName: "waste-log-april.csv",
     fileType: "text/csv",
     fileSize: 89000,
@@ -180,7 +186,35 @@ const REVIEW_ENTITIES: Record<string, ExtractedEntity[]> = {
   ],
 };
 
+const dynamicReviewEntities: Record<string, ExtractedEntity[]> = {};
+const uploadContentStore: Record<string, string> = {};
+const pendingUploadFiles = new Map<string, File>();
+
 const processingTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+export function registerMockUploadFile(uploadId: string, file: File): void {
+  if (typeof file.arrayBuffer !== "function") return;
+  pendingUploadFiles.set(uploadId, file);
+  void runMockUploadExtraction(uploadId, file);
+}
+
+async function runMockUploadExtraction(uploadId: string, file: File): Promise<void> {
+  const { processMockUploadFile } = await import("@/lib/ai/client-upload-pipeline");
+  const result = await processMockUploadFile(file, uploadId);
+  dynamicReviewEntities[uploadId] = result.entities;
+  uploadContentStore[uploadId] = result.originalContent;
+
+  const idx = mockUploads.findIndex((u) => u.id === uploadId);
+  if (idx >= 0) {
+    mockUploads[idx] = {
+      ...mockUploads[idx],
+      classification: result.classification,
+      confidence: result.confidence,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+  pendingUploadFiles.delete(uploadId);
+}
 
 function inferClassification(fileName: string): UploadClassification {
   const lower = fileName.toLowerCase();
@@ -254,7 +288,7 @@ export function getMockUploadReview(uploadId: string): UploadReview | null {
   const upload = getMockUploadById(uploadId);
   if (!upload) return null;
 
-  const entities = REVIEW_ENTITIES[uploadId] ?? [
+  const entities = dynamicReviewEntities[uploadId] ?? REVIEW_ENTITIES[uploadId] ?? [
     {
       id: `ent_${uploadId}`,
       field: "Content",
@@ -267,7 +301,9 @@ export function getMockUploadReview(uploadId: string): UploadReview | null {
   return {
     uploadId,
     fileName: upload.fileName,
-    originalContent: `Original file: ${upload.fileName}\n\nSample extracted content for demo purposes.\nClassification: ${upload.classification}`,
+    originalContent:
+      uploadContentStore[uploadId] ??
+      `Original file: ${upload.fileName}\n\nSample extracted content for demo purposes.\nClassification: ${upload.classification}`,
     originalContentType: upload.fileType.startsWith("image/") ? "image" : "text",
     extractedEntities: entities,
     validationIssues: getMockAnomalies(uploadId),
@@ -290,7 +326,7 @@ export function createMockUpload(input: {
     id,
     organizationId: input.organizationId,
     siteId: input.siteId,
-    siteName: DEMO_SITE_NAME,
+    siteName: siteNameFor(input.organizationId, input.siteId),
     fileName: input.fileName,
     fileType: input.fileType,
     fileSize: input.fileSize,
@@ -411,4 +447,4 @@ export function getPendingReviewUploads(orgId: string): UploadSummary[] {
   );
 }
 
-export { DEMO_ORG, DEMO_SITE_ID, DEMO_SITE_NAME };
+export { DEMO_ORG, DEMO_SITE_ID };

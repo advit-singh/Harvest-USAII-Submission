@@ -24,12 +24,9 @@ vi.mock("@/lib/parsers", () => ({
   }),
 }));
 
-vi.mock("@/lib/ai/openrouter-client", () => ({
-  isOpenRouterConfigured: vi.fn().mockReturnValue(false),
-}));
-
 vi.mock("@/services/ai/ai-service", () => ({
   extractWithAi: vi.fn(),
+  isAiConfigured: vi.fn().mockReturnValue(false),
 }));
 
 import { extractWithAi } from "@/services/ai/ai-service";

@@ -1,7 +1,8 @@
 "use client";
 
-import { Area, AreaChart, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, XAxis, YAxis, Tooltip, Label } from "recharts";
 import { ChartContainer } from "@/components/charts/ChartContainer";
+import { ChartTooltip } from "@/components/charts/ChartTooltip";
 import { ConfidenceIndicator } from "@/components/ai/ConfidenceIndicator";
 import { AiBadge } from "@/components/ai/AiBadge";
 import type { ForecastSummary } from "@/types/forecast";
@@ -54,13 +55,13 @@ export function ForecastExplorerChart({
 
       <ChartContainer height={180} aria-label="Forecast trend chart">
         <AreaChart data={forecast.historyPoints}>
-          <XAxis
-            dataKey="date"
-            tick={{ fontSize: 11 }}
-            axisLine={false}
-            tickLine={false}
-          />
-          <YAxis hide />
+          <XAxis dataKey="date" tick={{ fontSize: 11 }} axisLine={false} tickLine={false}>
+            <Label value="Day" offset={-4} position="insideBottom" fontSize={11} />
+          </XAxis>
+          <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={32}>
+            <Label value="Meals" angle={-90} position="insideLeft" fontSize={11} />
+          </YAxis>
+          <Tooltip content={<ChartTooltip valueLabel="Predicted meals" />} />
           <Area
             type="monotone"
             dataKey="value"
