@@ -22,7 +22,7 @@ export function ExportsTab({ orgId, apiFilters }: ExportsTabProps) {
     status: "ready",
   };
   const query = useReportsList(orgId, readyFilters);
-  const download = useReportDownload();
+  const download = useReportDownload(orgId);
 
   return (
     <ReportsQueryState

@@ -34,7 +34,7 @@ export function GeneratedTab({
   onSelectReport,
 }: GeneratedTabProps) {
   const query = useReportsList(orgId, apiFilters);
-  const download = useReportDownload();
+  const download = useReportDownload(orgId);
   const { siteOptions } = useOrgSites(orgId);
 
   return (
