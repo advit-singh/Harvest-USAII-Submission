@@ -1,19 +1,36 @@
 "use client";
 
+import { useMemo } from "react";
 import { useReportsStore } from "@/store/reports-store";
 import { toReportFilters } from "@/features/reports/config/report-tabs";
+import { DEFAULT_REPORT_FILTERS } from "@/features/reports/schemas/report-filters.schema";
 import type { ReportTabId, ReportTemplateId } from "@/types/report";
 import type { ReportFiltersInput } from "@/features/reports/schemas/report-filters.schema";
 
 export function useReportFilters(orgId: string | null) {
-  const getStateForOrg = useReportsStore((s) => s.getStateForOrg);
+  const stored = useReportsStore((s) => (orgId ? s.orgStates[orgId] : undefined));
   const setFilters = useReportsStore((s) => s.setFilters);
   const setActiveTab = useReportsStore((s) => s.setActiveTab);
   const setSelectedReportId = useReportsStore((s) => s.setSelectedReportId);
   const setBuilderOpen = useReportsStore((s) => s.setBuilderOpen);
   const resetFilters = useReportsStore((s) => s.resetFilters);
 
-  const orgState = orgId ? getStateForOrg(orgId) : null;
+  const orgState = useMemo(() => {
+    if (!orgId) return null;
+    const defaults = {
+      filters: { ...DEFAULT_REPORT_FILTERS },
+      activeTab: "templates" as ReportTabId,
+      selectedReportId: null as string | null,
+      builderOpen: false,
+      builderTemplate: null as ReportTemplateId | null,
+    };
+    if (!stored) return defaults;
+    return {
+      ...defaults,
+      ...stored,
+      filters: { ...defaults.filters, ...stored.filters },
+    };
+  }, [orgId, stored]);
 
   const updateFilters = (partial: Partial<ReportFiltersInput>) => {
     if (!orgId) return;

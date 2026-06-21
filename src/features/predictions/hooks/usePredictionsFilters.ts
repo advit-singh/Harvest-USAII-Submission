@@ -1,13 +1,23 @@
 "use client";
 
+import { useMemo } from "react";
 import { usePredictionsStore } from "@/store/predictions-store";
 import { toPredictionsFilters } from "@/features/predictions/config/predictions-tabs";
+import {
+  DEFAULT_PREDICTIONS_FILTERS,
+  type PredictionsFiltersInput,
+} from "@/features/predictions/schemas/predictions-filters.schema";
+import {
+  DEFAULT_RECOMMENDATION_FILTERS,
+  type RecommendationFiltersInput,
+} from "@/features/predictions/schemas/recommendation-filters.schema";
+import { DEFAULT_SIMULATION_INPUT } from "@/features/predictions/schemas/simulation-input.schema";
 import type { PredictionsTabId } from "@/types/predictions";
-import type { PredictionsFiltersInput } from "@/features/predictions/schemas/predictions-filters.schema";
-import type { RecommendationFiltersInput } from "@/features/predictions/schemas/recommendation-filters.schema";
 
 export function usePredictionsFilters(orgId: string | null) {
-  const getStateForOrg = usePredictionsStore((s) => s.getStateForOrg);
+  const stored = usePredictionsStore((s) =>
+    orgId ? s.orgStates[orgId] : undefined,
+  );
   const setFilters = usePredictionsStore((s) => s.setFilters);
   const setRecommendationFilters = usePredictionsStore(
     (s) => s.setRecommendationFilters,
@@ -15,7 +25,33 @@ export function usePredictionsFilters(orgId: string | null) {
   const setActiveTab = usePredictionsStore((s) => s.setActiveTab);
   const resetFilters = usePredictionsStore((s) => s.resetFilters);
 
-  const orgState = orgId ? getStateForOrg(orgId) : null;
+  const orgState = useMemo(() => {
+    if (!orgId) return null;
+    const defaults = {
+      filters: { ...DEFAULT_PREDICTIONS_FILTERS },
+      recommendationFilters: { ...DEFAULT_RECOMMENDATION_FILTERS },
+      activeTab: "summary" as PredictionsTabId,
+      selectedForecastId: null as string | null,
+      simulatorDraft: { ...DEFAULT_SIMULATION_INPUT },
+      savedScenarioIds: [] as string[],
+      compareScenarioIds: [] as string[],
+    };
+    if (!stored) return defaults;
+    return {
+      ...defaults,
+      ...stored,
+      filters: { ...defaults.filters, ...stored.filters },
+      recommendationFilters: {
+        ...defaults.recommendationFilters,
+        ...stored.recommendationFilters,
+      },
+      simulatorDraft: {
+        ...defaults.simulatorDraft,
+        ...stored.simulatorDraft,
+      },
+    };
+  }, [orgId, stored]);
+
   const filters = orgState?.filters ?? null;
   const recommendationFilters = orgState?.recommendationFilters ?? null;
   const activeTab = orgState?.activeTab ?? "summary";
