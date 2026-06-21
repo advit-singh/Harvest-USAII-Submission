@@ -26,6 +26,9 @@ import {
   recommendation_factors,
   simulations,
   simulation_runs,
+  conversations,
+  messages,
+  reports,
 } from "../schema";
 
 const DEMO_ORG_ID = "00000000-0000-4000-8000-000000000001";
@@ -43,12 +46,15 @@ const DEMO_RECIPIENT_002_ID = "00000000-0000-4000-8000-000000000041";
 const DEMO_INVENTORY_LOT_ID = "00000000-0000-4000-8000-000000000006";
 const DEMO_OPPORTUNITY_001_ID = "00000000-0000-4000-8000-000000000050";
 const DEMO_DONATION_EVENT_001_ID = "00000000-0000-4000-8000-000000000051";
+const DEMO_CONVERSATION_ID = "00000000-0000-4000-8000-000000000060";
+const DEMO_REPORT_ID = "00000000-0000-4000-8000-000000000061";
 
 const DEFAULT_PERMISSIONS = [
   { key: "uploads.read", name: "Read Uploads", description: "View uploads" },
   { key: "uploads.write", name: "Write Uploads", description: "Create and process uploads" },
   { key: "inventory.read", name: "Read Inventory", description: "View inventory" },
   { key: "analytics.read", name: "Read Analytics", description: "View analytics" },
+  { key: "reports.generate", name: "Generate Reports", description: "Generate and download reports" },
   { key: "settings.manage", name: "Manage Settings", description: "Manage organization settings" },
 ];
 
@@ -510,6 +516,79 @@ export async function seedDatabase() {
         created_by: DEMO_USER_ID,
       },
     ])
+    .onConflictDoNothing();
+
+  await db
+    .insert(conversations)
+    .values({
+      id: DEMO_CONVERSATION_ID,
+      organization_id: DEMO_ORG_ID,
+      user_id: DEMO_USER_ID,
+      title: "Waste spike analysis",
+      created_by: DEMO_USER_ID,
+    })
+    .onConflictDoNothing();
+
+  await db
+    .insert(messages)
+    .values([
+      {
+        conversation_id: DEMO_CONVERSATION_ID,
+        role: "user",
+        content: "Why was waste higher this week?",
+        created_by: DEMO_USER_ID,
+      },
+      {
+        conversation_id: DEMO_CONVERSATION_ID,
+        role: "assistant",
+        content:
+          "Waste increased primarily due to attendance variance after exam days and dairy spoilage from expiring inventory lots.",
+        citations: [
+          {
+            id: "cite_waste",
+            sourceType: "waste",
+            title: "Waste analytics",
+            excerpt: "Attendance variance and dairy spoilage drove the weekly increase.",
+            href: "/analytics?tab=waste",
+          },
+        ],
+        metadata: {
+          reasoning:
+            "Compared waste records for the last 7 days against the prior week and matched spikes to attendance and dairy expiration patterns.",
+          confidence: 0.84,
+          recommendedActions: [
+            {
+              id: "act_forecast",
+              label: "Review forecasts",
+              href: "/predictions?tab=explorer",
+            },
+          ],
+        },
+        created_by: DEMO_USER_ID,
+      },
+    ])
+    .onConflictDoNothing();
+
+  await db
+    .insert(reports)
+    .values({
+      id: DEMO_REPORT_ID,
+      organization_id: DEMO_ORG_ID,
+      site_id: DEMO_SITE_ID,
+      generated_by: DEMO_USER_ID,
+      report_type: "monthly_summary",
+      format: "pdf",
+      date_range: {
+        preset: "month",
+        start: "2026-05-01",
+        end: "2026-05-31",
+      },
+      status: "ready",
+      progress: 100,
+      file_path: `local://${DEMO_ORG_ID}/${DEMO_REPORT_ID}/monthly-summary-2026-05.pdf`,
+      generated_at: new Date(),
+      created_by: DEMO_USER_ID,
+    })
     .onConflictDoNothing();
 
   console.log("Seed complete.");
