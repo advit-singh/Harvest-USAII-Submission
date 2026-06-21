@@ -21,6 +21,11 @@ export const orgInfoSchema = z.object({
   defaultUnitSystem: z.enum(["metric", "imperial"]),
 });
 
+export const userProfileSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+});
+
 export const operationalProfileSchema = z.object({
   operationalFocus: z.string().min(1, "Select an operational profile"),
   sitesCount: z.coerce.number().min(1).max(1000),
@@ -42,7 +47,8 @@ export const inviteTeamSchema = z.object({
   ),
 });
 
-export const onboardingSchema = orgInfoSchema
+export const onboardingSchema = userProfileSchema
+  .merge(orgInfoSchema)
   .merge(operationalProfileSchema)
   .merge(aiConfigSchema)
   .merge(inviteTeamSchema);

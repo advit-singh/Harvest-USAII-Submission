@@ -31,6 +31,7 @@ export function LoginForm() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    defaultValues: { email: "demo@harvest.app", password: "demo" },
   });
 
   const onSubmit = async (data: LoginFormValues) => {
@@ -44,12 +45,23 @@ export function LoginForm() {
     }
   };
 
+  const handleDemo = async () => {
+    setError(null);
+    try {
+      await signIn("demo@harvest.app", "demo");
+    } catch (e) {
+      setError(
+        e instanceof Error ? e.message : "Unable to start demo. Please try again.",
+      );
+    }
+  };
+
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>Welcome back</CardTitle>
+        <CardTitle>Welcome to Harvest</CardTitle>
         <CardDescription>
-          Sign in to your Project Harvest account
+          Sign in or continue to the demo experience
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -59,6 +71,23 @@ export function LoginForm() {
               {error}
             </p>
           )}
+          <Button
+            type="button"
+            variant="secondary"
+            className="w-full"
+            onClick={() => void handleDemo()}
+            disabled={isSubmitting}
+          >
+            Continue to demo
+          </Button>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">or sign in</span>
+            </div>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -91,12 +120,9 @@ export function LoginForm() {
             {isSubmitting && <Loader2 className="animate-spin" />}
             Sign in
           </Button>
-          <div className="flex w-full justify-between text-sm">
+          <div className="flex w-full justify-center text-sm">
             <Link href="/reset-password" className="text-primary hover:underline">
               Forgot password?
-            </Link>
-            <Link href="/register" className="text-primary hover:underline">
-              Create account
             </Link>
           </div>
         </CardFooter>

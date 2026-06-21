@@ -14,7 +14,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { UserProfileStep } from "@/features/organizations/components/steps/UserProfileStep";
 import { OrgInfoStep } from "@/features/organizations/components/steps/OrgInfoStep";
+import { LocationStep } from "@/features/organizations/components/steps/LocationStep";
 import { OperationalProfileStep } from "@/features/organizations/components/steps/OperationalProfileStep";
 import { AiConfigStep } from "@/features/organizations/components/steps/AiConfigStep";
 import { InviteTeamStep } from "@/features/organizations/components/steps/InviteTeamStep";
@@ -27,14 +29,26 @@ import {
   onboardingSchema,
   type OnboardingFormValues,
 } from "@/features/organizations/schemas/organization.schema";
+import { updateOrganizationSettings } from "@/lib/api/organization-settings";
+import { markOnboardingComplete } from "@/lib/demo/onboarding";
+import { seedGithubPagesDemoData } from "@/lib/demo/bootstrap";
+import { setMockUser } from "@/lib/api/users";
 
 const STEPS = [
+  { id: "user", title: "Your profile", component: UserProfileStep },
   { id: "org", title: "Organization", component: OrgInfoStep },
+  { id: "location", title: "Location", component: LocationStep },
   { id: "profile", title: "Operations", component: OperationalProfileStep },
   { id: "ai", title: "AI Settings", component: AiConfigStep },
   { id: "team", title: "Team", component: InviteTeamStep },
   { id: "upload", title: "Get Started", component: InitialUploadStep },
 ] as const;
+
+const AGGRESSIVENESS_MAP = {
+  conservative: "low",
+  balanced: "medium",
+  aggressive: "high",
+} as const;
 
 export function OnboardingWizard() {
   const router = useRouter();
@@ -46,10 +60,13 @@ export function OnboardingWizard() {
   const methods = useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
+      firstName: "",
+      lastName: "",
       name: "",
       type: "school",
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       defaultUnitSystem: "imperial",
+      country: "US",
       operationalFocus: "school",
       sitesCount: 1,
       confidenceVisibility: true,
@@ -67,8 +84,10 @@ export function OnboardingWizard() {
   const handleNext = async () => {
     setError(null);
     const fieldsByStep: (keyof OnboardingFormValues)[][] = [
-      ["name", "type", "timezone", "defaultUnitSystem", "city", "state", "country"],
-      ["operationalFocus", "sitesCount"],
+      ["firstName", "lastName"],
+      ["name", "type"],
+      ["city", "state", "country", "timezone"],
+      ["operationalFocus", "sitesCount", "defaultUnitSystem"],
       [
         "confidenceVisibility",
         "recommendationAggressiveness",
@@ -89,6 +108,12 @@ export function OnboardingWizard() {
 
     const data = methods.getValues();
     try {
+      setMockUser({
+        id: "user_dev",
+        email: "demo@harvest.app",
+        fullName: `${data.firstName} ${data.lastName}`.trim(),
+      });
+
       const org = await createOrg.mutateAsync({
         name: data.name,
         type: data.type,
@@ -97,6 +122,22 @@ export function OnboardingWizard() {
         state: data.state,
         country: data.country,
         defaultUnitSystem: data.defaultUnitSystem,
+      });
+
+      await updateOrganizationSettings(org.id, {
+        ai: {
+          confidenceVisibility: data.confidenceVisibility,
+          recommendationAggressiveness:
+            AGGRESSIVENESS_MAP[data.recommendationAggressiveness],
+          memoryEnabled: data.memoryEnabled,
+          assistantEnabled: true,
+          autoCommitEnabled: false,
+          autoCommitConfidenceThreshold: 0.85,
+        },
+        forecast: {
+          externalDataEnabled: true,
+          defaultHorizonDays: Number(data.forecastHorizon),
+        },
       });
 
       for (const invite of data.invites) {
@@ -109,6 +150,8 @@ export function OnboardingWizard() {
         }
       }
 
+      markOnboardingComplete();
+      seedGithubPagesDemoData();
       router.push("/dashboard");
     } catch (e) {
       setError(
@@ -147,10 +190,22 @@ export function OnboardingWizard() {
             >
               Back
             </Button>
-            <Button type="button" onClick={handleNext} disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="animate-spin" />}
-              {step === STEPS.length - 1 ? "Complete setup" : "Continue"}
-            </Button>
+            <div className="flex gap-2">
+              {step === 5 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setStep((s) => s + 1)}
+                  disabled={isSubmitting}
+                >
+                  Skip
+                </Button>
+              )}
+              <Button type="button" onClick={handleNext} disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="animate-spin" />}
+                {step === STEPS.length - 1 ? "Complete setup" : "Continue"}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

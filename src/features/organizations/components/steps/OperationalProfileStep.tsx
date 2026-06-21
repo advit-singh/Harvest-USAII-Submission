@@ -64,6 +64,25 @@ export function OperationalProfileStep() {
           {...register("sitesCount")}
         />
       </div>
+      <div className="space-y-2">
+        <Label>Unit system</Label>
+        <Select
+          value={watch("defaultUnitSystem")}
+          onValueChange={(v) =>
+            setValue("defaultUnitSystem", v as "metric" | "imperial", {
+              shouldValidate: true,
+            })
+          }
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="imperial">Imperial</SelectItem>
+            <SelectItem value="metric">Metric</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 }

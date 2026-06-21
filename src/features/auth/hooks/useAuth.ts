@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { setMockUser } from "@/lib/api/users";
+import { isOnboardingComplete } from "@/lib/demo/onboarding";
 import type { User } from "@supabase/supabase-js";
 
 const DEV_SESSION_KEY = "harvest-dev-session";
@@ -90,7 +91,7 @@ export function useAuth() {
       if (!supabaseReady) {
         setDevSession(email);
         setUser({ id: "user_dev", email } as User);
-        router.push("/dashboard");
+        router.push(isOnboardingComplete() ? "/dashboard" : "/onboarding");
         return;
       }
 
@@ -100,7 +101,7 @@ export function useAuth() {
         password,
       });
       if (error) throw error;
-      router.push("/dashboard");
+      router.push(isOnboardingComplete() ? "/dashboard" : "/onboarding");
     },
     [router, supabaseReady],
   );

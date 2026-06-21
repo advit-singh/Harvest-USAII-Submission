@@ -3,14 +3,13 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { useOrganizations } from "@/features/organizations/hooks/useOrganizations";
+import { isOnboardingComplete } from "@/lib/demo/onboarding";
 import { PageLoadingState } from "@/components/feedback/LoadingState";
 
 export function AppGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const { organizations, isLoading: orgsLoading } = useOrganizations();
 
   useEffect(() => {
     if (authLoading) return;
@@ -18,19 +17,12 @@ export function AppGuard({ children }: { children: React.ReactNode }) {
       router.replace("/login");
       return;
     }
-    if (!orgsLoading && organizations.length === 0 && pathname !== "/onboarding") {
+    if (!isOnboardingComplete() && pathname !== "/onboarding") {
       router.replace("/onboarding");
     }
-  }, [
-    authLoading,
-    isAuthenticated,
-    orgsLoading,
-    organizations.length,
-    pathname,
-    router,
-  ]);
+  }, [authLoading, isAuthenticated, pathname, router]);
 
-  if (authLoading || orgsLoading) {
+  if (authLoading) {
     return <PageLoadingState />;
   }
 
@@ -38,7 +30,7 @@ export function AppGuard({ children }: { children: React.ReactNode }) {
     return <PageLoadingState />;
   }
 
-  if (organizations.length === 0) {
+  if (!isOnboardingComplete()) {
     return <PageLoadingState />;
   }
 

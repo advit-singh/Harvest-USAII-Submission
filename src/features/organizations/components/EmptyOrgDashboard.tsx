@@ -10,7 +10,7 @@ export function EmptyOrgDashboard() {
     <div className="space-y-8">
       <EmptyState
         icon={Leaf}
-        title="Welcome to Project Harvest"
+        title="Welcome to Harvest"
         description="Your organization is ready. Upload operational data to unlock forecasts, recommendations, and impact insights."
         actionLabel="Upload your first file"
         onAction={() => {
