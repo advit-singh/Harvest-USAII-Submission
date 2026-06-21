@@ -1,8 +1,14 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { isGithubPagesDeployment } from "@/lib/deployment";
+import { HomePageClient } from "@/app/home-page-client";
 
 export default async function HomePage() {
+  if (isGithubPagesDeployment()) {
+    return <HomePageClient />;
+  }
+
   if (isSupabaseConfigured()) {
     const supabase = await createClient();
     const {
