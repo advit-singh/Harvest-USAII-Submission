@@ -6,7 +6,7 @@ Harvest is an AI-powered food waste intelligence platform built for hackathon de
 
 After deployment, the app is available at:
 
-`https://advit-singh.github.io/USAII-submission/`
+`https://advit-singh.github.io/Harvest-USAII-Submission/`
 
 GitHub Pages builds automatically from the `master` branch via `.github/workflows/deploy-github-pages.yml`.
 
