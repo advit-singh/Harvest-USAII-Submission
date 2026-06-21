@@ -1,24 +1,34 @@
 "use client";
 
-import { LayoutGrid, RotateCcw } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { WidgetPicker } from "@/features/dashboard/components/WidgetPicker";
-import type { WidgetId } from "@/types/dashboard";
+import { DashboardCustomizeDialog } from "@/features/dashboard/components/DashboardCustomizeDialog";
+import type { GridLayoutItem, WidgetId } from "@/types/dashboard";
 
 interface DashboardToolbarProps {
   visibility: Record<WidgetId, boolean>;
+  layouts: GridLayoutItem[];
   onToggleWidget: (widgetId: WidgetId, visible: boolean) => void;
+  onLayoutChange: (layouts: GridLayoutItem[]) => void;
   onResetLayout: () => void;
 }
 
 export function DashboardToolbar({
   visibility,
+  layouts,
   onToggleWidget,
+  onLayoutChange,
   onResetLayout,
 }: DashboardToolbarProps) {
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
-      <WidgetPicker visibility={visibility} onToggle={onToggleWidget} />
+      <DashboardCustomizeDialog
+        visibility={visibility}
+        layouts={layouts}
+        onToggle={onToggleWidget}
+        onLayoutChange={onLayoutChange}
+        onResetLayout={onResetLayout}
+      />
       <Button
         type="button"
         variant="outline"
@@ -29,10 +39,6 @@ export function DashboardToolbar({
         <RotateCcw className="mr-2 h-4 w-4" aria-hidden />
         Reset layout
       </Button>
-      <div className="hidden items-center gap-1 text-xs text-muted-foreground sm:flex">
-        <LayoutGrid className="h-3.5 w-3.5" aria-hidden />
-        <span>Drag widgets to rearrange</span>
-      </div>
     </div>
   );
 }
