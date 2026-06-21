@@ -116,7 +116,12 @@ Production-demo ready.
 | Rescue Network Workspace | B | Complete | Yes | 4 tabs: opportunities, recipients, history, impact; match/complete/dismiss flows; mock API clients |
 | Uploads Workspace | B | Complete | Yes | 4 tabs: upload, queue, history, validation; extraction review; mock API clients |
 | AI Assistant Workspace | B | Complete | Yes | Chat UI, conversation history, evidence panel, citations, suggested prompts; mock API clients |
-| Reports Workspace | B | Complete | Yes | 4 tabs: templates, generated, scheduled (placeholder), exports; builder drawer; status polling; download; mock API clients |
+| Reports Workspace | B | Complete | Yes | Live API + full scheduled reports UI |
+| Scheduled Reports Backend | A | Complete | Yes | `report_schedules` CRUD + run-due + cron |
+| Organization Sites API | A | Complete | Yes | `GET /organizations/:id/sites` |
+| Data Export API | A | Complete | Yes | `GET /organizations/:id/export` |
+| Live API Integration | B | Complete | Yes | `NEXT_PUBLIC_USE_MOCK_API=false` default in `.env.example` |
+| Global Search UI | B | Complete | Yes | Header search + command palette wired to search API |
 | Settings Workspace | B | Complete | Yes | 9 sections: org, users, permissions, AI, forecast, integrations, appearance, notifications, data; mock API clients |
 | Notification System | B | Complete | Yes | Header Notification Center, unread badge, mark-read, preferences filtering; mock API clients |
 
@@ -140,6 +145,7 @@ Production-demo ready.
 | feature/complete-platform-api-layer | A | Merged (PR #17) |
 | feature/complete-e2e-intelligence-orchestration | A | Merged (PR #18) |
 | feature/complete-intelligence-testing-platform | A | Merged (PR #19) |
+| feature/complete-production-integration-platform | A+B | Merged |
 
 ---
 
@@ -348,6 +354,27 @@ Person B: set `NEXT_PUBLIC_USE_MOCK_API=false` to use live notification APIs.
 ---
 
 # Daily Sync Log
+
+## 2026-06-21 (Production Integration Platform — A+B)
+
+### Person A + B
+
+Completed:
+
+- Sites API, data export API, scheduled reports backend (migration, service, routes, cron)
+- Live API integration: unified `api-mode`, dynamic org/site context via `useOrgSites`
+- Full scheduled reports UI (list, create/edit drawer, pause/resume)
+- Global search wired in header and command palette
+- Settings: data export download, integrations status, custom role permission editing
+- Error boundaries, assistant error states, onboarding error state
+- README and production `.env.example` defaults (`NEXT_PUBLIC_USE_MOCK_API=false`)
+- 16 new tests (456 total passing)
+
+Milestone Status:
+
+- Complete Production Integration, Scheduling & Polish Platform — **Complete**
+
+---
 
 ## 2026-06-21 (Intelligence Testing & Production Readiness — Person A)
 
@@ -862,7 +889,7 @@ Before consuming another developer's work:
 
 Current Risks:
 
-- None — Person A Phase 16 testing complete; Person B live API swap is next coordination step
+- None — production integration complete; live API mode enabled by default
 
 Architecture Concerns:
 
@@ -870,8 +897,8 @@ Architecture Concerns:
 
 Merge Conflict Risks:
 
-- Low — this milestone primarily adds `tests/` files; minor `package.json` devDependency for coverage
+- Low
 
 Upcoming Integration Milestones:
 
-- Person B: set `NEXT_PUBLIC_USE_MOCK_API=false` to wire live backends across all workspaces
+- None — final sprint complete

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MOCK_TEAM_MEMBERS } from "@/features/predictions/config/predictions-tabs";
+import { fetchMembers } from "@/lib/api/organizations";
+import { organizationKeys } from "@/features/organizations/hooks/useOrganizations";
 import { useRecommendationAssign } from "@/features/predictions/hooks/useRecommendationAssign";
 
 interface RecommendationAssignDialogProps {
@@ -38,6 +40,12 @@ export function RecommendationAssignDialog({
   const [notes, setNotes] = useState("");
   const [dueDate, setDueDate] = useState("");
   const assignMutation = useRecommendationAssign(orgId);
+  const membersQuery = useQuery({
+    queryKey: [...organizationKeys.all, "members", orgId],
+    queryFn: () => fetchMembers(orgId),
+    enabled: open,
+  });
+  const members = membersQuery.data ?? [];
 
   const handleAssign = () => {
     if (!recommendationId || !assigneeId) return;
@@ -82,9 +90,9 @@ export function RecommendationAssignDialog({
                 <SelectValue placeholder="Select team member" />
               </SelectTrigger>
               <SelectContent>
-                {MOCK_TEAM_MEMBERS.map((member) => (
+                {members.map((member) => (
                   <SelectItem key={member.id} value={member.id}>
-                    {member.name} — {member.role}
+                    {member.email} — {member.roleName ?? "Member"}
                   </SelectItem>
                 ))}
               </SelectContent>

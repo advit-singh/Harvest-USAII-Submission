@@ -103,7 +103,7 @@ export function ReportsTabNav({
         </TabsContent>
 
         <TabsContent value="scheduled" className="mt-4">
-          <ScheduledTab />
+          <ScheduledTab orgId={orgId} />
         </TabsContent>
 
         <TabsContent value="exports" className="mt-4">

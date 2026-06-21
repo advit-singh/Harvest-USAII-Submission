@@ -21,10 +21,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { useGenerateReport } from "@/features/reports/hooks/useGenerateReport";
 import { useReportTemplates } from "@/features/reports/hooks/useReportTemplates";
+import { useOrgSites } from "@/features/organizations/hooks/useOrgSites";
 import {
   DATE_RANGE_OPTIONS,
   FORMAT_OPTIONS,
-  REPORT_SITE_OPTIONS,
 } from "@/features/reports/config/report-tabs";
 import {
   defaultGenerateInput,
@@ -51,16 +51,25 @@ export function ReportBuilderDrawer({
 }: ReportBuilderDrawerProps) {
   const templatesQuery = useReportTemplates(orgId);
   const generate = useGenerateReport(orgId);
+  const { siteOptions, defaultSiteId } = useOrgSites(orgId);
 
   const form = useForm<ReportGenerateInput>({
     resolver: zodResolver(reportGenerateSchema),
     defaultValues: defaultGenerateInput(
       initialTemplate ?? "monthly_summary",
+      "pdf",
+      defaultSiteId,
     ),
   });
 
   const watchPreset = form.watch("dateRangePreset");
   const watchTemplate = form.watch("template");
+
+  useEffect(() => {
+    if (defaultSiteId && !form.getValues("siteId")) {
+      form.setValue("siteId", defaultSiteId);
+    }
+  }, [defaultSiteId, form]);
 
   useEffect(() => {
     if (open && initialTemplate) {
@@ -69,10 +78,11 @@ export function ReportBuilderDrawer({
         defaultGenerateInput(
           initialTemplate,
           template?.defaultFormat ?? "pdf",
+          defaultSiteId,
         ),
       );
     }
-  }, [open, initialTemplate, templatesQuery.data, form]);
+  }, [open, initialTemplate, templatesQuery.data, form, defaultSiteId]);
 
   const selectedTemplate = templatesQuery.data?.find(
     (t) => t.id === watchTemplate,
@@ -146,13 +156,11 @@ export function ReportBuilderDrawer({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {REPORT_SITE_OPTIONS.filter((s) => s.value !== "all").map(
-                  (site) => (
-                    <SelectItem key={site.value} value={site.value}>
-                      {site.label}
-                    </SelectItem>
-                  ),
-                )}
+                {siteOptions.filter((s) => s.value !== "all").map((site) => (
+                  <SelectItem key={site.value} value={site.value}>
+                    {site.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

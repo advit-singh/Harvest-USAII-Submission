@@ -8,4 +8,6 @@ export const reportKeys = {
     [...reportKeys.all, "list", orgId, filters] as const,
   detail: (reportId: string) =>
     [...reportKeys.all, "detail", reportId] as const,
+  schedules: (orgId: string) =>
+    [...reportKeys.all, "schedules", orgId] as const,
 };

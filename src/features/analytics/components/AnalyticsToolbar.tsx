@@ -9,15 +9,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  TIME_RANGE_OPTIONS,
-  SITE_OPTIONS,
-} from "@/features/analytics/config/analytics-tabs";
-import { getMockHierarchyNodes } from "@/lib/mocks/analytics-fixtures";
-import type { HierarchyLevel } from "@/types/analytics";
+import { TIME_RANGE_OPTIONS } from "@/features/analytics/config/analytics-tabs";
+import { useOrgSites } from "@/features/organizations/hooks/useOrgSites";
+import type { HierarchyLevel, HierarchyNode } from "@/types/analytics";
 import type { AnalyticsFiltersInput } from "@/features/analytics/schemas/analytics-filters.schema";
 
 interface AnalyticsToolbarProps {
+  orgId: string;
   filters: AnalyticsFiltersInput;
   onFiltersChange: (partial: Partial<AnalyticsFiltersInput>) => void;
   onReset: () => void;
@@ -32,12 +30,33 @@ const HIERARCHY_ORDER: HierarchyLevel[] = [
   "storage",
 ];
 
+function buildHierarchyFromSites(
+  orgId: string,
+  sites: { id: string; name: string }[],
+): HierarchyNode[] {
+  const orgNode: HierarchyNode = {
+    id: orgId,
+    name: "Organization",
+    level: "organization",
+    parentId: null,
+  };
+  const siteNodes: HierarchyNode[] = sites.map((site) => ({
+    id: site.id,
+    name: site.name,
+    level: "kitchen",
+    parentId: orgId,
+  }));
+  return [orgNode, ...siteNodes];
+}
+
 export function AnalyticsToolbar({
+  orgId,
   filters,
   onFiltersChange,
   onReset,
 }: AnalyticsToolbarProps) {
-  const hierarchyNodes = getMockHierarchyNodes();
+  const { siteOptions, sites } = useOrgSites(orgId);
+  const hierarchyNodes = buildHierarchyFromSites(orgId, sites);
   const currentNode =
     hierarchyNodes.find((n) => n.level === filters.hierarchyLevel) ??
     hierarchyNodes[0];
@@ -105,7 +124,7 @@ export function AnalyticsToolbar({
             <SelectValue placeholder="All sites" />
           </SelectTrigger>
           <SelectContent>
-            {SITE_OPTIONS.map((opt) => (
+            {siteOptions.map((opt) => (
               <SelectItem key={opt.value} value={opt.value}>
                 {opt.label}
               </SelectItem>

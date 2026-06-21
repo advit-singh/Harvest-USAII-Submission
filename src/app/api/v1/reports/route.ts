@@ -1,6 +1,7 @@
 import { AuthError, requireAuthenticatedUser, requireOrgMembership } from "@/lib/api/auth";
 import { errorResponse, successResponse } from "@/lib/api/response";
 import { listReports } from "@/services/report/report-service";
+import { processDueSchedules } from "@/services/report/schedule-service";
 import type { ReportFilters } from "@/types/report";
 
 export async function GET(request: Request) {
@@ -12,6 +13,10 @@ export async function GET(request: Request) {
       return errorResponse("VALIDATION_ERROR", "organizationId is required.", 400);
     }
     await requireOrgMembership(organizationId, user.id);
+
+    void processDueSchedules(organizationId).catch(() => {
+      // Non-blocking degraded schedule processing on list fetch
+    });
 
     const filters: ReportFilters = {
       organizationId,

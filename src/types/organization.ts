@@ -44,3 +44,11 @@ export interface OrganizationMember {
   roleName?: string;
   organizationId?: string;
 }
+
+export interface OrganizationSite {
+  id: string;
+  organizationId: string;
+  name: string;
+  siteType: string;
+  isActive: boolean;
+}

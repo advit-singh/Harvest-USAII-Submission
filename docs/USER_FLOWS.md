@@ -1393,6 +1393,70 @@ System becomes more useful over time.
 
 ---
 
+# 55. Scheduled Report Flow
+
+User opens Reports workspace → Scheduled tab.
+
+---
+
+User creates schedule:
+
+Select template
+
+Select site
+
+Choose format
+
+Set cadence (daily, weekly, monthly)
+
+Set timezone
+
+---
+
+System computes next run time.
+
+---
+
+Cron or degraded local trigger runs due schedules.
+
+---
+
+Generated report appears in Generated tab.
+
+User receives `report.generated` notification.
+
+---
+
+User may pause, edit, or delete schedules.
+
+---
+
+# 56. Live API Onboarding Flow
+
+New user signs in with Supabase auth.
+
+---
+
+System loads organizations from `GET /api/v1/organizations`.
+
+---
+
+If no organizations, user completes onboarding wizard.
+
+---
+
+Organization created via `POST /api/v1/organizations` with default site.
+
+---
+
+All workspaces load live data (`NEXT_PUBLIC_USE_MOCK_API=false`).
+
+---
+
+Site filters populate from `GET /api/v1/organizations/:id/sites`.
+
+---
+
 # 54. User Flow North Star
 
 Every workflow should help users move from:

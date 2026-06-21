@@ -1207,6 +1207,46 @@ updated_at
 
 ---
 
+## report_schedules
+
+Fields:
+
+```txt
+id
+
+organization_id
+
+site_id
+
+template_id
+
+format
+
+cadence
+
+day_of_week
+
+day_of_month
+
+timezone
+
+is_active
+
+last_run_at
+
+next_run_at
+
+created_by
+
+created_at
+
+updated_at
+```
+
+Cadence: `daily` | `weekly` | `monthly`
+
+---
+
 # 38. AI Conversations
 
 ## conversations

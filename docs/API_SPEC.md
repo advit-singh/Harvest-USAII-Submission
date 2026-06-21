@@ -225,6 +225,47 @@ Request:
 
 ---
 
+## List Sites
+
+```http
+GET /api/v1/organizations/:organizationId/sites
+```
+
+Returns active sites for the organization.
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "uuid",
+      "organizationId": "uuid",
+      "name": "Lincoln Elementary Cafeteria",
+      "siteType": "kitchen",
+      "isActive": true
+    }
+  ]
+}
+```
+
+---
+
+## Export Organization Data
+
+```http
+GET /api/v1/organizations/:organizationId/export
+```
+
+Requires `org.manage` permission.
+
+Returns a CSV file download containing uploads, inventory, and waste records for the organization.
+
+Response: `Content-Type: text/csv` with `Content-Disposition: attachment`
+
+---
+
 # 10. Organization Settings
 
 ## GET
@@ -1417,6 +1458,115 @@ Response:
 ```
 
 Report must be in `ready` status. Returns signed download URL.
+
+---
+
+## Report Schedules
+
+### List Schedules
+
+```http
+GET /api/v1/reports/schedules?organizationId=
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "uuid",
+      "organizationId": "uuid",
+      "siteId": "uuid",
+      "siteName": "Main Kitchen",
+      "template": "monthly_summary",
+      "templateName": "Monthly Summary",
+      "format": "pdf",
+      "cadence": "weekly",
+      "dayOfWeek": 1,
+      "dayOfMonth": null,
+      "timezone": "America/Chicago",
+      "isActive": true,
+      "lastRunAt": "2026-06-01T08:00:00Z",
+      "nextRunAt": "2026-06-08T08:00:00Z",
+      "createdAt": "2026-06-01T10:00:00Z"
+    }
+  ]
+}
+```
+
+Cadence values: `daily` | `weekly` | `monthly`
+
+---
+
+### Create Schedule
+
+```http
+POST /api/v1/reports/schedules
+```
+
+Request:
+
+```json
+{
+  "organizationId": "uuid",
+  "siteId": "uuid",
+  "template": "monthly_summary",
+  "format": "pdf",
+  "cadence": "weekly",
+  "dayOfWeek": 1,
+  "timezone": "America/Chicago"
+}
+```
+
+---
+
+### Update Schedule
+
+```http
+PATCH /api/v1/reports/schedules/:id
+```
+
+Request (partial):
+
+```json
+{
+  "isActive": false,
+  "cadence": "monthly",
+  "dayOfMonth": 1
+}
+```
+
+---
+
+### Delete Schedule
+
+```http
+DELETE /api/v1/reports/schedules/:id
+```
+
+---
+
+### Run Due Schedules
+
+```http
+POST /api/v1/reports/schedules/run-due
+```
+
+Processes all due schedules. Requires `CRON_SECRET` header or `reports.generate` permission.
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "processed": 2,
+    "reportIds": ["uuid", "uuid"]
+  }
+}
+```
 
 ---
 

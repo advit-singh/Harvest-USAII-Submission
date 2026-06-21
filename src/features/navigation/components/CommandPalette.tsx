@@ -12,10 +12,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { navItems } from "@/features/navigation/config/nav-items";
+import { useOrganizations } from "@/features/organizations/hooks/useOrganizations";
+import {
+  flattenSearchResults,
+  useGlobalSearch,
+} from "@/features/navigation/hooks/useGlobalSearch";
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const router = useRouter();
+  const { activeOrgId } = useOrganizations();
+  const searchQuery = useGlobalSearch(activeOrgId, search);
+  const apiResults = flattenSearchResults(searchQuery.data);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -51,10 +60,35 @@ export function CommandPalette() {
               <Command.Input
                 placeholder="Search workspaces and actions..."
                 className="flex h-12 w-full rounded-md bg-transparent py-3 text-sm outline-none"
+                value={search}
+                onValueChange={setSearch}
               />
             </div>
             <Command.List className="max-h-80 overflow-y-auto p-2">
               <Command.Empty>No results found.</Command.Empty>
+              {search.trim().length >= 2 && apiResults.length > 0 && (
+                <Command.Group heading="Search results">
+                  {apiResults.map((item) => (
+                    <Command.Item
+                      key={`${item.type}-${item.id}`}
+                      value={`${item.title} ${item.subtitle ?? ""}`}
+                      onSelect={() => {
+                        router.push(item.href);
+                        setOpen(false);
+                        setSearch("");
+                      }}
+                      className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
+                    >
+                      <div>
+                        <p>{item.title}</p>
+                        {item.subtitle && (
+                          <p className="text-xs text-muted-foreground">{item.subtitle}</p>
+                        )}
+                      </div>
+                    </Command.Item>
+                  ))}
+                </Command.Group>
+              )}
               <Command.Group heading="Workspaces">
                 {navItems.map((item) => {
                   const Icon = item.icon;
@@ -100,7 +134,7 @@ export function CommandPalette() {
                 <Command.Item
                   value="review pending upload"
                   onSelect={() => {
-                    router.push("/uploads?id=upl_001&tab=queue");
+                    router.push("/uploads?tab=queue");
                     setOpen(false);
                   }}
                   className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
@@ -150,9 +184,7 @@ export function CommandPalette() {
                     key={prompt.id}
                     value={`ask ${prompt.label}`}
                     onSelect={() => {
-                      router.push(
-                        `/assistant?conversation=conv_demo_001`,
-                      );
+                      router.push(`/assistant?prompt=${encodeURIComponent(prompt.message)}`);
                       setOpen(false);
                     }}
                     className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm aria-selected:bg-accent"
