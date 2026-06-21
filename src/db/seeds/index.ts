@@ -16,6 +16,9 @@ import {
   purchases,
   waste_reason_categories,
   donation_recipients,
+  donation_opportunities,
+  donation_events,
+  impact_metrics,
   organization_settings,
   forecasts,
   forecast_factors,
@@ -35,6 +38,11 @@ const DEMO_FORECAST_DEMAND_ID = "00000000-0000-4000-8000-000000000012";
 const DEMO_REC_001_ID = "00000000-0000-4000-8000-000000000020";
 const DEMO_REC_002_ID = "00000000-0000-4000-8000-000000000021";
 const DEMO_SIMULATION_ID = "00000000-0000-4000-8000-000000000030";
+const DEMO_RECIPIENT_001_ID = "00000000-0000-4000-8000-000000000040";
+const DEMO_RECIPIENT_002_ID = "00000000-0000-4000-8000-000000000041";
+const DEMO_INVENTORY_LOT_ID = "00000000-0000-4000-8000-000000000006";
+const DEMO_OPPORTUNITY_001_ID = "00000000-0000-4000-8000-000000000050";
+const DEMO_DONATION_EVENT_001_ID = "00000000-0000-4000-8000-000000000051";
 
 const DEFAULT_PERMISSIONS = [
   { key: "uploads.read", name: "Read Uploads", description: "View uploads" },
@@ -149,16 +157,34 @@ export async function seedDatabase() {
 
   await db
     .insert(donation_recipients)
-    .values({
-      organization_id: DEMO_ORG_ID,
-      name: "Community Food Pantry",
-      recipient_type: "food_bank",
-      address: "456 Hope Street",
-      contact_name: "Jane Smith",
-      phone: "555-0100",
-      email: "contact@foodpantry.local",
-      capacity_rating: 4,
-    })
+    .values([
+      {
+        id: DEMO_RECIPIENT_001_ID,
+        organization_id: DEMO_ORG_ID,
+        name: "Community Food Pantry",
+        recipient_type: "food_bank",
+        address: "456 Hope Street",
+        latitude: "41.8819",
+        longitude: "-87.6231",
+        contact_name: "Jane Smith",
+        phone: "555-0100",
+        email: "contact@foodpantry.local",
+        capacity_rating: 4,
+      },
+      {
+        id: DEMO_RECIPIENT_002_ID,
+        organization_id: DEMO_ORG_ID,
+        name: "Community Kitchen",
+        recipient_type: "community_kitchen",
+        address: "142 Oak Street",
+        latitude: "41.8756",
+        longitude: "-87.6244",
+        contact_name: "Maria Lopez",
+        phone: "555-0200",
+        email: "donations@communitykitchen.local",
+        capacity_rating: 5,
+      },
+    ])
     .onConflictDoNothing();
 
   await db
@@ -207,6 +233,7 @@ export async function seedDatabase() {
     await db
       .insert(inventory_lots)
       .values({
+        id: DEMO_INVENTORY_LOT_ID,
         inventory_item_id: "00000000-0000-4000-8000-000000000005",
         site_id: DEMO_SITE_ID,
         quantity: "380",
@@ -417,6 +444,72 @@ export async function seedDatabase() {
       confidence_score: 81,
       created_by: DEMO_USER_ID,
     })
+    .onConflictDoNothing();
+
+  const completedAt = new Date();
+  completedAt.setDate(completedAt.getDate() - 3);
+
+  await db
+    .insert(donation_opportunities)
+    .values({
+      id: DEMO_OPPORTUNITY_001_ID,
+      organization_id: DEMO_ORG_ID,
+      inventory_lot_id: DEMO_INVENTORY_LOT_ID,
+      priority_score: 88,
+      reason: "Expiring Whole Milk within 2 days",
+      predicted_surplus_quantity: "24",
+      status: "open",
+      created_by: DEMO_USER_ID,
+    })
+    .onConflictDoNothing();
+
+  await db
+    .insert(donation_events)
+    .values({
+      id: DEMO_DONATION_EVENT_001_ID,
+      organization_id: DEMO_ORG_ID,
+      recipient_id: DEMO_RECIPIENT_002_ID,
+      site_id: DEMO_SITE_ID,
+      completed_at: completedAt,
+      total_quantity: "9.6",
+      estimated_meals: 24,
+      created_by: DEMO_USER_ID,
+    })
+    .onConflictDoNothing();
+
+  const impactDate = new Date();
+  await db
+    .insert(impact_metrics)
+    .values([
+      {
+        organization_id: DEMO_ORG_ID,
+        metric_type: "meals_saved",
+        metric_value: "24",
+        calculation_date: impactDate,
+        created_by: DEMO_USER_ID,
+      },
+      {
+        organization_id: DEMO_ORG_ID,
+        metric_type: "food_diverted",
+        metric_value: "9.6",
+        calculation_date: impactDate,
+        created_by: DEMO_USER_ID,
+      },
+      {
+        organization_id: DEMO_ORG_ID,
+        metric_type: "co2_avoided",
+        metric_value: "24",
+        calculation_date: impactDate,
+        created_by: DEMO_USER_ID,
+      },
+      {
+        organization_id: DEMO_ORG_ID,
+        metric_type: "money_saved",
+        metric_value: "43.2",
+        calculation_date: impactDate,
+        created_by: DEMO_USER_ID,
+      },
+    ])
     .onConflictDoNothing();
 
   console.log("Seed complete.");
