@@ -94,3 +94,23 @@ export type ClassificationResponse = z.infer<typeof classificationResponseSchema
 export type ExtractedEntity = z.infer<typeof extractedEntitySchema>;
 export type ExtractionResponse = z.infer<typeof extractionResponseSchema>;
 export type NormalizationResponse = z.infer<typeof normalizationResponseSchema>;
+
+export const assistantResponseSchema = z.object({
+  answer: z.string(),
+  reasoning: z.string(),
+  confidence: z.number().min(0).max(1),
+  recommendedActions: z
+    .array(
+      z.object({
+        id: z.string(),
+        label: z.string(),
+        description: z.string().optional(),
+        href: z.string(),
+      }),
+    )
+    .optional()
+    .default([]),
+  citedSourceIds: z.array(z.string()).optional().default([]),
+});
+
+export type AssistantModelResponse = z.infer<typeof assistantResponseSchema>;

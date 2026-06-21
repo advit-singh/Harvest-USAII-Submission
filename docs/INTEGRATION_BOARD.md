@@ -96,8 +96,8 @@ Production-demo ready.
 | Impact Engine | A | Ready for Integration | Yes | Formulas + aggregation in `src/services/impact`; `GET /api/v1/impact` |
 | Donation Matching Engine | A | Ready for Integration | Yes | Opportunity detection, weighted matching, completion in `src/services/donation` |
 | Analytics API | A | Ready for Integration | Yes | `GET /api/v1/analytics/*` (overview + 5 tabs) |
-| AI Assistant Backend | A | Not Started | No | |
-| Report Generation Backend | A | Not Started | No | |
+| AI Assistant Backend | A | Ready for Integration | Yes | Retrieval, citations, chat API in `src/services/assistant` |
+| Report Generation Backend | A | Ready for Integration | Yes | Templates, async generation, PDF/CSV/DOCX in `src/services/report` |
 | Authentication | B | Complete | Yes | Supabase SSR + dev mock mode; login/register/reset flows |
 | Design System | B | Complete | Yes | Harvest tokens in `src/design-system` + `src/styles/globals.css` |
 | App Shell / Navigation | B | Complete | Yes | Sidebar, header, org switcher, command palette, breadcrumbs |
@@ -130,7 +130,8 @@ Production-demo ready.
 | feature/complete-upload-pipeline-backend | A | Merged (PR #11) |
 | feature/complete-upload-intelligence-pipeline | A | Merged (PR #12) |
 | feature/complete-prediction-intelligence-platform | A | Merged (PR #13) |
-| feature/complete-action-measurement-platform | A | In Progress |
+| feature/complete-action-measurement-platform | A | Merged (PR #15) |
+| feature/complete-conversational-reporting-platform | A | In Progress |
 
 ---
 
@@ -278,14 +279,14 @@ Requires:
 
 Status:
 
-Ready for Integration (mocked clients in `src/lib/api`)
+Ready for Integration (live backends in `src/app/api/v1/assistant`)
 
 Mock-first clients (API_SPEC §44–45, types in `src/types/assistant.ts`):
 
 - `src/lib/api/assistant.ts` — `POST /assistant/conversations`, `POST /assistant/chat`, `GET /assistant/conversations/:id`
 - Mock conversation list maintained in-memory (no list endpoint in API_SPEC); sidebar uses mock registry only
 
-Person A: swap mocks when assistant backend routes are live.
+Person B: set `NEXT_PUBLIC_USE_MOCK_API=false` to use live assistant APIs.
 
 ---
 
@@ -297,13 +298,13 @@ Requires:
 
 Status:
 
-Ready for Integration (mocked clients in `src/lib/api`)
+Ready for Integration (live backends in `src/app/api/v1/reports`)
 
 Mock-first clients (API_SPEC §41–43, types in `src/types/report.ts`):
 
 - `src/lib/api/reports.ts` — `GET /reports/templates`, `GET /reports`, `POST /reports/generate`, `GET /reports/:id`, `GET /reports/:id/download`
 
-Person A: swap mocks when report generation backend routes are live.
+Person B: set `NEXT_PUBLIC_USE_MOCK_API=false` to use live report generation APIs.
 
 ---
 
@@ -350,6 +351,38 @@ Person A: swap mocks when notification backend routes are live.
 
 # Daily Sync Log
 
+## 2026-06-20 (Conversational & Reporting Platform — Person A)
+
+### Person A
+
+Completed:
+
+- AI Assistant backend: org-scoped retrieval, context assembly, OpenRouter + heuristic fallback, citations, recommended actions
+- Report generation engine: 8 templates, PDF/CSV/DOCX renderers, async job lifecycle, Supabase/local storage
+- Full API routes: `/api/v1/assistant/*`, `/api/v1/reports/*`
+- Migration `0004` for report metadata and assistant message metadata
+- Permission gate for `reports.generate`
+- Demo seeds: conversation, messages, ready report, reports.generate permission
+- Unit tests for assistant/report services
+
+Working On:
+
+- PR `feature/complete-conversational-reporting-platform`
+
+Blockers:
+
+- None
+
+Ready For Integration:
+
+- Assistant and Reports backends — Person B can set `NEXT_PUBLIC_USE_MOCK_API=false` for Assistant and Reports workspaces
+
+Milestone Status:
+
+- Complete Conversational & Reporting Intelligence Platform — **Ready for Integration**, PR in progress
+
+---
+
 ## 2026-06-20 (Action & Measurement Platform — Person A)
 
 ### Person A
@@ -367,7 +400,7 @@ Completed:
 
 Working On:
 
-- PR `feature/complete-action-measurement-platform`
+- None
 
 Blockers:
 
@@ -379,7 +412,7 @@ Ready For Integration:
 
 Milestone Status:
 
-- Complete Action & Measurement Intelligence Platform — **Ready for Integration**, PR in progress
+- Complete Action & Measurement Intelligence Platform — **Complete**, merged PR #15
 
 ---
 

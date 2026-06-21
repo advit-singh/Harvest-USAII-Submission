@@ -1180,15 +1180,29 @@ id
 
 organization_id
 
+site_id
+
 generated_by
 
 report_type
+
+format
+
+date_range
 
 file_path
 
 status
 
+progress
+
+error_message
+
 generated_at
+
+created_at
+
+updated_at
 ```
 
 ---
@@ -1228,8 +1242,14 @@ content
 
 citations
 
+metadata
+
 created_at
+
+updated_at
 ```
+
+`metadata` stores assistant response fields: `reasoning`, `confidence`, `recommendedActions`.
 
 ---
 

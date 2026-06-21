@@ -595,12 +595,17 @@ export const reports = pgTable("reports", {
   organization_id: uuid("organization_id")
     .notNull()
     .references(() => organizations.id),
+  site_id: uuid("site_id").references(() => organization_sites.id),
   generated_by: uuid("generated_by")
     .notNull()
     .references(() => users.id),
   report_type: varchar("report_type", { length: 64 }).notNull(),
+  format: varchar("format", { length: 16 }),
+  date_range: jsonb("date_range"),
   file_path: text("file_path"),
   status: varchar("status", { length: 32 }).notNull().default("queued"),
+  progress: integer("progress").notNull().default(0),
+  error_message: text("error_message"),
   generated_at: timestamp("generated_at"),
   created_at: timestamp("created_at").defaultNow().notNull(),
   updated_at: timestamp("updated_at").defaultNow().notNull(),
@@ -629,6 +634,7 @@ export const messages = pgTable("messages", {
   role: varchar("role", { length: 32 }).notNull(),
   content: text("content").notNull(),
   citations: jsonb("citations"),
+  metadata: jsonb("metadata"),
   created_at: timestamp("created_at").defaultNow().notNull(),
   updated_at: timestamp("updated_at").defaultNow().notNull(),
   created_by: uuid("created_by"),
