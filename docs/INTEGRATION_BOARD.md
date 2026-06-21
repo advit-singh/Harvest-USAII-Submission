@@ -87,7 +87,8 @@ Production-demo ready.
 | System | Owner | Status | Consumer Ready | Notes |
 |----------|----------|----------|----------|----------|
 | Database Schema | A | Complete | Yes | Full schema in `src/db/schema.ts`; migrations `0000`–`0003`; seeds in `src/db/seeds` |
-| Upload Pipeline | A | Complete | Yes | API routes + auto-process; OpenRouter/Gemini when `OPENROUTER_API_KEY` set |
+| Upload Pipeline | A | Complete | Yes | Auto-process + auto-commit orchestration; OpenRouter/Gemini when `OPENROUTER_API_KEY` set |
+| E2E Intelligence Orchestration | A | Complete | Yes | Eligible uploads auto-commit → forecast/recommend/donate/impact refresh |
 | AI Extraction Engine | A | Complete | Yes | Classification, extraction, normalization via `src/services/ai` + parsers |
 | Data Validation Engine | A | Complete | Yes | Validation anomalies + resolve API; never blocks pipeline |
 | Forecast Engine | A | Ready for Integration | Yes | Hybrid statistical + rules + AI factors; Open-Meteo weather + Nager.Date holidays when `externalDataEnabled` |
@@ -98,7 +99,7 @@ Production-demo ready.
 | Analytics API | A | Ready for Integration | Yes | `GET /api/v1/analytics/*` (overview + 5 tabs) |
 | AI Assistant Backend | A | Ready for Integration | Yes | Retrieval, citations, chat API in `src/services/assistant` |
 | Report Generation Backend | A | Complete | Yes | Templates, async generation, PDF/CSV/DOCX in `src/services/report` |
-| Platform API Layer | A | Ready for Integration | Yes | Org/settings/members/roles, notifications, operational CRUD, audit, search |
+| Platform API Layer | A | Complete | Yes | Org/settings/members/roles, notifications, operational CRUD, audit, search; merged PR #17 |
 | Notification API | A | Ready for Integration | Yes | `GET/PATCH /api/v1/notifications/*` with event emission hooks |
 | Operational Data APIs | A | Ready for Integration | Yes | Inventory, attendance, events, waste routes |
 | Audit & Search APIs | A | Ready for Integration | Yes | `GET /api/v1/audit`, `GET /api/v1/search` |
@@ -136,7 +137,8 @@ Production-demo ready.
 | feature/complete-prediction-intelligence-platform | A | Merged (PR #13) |
 | feature/complete-action-measurement-platform | A | Merged (PR #15) |
 | feature/complete-conversational-reporting-platform | A | Merged (PR #16) |
-| feature/complete-platform-api-layer | A | In Progress |
+| feature/complete-platform-api-layer | A | Merged (PR #17) |
+| feature/complete-e2e-intelligence-orchestration | A | In Progress |
 
 ---
 
@@ -345,6 +347,37 @@ Person B: set `NEXT_PUBLIC_USE_MOCK_API=false` to use live notification APIs.
 ---
 
 # Daily Sync Log
+
+## 2026-06-20 (E2E Intelligence Orchestration — Person A)
+
+### Person A
+
+Completed:
+
+- Documentation: API_SPEC auto-commit settings, upload status transitions, USER_FLOWS orchestration branch
+- Auto-commit eligibility rules with org-configurable confidence threshold
+- Upload orchestration service: shared finalize path for auto and manual commit
+- Pipeline auto-commit branch → intelligence refresh (forecasts, donations, impact)
+- Intelligence trigger structured results and logging
+- Unit and integration tests for orchestration path
+
+Working On:
+
+- PR merge
+
+Blockers:
+
+- None
+
+Ready For Integration:
+
+- End-to-end upload → intelligence pipeline for Person B live API mode
+
+Milestone Status:
+
+- Complete End-to-End Intelligence Orchestration Pipeline — **Complete**, PR in progress
+
+---
 
 ## 2026-06-20 (Platform API Layer — Person A)
 

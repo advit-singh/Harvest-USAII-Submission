@@ -264,7 +264,9 @@ Notification Settings
       "confidenceVisibility": true,
       "memoryEnabled": true,
       "recommendationAggressiveness": "medium",
-      "assistantEnabled": true
+      "assistantEnabled": true,
+      "autoCommitEnabled": true,
+      "autoCommitConfidenceThreshold": 0.85
     },
     "forecast": {
       "defaultHorizonDays": 7,
@@ -290,7 +292,9 @@ Notification Settings
     "confidenceVisibility": true,
     "memoryEnabled": true,
     "recommendationAggressiveness": "low",
-    "assistantEnabled": true
+    "assistantEnabled": true,
+    "autoCommitEnabled": true,
+    "autoCommitConfidenceThreshold": 0.9
   },
   "forecast": {
     "defaultHorizonDays": 14,
@@ -497,6 +501,22 @@ Returns:
 }
 ```
 
+### Status values
+
+| Status | Description |
+|--------|-------------|
+| `uploaded` | File stored, processing not started |
+| `classifying` | Document type detection |
+| `extracting` | Content parsing |
+| `normalizing` | Canonical data conversion |
+| `validating` | Anomaly checks |
+| `review_required` | Human review required before commit |
+| `completed` | Committed to operational tables; intelligence refresh triggered |
+| `failed` | Processing error |
+| `rejected` | User rejected extraction |
+
+When auto-commit eligibility passes (see Organization Settings `ai.autoCommitEnabled` and `ai.autoCommitConfidenceThreshold`), processing transitions directly from `validating` to `completed` without manual approval.
+
 ---
 
 # 16. Upload Processing
@@ -542,6 +562,8 @@ POST /api/v1/uploads/:id/approve
 ```
 
 Commits extracted records to Layer 2 operational tables (inventory, attendance, waste, events, purchases).
+
+Also used for manual approval when the pipeline ends in `review_required`. When auto-commit eligibility passes during processing, the same commit and intelligence refresh runs automatically without calling this endpoint.
 
 Request body (optional edits):
 

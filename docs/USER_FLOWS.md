@@ -247,13 +247,11 @@ Validation.
 
 ↓
 
-Review.
+Auto-commit eligibility check.
 
 ↓
 
-Approval.
-
-↓
+If eligible:
 
 Database Update.
 
@@ -263,7 +261,45 @@ Forecast Refresh.
 
 ↓
 
+Recommendations Refresh.
+
+↓
+
+Donation Opportunities Sync.
+
+↓
+
+Impact Snapshot Update.
+
+↓
+
+Status: Completed.
+
+↓
+
 Dashboard Refresh.
+
+---
+
+If not eligible:
+
+Review Required.
+
+↓
+
+User opens review screen.
+
+↓
+
+Manual Approval (optional edits).
+
+↓
+
+Database Update + Intelligence Refresh.
+
+↓
+
+Status: Completed.
 
 ---
 
