@@ -1404,10 +1404,65 @@ Natural language interface.
 
 ---
 
+## List Conversations
+
+```http
+GET /api/v1/assistant/conversations
+```
+
+Query:
+
+* `organizationId` (required)
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "uuid",
+      "organizationId": "uuid",
+      "title": "Waste spike analysis",
+      "preview": "Why was waste higher this week?",
+      "createdAt": "2026-06-01T10:00:00Z",
+      "updatedAt": "2026-06-01T10:05:00Z"
+    }
+  ]
+}
+```
+
+---
+
 ## Create Conversation
 
 ```http
 POST /api/v1/assistant/conversations
+```
+
+Request:
+
+```json
+{
+  "organizationId": "uuid"
+}
+```
+
+Response (201):
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "organizationId": "uuid",
+    "title": "New conversation",
+    "preview": "",
+    "createdAt": "2026-06-01T10:00:00Z",
+    "updatedAt": "2026-06-01T10:00:00Z",
+    "messages": []
+  }
+}
 ```
 
 ---
@@ -1427,17 +1482,22 @@ Request:
 }
 ```
 
----
-
 Response:
 
 ```json
 {
-  "answer": "...",
-  "confidence": 0.87,
-  "citations": []
+  "success": true,
+  "data": {
+    "answer": "...",
+    "confidence": 0.87,
+    "reasoning": "...",
+    "citations": [],
+    "recommendedActions": []
+  }
 }
 ```
+
+Rate limit: 20 requests per minute per user.
 
 ---
 
@@ -1445,6 +1505,43 @@ Response:
 
 ```http
 GET /api/v1/assistant/conversations/:id
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "organizationId": "uuid",
+    "title": "Waste spike analysis",
+    "preview": "Why was waste higher this week?",
+    "createdAt": "2026-06-01T10:00:00Z",
+    "updatedAt": "2026-06-01T10:05:00Z",
+    "messages": [
+      {
+        "id": "uuid",
+        "role": "user",
+        "content": "Why was waste higher this week?",
+        "createdAt": "2026-06-01T10:00:00Z"
+      },
+      {
+        "id": "uuid",
+        "role": "assistant",
+        "content": "...",
+        "createdAt": "2026-06-01T10:00:05Z",
+        "response": {
+          "answer": "...",
+          "confidence": 0.87,
+          "reasoning": "...",
+          "citations": [],
+          "recommendedActions": []
+        }
+      }
+    ]
+  }
+}
 ```
 
 ---
