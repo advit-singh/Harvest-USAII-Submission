@@ -4,6 +4,7 @@ import { mapUploadSummary } from "@/lib/api/upload-mappers";
 import { commitUploadData } from "@/services/upload/commit-service";
 import { getUploadById, updateUploadStatus } from "@/services/upload/upload-service";
 import { refreshSiteIntelligence } from "@/services/intelligence/intelligence-trigger";
+import { notifyUploadCompleted } from "@/services/notification/notification-emitter";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -24,6 +25,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     await updateUploadStatus(id, "completed");
 
     void refreshSiteIntelligence(upload.organization_id, upload.site_id, user.id);
+    void notifyUploadCompleted({
+      organizationId: upload.organization_id,
+      userId: user.id,
+      uploadId: id,
+      fileName: upload.file_name,
+    });
 
     const updatedUpload = await getUploadById(id);
 

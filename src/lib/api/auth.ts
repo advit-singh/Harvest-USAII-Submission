@@ -1,7 +1,23 @@
-import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { db } from "@/db/client";
+import { DEMO_USER_ID } from "@/services/platform/constants";
+import { ensureDemoUser, ensureUserFromAuth } from "@/services/platform/auth-sync-service";
 
 export async function getAuthenticatedUser() {
+  if (!isSupabaseConfigured()) {
+    const cookieStore = await cookies();
+    if (cookieStore.get("harvest-dev-auth")?.value === "1") {
+      await ensureDemoUser();
+      return {
+        id: DEMO_USER_ID,
+        email: "demo@harvest.local",
+        user_metadata: { full_name: "Demo User" },
+      };
+    }
+    return null;
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -20,13 +36,23 @@ export async function requireAuthenticatedUser() {
   if (!user) {
     throw new AuthError("UNAUTHORIZED", "Authentication required.");
   }
+
+  const metadata = user.user_metadata as Record<string, unknown> | undefined;
+
+  await ensureUserFromAuth({
+    id: user.id,
+    email: user.email ?? `${user.id}@harvest.local`,
+    fullName: typeof metadata?.full_name === "string" ? metadata.full_name : undefined,
+    avatarUrl: typeof metadata?.avatar_url === "string" ? metadata.avatar_url : undefined,
+  });
+
   return user;
 }
 
 export async function requireOrgMembership(organizationId: string, userId: string) {
   const member = await db.query.organization_members.findFirst({
-    where: (fields, { and, eq: eqFn }) =>
-      and(eqFn(fields.organization_id, organizationId), eqFn(fields.user_id, userId)),
+    where: (fields, { and: andFn, eq: eqFn }) =>
+      andFn(eqFn(fields.organization_id, organizationId), eqFn(fields.user_id, userId)),
   });
 
   if (!member || member.status !== "active") {
