@@ -30,6 +30,6 @@ describe("AnomalyCard", () => {
 
     expect(screen.getByText(/inventory conflict/i)).toBeInTheDocument();
     expect(screen.getByText(/Quantity exceeds typical usage/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Accept/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Acknowledge/i })).toBeInTheDocument();
   });
 });

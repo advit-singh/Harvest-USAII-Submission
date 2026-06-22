@@ -24,7 +24,7 @@ export async function fetchDonationOpportunities(
 ): Promise<DonationOpportunity[]> {
   if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
     await new Promise((r) => setTimeout(r, 200));
-    return getMockDonationOpportunities();
+    return getMockDonationOpportunities(orgId);
   }
 
   return apiClient<DonationOpportunity[]>(

@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db/client";
 import { memory_mappings, organizations } from "@/db/schema";
 import { normalizeWithAi } from "@/services/ai/ai-service";
-import { isOpenRouterConfigured } from "@/lib/ai/openrouter-client";
+import { isAiConfigured } from "@/services/ai/ai-service";
 import type { ExtractedEntity } from "@/lib/ai/response-parser";
 import { buildNormalizedPayload, type NormalizedUploadPayload } from "./upload-types";
 
@@ -40,7 +40,7 @@ export async function normalizeUploadContent(input: {
 
   let normalizedEntities = entities;
 
-  if (isOpenRouterConfigured() && entities.length > 0) {
+  if (isAiConfigured() && entities.length > 0) {
     try {
       const result = await normalizeWithAi({
         classification: input.classification,

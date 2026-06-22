@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api/client";
+import { persistMockData } from "@/lib/demo/hydrate-mock-data";
 import type {
   CreateOrganizationInput,
   Organization,
@@ -54,6 +55,21 @@ export function getMockOrganizations(): Organization[] {
   return mockOrganizations;
 }
 
+export function setMockOrganizationsState(orgs: Organization[]): void {
+  mockOrganizations = orgs;
+}
+
+export function updateMockOrganization(
+  orgId: string,
+  patch: Partial<Organization>,
+): Organization | null {
+  const idx = mockOrganizations.findIndex((o) => o.id === orgId);
+  if (idx === -1) return null;
+  mockOrganizations[idx] = { ...mockOrganizations[idx], ...patch };
+  persistMockData();
+  return mockOrganizations[idx];
+}
+
 export function resetMockOrganizations(): void {
   mockOrganizations = [];
   mockMembers = [];
@@ -83,6 +99,7 @@ export async function createOrganization(
       isActive: true,
     };
     mockOrganizations = [...mockOrganizations, org];
+    persistMockData();
     return org;
   }
   return apiClient<Organization>("/organizations", {
@@ -241,5 +258,20 @@ export async function inviteMember(
   return apiClient<OrganizationMember>(`/organizations/${orgId}/members`, {
     method: "POST",
     body: JSON.stringify({ email, roleId }),
+  });
+}
+
+export async function updateOrganization(
+  orgId: string,
+  patch: Partial<CreateOrganizationInput>,
+): Promise<Organization> {
+  if (process.env.NEXT_PUBLIC_USE_MOCK_API !== "false") {
+    const updated = updateMockOrganization(orgId, patch);
+    if (!updated) throw new Error("Organization not found");
+    return updated;
+  }
+  return apiClient<Organization>(`/organizations/${orgId}`, {
+    method: "PATCH",
+    body: JSON.stringify(patch),
   });
 }

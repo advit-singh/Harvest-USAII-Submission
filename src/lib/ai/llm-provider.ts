@@ -1,10 +1,7 @@
-import { isOpenRouterConfigured, callOpenRouter } from "@/lib/ai/openrouter-client";
-import {
-  LOCAL_LLM_MAX_TOKENS,
-  LOCAL_LLM_TEMPERATURE,
-} from "@/lib/ai/local/model-config";
+import { callGemini, isGeminiConfigured } from "@/lib/ai/gemini-client";
+import { callOpenRouter, isOpenRouterConfigured } from "@/lib/ai/openrouter-client";
 
-export type LlmProvider = "local" | "openrouter";
+export type LlmProvider = "gemini" | "openrouter";
 
 export interface LlmCallOptions {
   system: string;
@@ -21,17 +18,32 @@ export interface LlmCallResult {
 }
 
 export function resolveLlmProvider(): LlmProvider {
-  if (typeof window !== "undefined") {
-    return "local";
+  if (isGeminiConfigured()) {
+    return "gemini";
   }
   if (isOpenRouterConfigured()) {
     return "openrouter";
   }
-  return "local";
+  return "gemini";
 }
 
 export async function callLlm(options: LlmCallOptions): Promise<LlmCallResult> {
   const provider = resolveLlmProvider();
+
+  if (provider === "gemini" && isGeminiConfigured()) {
+    const response = await callGemini({
+      system: options.system,
+      user: options.user,
+      temperature: options.temperature,
+      maxTokens: options.maxTokens,
+      jsonMode: options.jsonMode,
+    });
+    return {
+      content: response.content,
+      provider: "gemini",
+      model: response.model,
+    };
+  }
 
   if (provider === "openrouter" && isOpenRouterConfigured()) {
     const response = await callOpenRouter({
@@ -39,8 +51,8 @@ export async function callLlm(options: LlmCallOptions): Promise<LlmCallResult> {
         { role: "system", content: options.system },
         { role: "user", content: options.user },
       ],
-      temperature: options.temperature ?? LOCAL_LLM_TEMPERATURE,
-      maxTokens: options.maxTokens ?? LOCAL_LLM_MAX_TOKENS,
+      temperature: options.temperature ?? 0.2,
+      maxTokens: options.maxTokens ?? 1024,
       responseFormat: options.jsonMode ? "json_object" : "text",
     });
     return {
@@ -50,24 +62,5 @@ export async function callLlm(options: LlmCallOptions): Promise<LlmCallResult> {
     };
   }
 
-  const { getLocalLlmEngine } = await import("@/lib/ai/local/web-llm-engine");
-  const engine = await getLocalLlmEngine();
-
-  const response = await engine.chat.completions.create({
-    messages: [
-      { role: "system", content: options.system },
-      { role: "user", content: options.user },
-    ],
-    temperature: options.temperature ?? LOCAL_LLM_TEMPERATURE,
-    max_tokens: options.maxTokens ?? LOCAL_LLM_MAX_TOKENS,
-    response_format: options.jsonMode ? { type: "json_object" } : undefined,
-  });
-
-  const content = response.choices[0]?.message?.content ?? "";
-
-  return {
-    content,
-    provider: "local",
-    model: response.model ?? "local-llm",
-  };
+  throw new Error("No AI provider configured. Set GEMINI_API_KEY or OPENROUTER_API_KEY.");
 }

@@ -67,6 +67,9 @@ export function ImpactAnalysisTab({ orgId, filters }: ImpactAnalysisTabProps) {
                       data={group.timeSeries}
                       variant="line"
                       height={160}
+                      xAxisLabel="Week"
+                      yAxisLabel="Impact"
+                      valueLabel={group.label}
                     />
                   </CardContent>
                 </Card>

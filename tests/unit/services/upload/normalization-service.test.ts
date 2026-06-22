@@ -13,6 +13,7 @@ vi.mock("@/db/client", () => ({
 
 vi.mock("@/services/ai/ai-service", () => ({
   normalizeWithAi: vi.fn(),
+  isAiConfigured: vi.fn().mockReturnValue(false),
 }));
 
 import { normalizeUploadContent } from "@/services/upload/normalization-service";

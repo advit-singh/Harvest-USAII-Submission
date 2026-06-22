@@ -1,5 +1,5 @@
 import { classifyWithAi } from "@/services/ai/ai-service";
-import { isOpenRouterConfigured } from "@/lib/ai/openrouter-client";
+import { isAiConfigured } from "@/services/ai/ai-service";
 import { toDbConfidence } from "@/lib/api/confidence";
 
 export interface UploadMetadata {
@@ -60,7 +60,7 @@ function classifyHeuristic(upload: UploadMetadata): ClassificationResult {
 }
 
 export async function classifyUpload(upload: UploadMetadata): Promise<ClassificationResult> {
-  if (isOpenRouterConfigured() && upload.contentPreview) {
+  if (isAiConfigured() && upload.contentPreview) {
     try {
       const result = await classifyWithAi({
         fileName: upload.file_name,

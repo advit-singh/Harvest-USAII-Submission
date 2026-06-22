@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Toaster } from "sonner";
 import { ThemeSync } from "@/components/layout/ThemeSync";
 import { GithubPagesBootstrap } from "@/components/layout/GithubPagesBootstrap";
+import { MockDataBootstrap } from "@/components/layout/MockDataBootstrap";
 import { LiveDataSync } from "@/lib/query/live-sync";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -24,6 +25,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <MockDataBootstrap />
         <GithubPagesBootstrap />
         <ThemeSync />
         <LiveDataSync />

@@ -1,7 +1,8 @@
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "@/db/client";
 import { conversations, messages } from "@/db/schema";
-import { callOpenRouter, isOpenRouterConfigured } from "@/lib/ai/openrouter-client";
+import { callLlm } from "@/lib/ai/llm-provider";
+import { isAiConfigured } from "@/services/ai/ai-service";
 import {
   buildAssistantSystemPrompt,
   buildAssistantUserPrompt,
@@ -166,23 +167,19 @@ async function generateAssistantAnswer(input: {
   history: Array<{ role: string; content: string }>;
   citations: AssistantCitation[];
 }) {
-  if (isOpenRouterConfigured()) {
+  if (isAiConfigured()) {
     try {
-      const response = await callOpenRouter({
-        messages: [
-          { role: "system", content: buildAssistantSystemPrompt() },
-          {
-            role: "user",
-            content: buildAssistantUserPrompt({
-              message: input.message,
-              context: input.context,
-              history: input.history,
-              citationIds: input.citations.map((citation) => citation.id),
-            }),
-          },
-        ],
-        responseFormat: "json_object",
-        maxTokens: 2048,
+      const recentHistory = input.history.slice(-4);
+      const response = await callLlm({
+        system: buildAssistantSystemPrompt(),
+        user: buildAssistantUserPrompt({
+          message: input.message,
+          context: input.context.slice(0, 3000),
+          history: recentHistory,
+          citationIds: input.citations.map((citation) => citation.id),
+        }),
+        jsonMode: true,
+        maxTokens: 512,
       });
 
       return parseJsonResponse(response.content, assistantResponseSchema);

@@ -34,7 +34,7 @@ export async function fetchRecommendations(
 ): Promise<Recommendation[]> {
   if (!isLiveIntelligenceApiEnabled()) {
     await new Promise((r) => setTimeout(r, 200));
-    let items = getMockRecommendations();
+    let items = getMockRecommendations(filters.orgId);
 
     if (filters.status && filters.status !== "all" && filters.status !== "open") {
       items = items.filter((r) => r.status === filters.status);
@@ -50,7 +50,7 @@ export async function fetchRecommendations(
 
     if (filters.status === "all") {
       items = ["rec_001", "rec_002", "rec_003"]
-        .map((id) => getMockRecommendationDetail(id))
+        .map((id) => getMockRecommendationDetail(id, filters.orgId))
         .filter((r): r is RecommendationDetail => r !== null);
     }
 

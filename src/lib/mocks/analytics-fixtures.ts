@@ -7,9 +7,8 @@ import type {
   InventoryAnalytics,
   WasteAnalytics,
 } from "@/types/analytics";
-
-const DEMO_SITE = "Lincoln Elementary Cafeteria";
-const DEMO_SITE_ID = "site_001";
+import { getOrgContext, orgScale } from "@/lib/demo/org-context";
+import { buildHierarchyNodes } from "@/lib/demo/apply-org-context";
 
 const TIME_MULTIPLIERS: Record<AnalyticsFilters["timeRange"], number> = {
   week: 1,
@@ -22,31 +21,12 @@ function isEmptyOrg(orgId: string): boolean {
   return orgId.startsWith("org_empty") || orgId === "org_new";
 }
 
-function orgScale(orgId: string): number {
-  if (orgId === "org_demo_456") return 1.4;
-  if (orgId === "org_demo_789") return 2.1;
-  return 1;
-}
-
-function orgSiteName(orgId: string): string {
-  if (orgId === "org_demo_456") return "Riverside Main Kitchen";
-  if (orgId === "org_demo_789") return "Metro University Dining Hall";
-  return DEMO_SITE;
-}
-
 function scale(value: number, timeRange: AnalyticsFilters["timeRange"]): number {
   return Math.round(value * TIME_MULTIPLIERS[timeRange]);
 }
 
-export function getMockHierarchyNodes(): HierarchyNode[] {
-  return [
-    { id: "org_001", name: "Lincoln School District", level: "organization", parentId: null },
-    { id: "region_001", name: "North Region", level: "region", parentId: "org_001" },
-    { id: "campus_001", name: "Lincoln Elementary", level: "campus", parentId: "region_001" },
-    { id: "building_001", name: "Main Building", level: "building", parentId: "campus_001" },
-    { id: "kitchen_001", name: DEMO_SITE, level: "kitchen", parentId: "building_001" },
-    { id: "storage_001", name: "Cold Storage A", level: "storage", parentId: "kitchen_001" },
-  ];
+export function getMockHierarchyNodes(orgId: string): HierarchyNode[] {
+  return buildHierarchyNodes(getOrgContext(orgId));
 }
 
 export function getMockWasteAnalytics(
@@ -67,7 +47,9 @@ export function getMockWasteAnalytics(
 
   const m = TIME_MULTIPLIERS[filters.timeRange];
   const scaleFactor = orgScale(orgId);
-  const siteName = orgSiteName(orgId);
+  const ctx = getOrgContext(orgId);
+  const siteName = ctx.primarySiteName;
+  const secondarySite = ctx.siteNames[1] ?? "Secondary Site";
 
   return {
     timeSeries: [
@@ -89,8 +71,8 @@ export function getMockWasteAnalytics(
       { id: "item_chicken", name: "Grilled chicken", value: Math.round(scale(10, filters.timeRange) * scaleFactor), unit: "kg", percent: 12 },
     ],
     bySite: [
-      { id: DEMO_SITE_ID, name: siteName, value: Math.round(scale(89, filters.timeRange) * scaleFactor), unit: "kg", percent: 72 },
-      { id: "site_002", name: orgId === "org_demo_789" ? "North Campus Cafeteria" : "Secondary Site", value: Math.round(scale(34, filters.timeRange) * scaleFactor), unit: "kg", percent: 28 },
+      { id: ctx.primarySiteId, name: siteName, value: Math.round(scale(89, filters.timeRange) * scaleFactor), unit: "kg", percent: 72 },
+      { id: "site_002", name: secondarySite, value: Math.round(scale(34, filters.timeRange) * scaleFactor), unit: "kg", percent: 28 },
     ],
     byEvent: [
       { id: "evt_rain", name: "Rain day lunch", value: scale(28, filters.timeRange), unit: "kg", percent: 32 },

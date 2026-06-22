@@ -45,6 +45,7 @@ const env = {
   NEXT_PUBLIC_GITHUB_PAGES: "true",
   NEXT_PUBLIC_USE_MOCK_API: "true",
   NEXT_PUBLIC_LIVE_INTELLIGENCE_API: "false",
+  NEXT_PUBLIC_GEMINI_API_KEY: process.env.NEXT_PUBLIC_GEMINI_API_KEY ?? process.env.GEMINI_API_KEY ?? "",
 };
 
 const build = spawnSync("npm", ["run", "build"], {

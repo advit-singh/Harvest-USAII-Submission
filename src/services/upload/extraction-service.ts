@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { parseFileContent } from "@/lib/parsers";
 import { extractWithAi } from "@/services/ai/ai-service";
-import { isOpenRouterConfigured } from "@/lib/ai/openrouter-client";
+import { isAiConfigured } from "@/services/ai/ai-service";
 import type { ExtractedEntity } from "@/lib/ai/response-parser";
 import { toDbConfidence } from "@/lib/api/confidence";
 
@@ -36,7 +36,7 @@ export async function extractUploadContent(
   let overallConfidence = 0.5;
   let modelVersion = "local-parser-v1";
 
-  if (isOpenRouterConfigured() && rawText.length > 0) {
+  if (isAiConfigured() && rawText.length > 0) {
     try {
       const extraction = await extractWithAi({
         classification,

@@ -6,10 +6,8 @@ import type { ImpactMetrics } from "@/types/impact";
 import type { InventoryHealth } from "@/types/inventory";
 import type { HarvestNotification } from "@/types/notification";
 import type { Recommendation } from "@/types/recommendation";
-
-/** School cafeteria demo story — PRD §30 */
-
-const DEMO_SITE = "Lincoln Elementary Cafeteria";
+import { getOrgContext } from "@/lib/demo/org-context";
+import { patchSiteFields, patchSiteFieldsList } from "@/lib/demo/apply-org-context";
 
 export function getMockDashboardOverview(orgId: string): DashboardOverview {
   if (orgId.startsWith("org_empty") || orgId === "org_new") {
@@ -35,13 +33,14 @@ export function getMockDashboardOverview(orgId: string): DashboardOverview {
   };
 }
 
-export function getMockForecasts(): ForecastSummary[] {
+export function getMockForecasts(orgId: string): ForecastSummary[] {
+  const ctx = getOrgContext(orgId);
   return [
     {
       id: "fcst_001",
       forecastType: "surplus",
-      siteId: "site_001",
-      siteName: DEMO_SITE,
+      siteId: ctx.primarySiteId,
+      siteName: ctx.primarySiteName,
       predictedMeals: 142,
       predictedInventoryUnits: 380,
       confidence: 0.87,
@@ -72,7 +71,7 @@ let mockRecommendations: Recommendation[] = [
     priority: "high",
     status: "open",
     siteId: "site_001",
-    siteName: DEMO_SITE,
+    siteName: "Main Kitchen",
     createdAt: new Date(Date.now() - 3600000).toISOString(),
   },
   {
@@ -84,7 +83,7 @@ let mockRecommendations: Recommendation[] = [
     priority: "medium",
     status: "open",
     siteId: "site_001",
-    siteName: DEMO_SITE,
+    siteName: "Main Kitchen",
     createdAt: new Date(Date.now() - 7200000).toISOString(),
   },
   {
@@ -96,13 +95,16 @@ let mockRecommendations: Recommendation[] = [
     priority: "high",
     status: "open",
     siteId: "site_001",
-    siteName: DEMO_SITE,
+    siteName: "Main Kitchen",
     createdAt: new Date(Date.now() - 10800000).toISOString(),
   },
 ];
 
-export function getMockRecommendations(): Recommendation[] {
-  return mockRecommendations.filter((r) => r.status === "open");
+export function getMockRecommendations(orgId: string): Recommendation[] {
+  return patchSiteFieldsList(
+    orgId,
+    mockRecommendations.filter((r) => r.status === "open"),
+  );
 }
 
 export function updateMockRecommendationAction(
@@ -168,18 +170,19 @@ export function getMockInventoryHealth(): InventoryHealth {
   };
 }
 
-export function getMockDonationOpportunities(): DonationOpportunity[] {
-  return getMockDonationOpportunitiesFromRescue();
+export function getMockDonationOpportunities(orgId: string): DonationOpportunity[] {
+  return getMockDonationOpportunitiesFromRescue(orgId);
 }
 
-export function getMockNotifications(): HarvestNotification[] {
+export function getMockNotifications(orgId: string): HarvestNotification[] {
+  const ctx = getOrgContext(orgId);
   return [
     {
       id: "notif_001",
       type: "upload.completed",
       severity: "informational",
       title: "Receipt upload processed",
-      message: "Lincoln Elementary lunch receipt extracted successfully.",
+      message: `${ctx.primarySiteName} lunch receipt extracted successfully.`,
       href: "/uploads?id=upl_001&tab=queue",
       isRead: false,
       createdAt: new Date(Date.now() - 1800000).toISOString(),

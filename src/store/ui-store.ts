@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 
 export type Theme = "light" | "dark" | "system";
 export type TableDensity = "comfortable" | "compact";
+export type ResolvedTheme = "light" | "dark";
 
 interface UiState {
   sidebarCollapsed: boolean;
@@ -11,6 +12,7 @@ interface UiState {
   setSidebarCollapsed: (collapsed: boolean) => void;
   toggleSidebar: () => void;
   setTheme: (theme: Theme) => void;
+  toggleTheme: (resolvedTheme?: ResolvedTheme) => void;
   setTableDensity: (density: TableDensity) => void;
 }
 
@@ -24,6 +26,13 @@ export const useUiStore = create<UiState>()(
       toggleSidebar: () =>
         set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
       setTheme: (theme) => set({ theme }),
+      toggleTheme: (resolvedTheme) =>
+        set((state) => {
+          const isDark =
+            resolvedTheme === "dark" ||
+            (resolvedTheme !== "light" && state.theme === "dark");
+          return { theme: isDark ? "light" : "dark" };
+        }),
       setTableDensity: (tableDensity) => set({ tableDensity }),
     }),
     { name: "harvest-ui" },

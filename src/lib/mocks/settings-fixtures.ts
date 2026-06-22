@@ -1,5 +1,9 @@
 import type { OrganizationSettings } from "@/types/settings";
 import { DEFAULT_LAYOUTS, DEFAULT_VISIBILITY } from "@/store/dashboard-store";
+import {
+  loadMockSettingsMap,
+  saveMockSettingsMap,
+} from "@/lib/demo/mock-persistence";
 
 const mockSettingsByOrg = new Map<string, OrganizationSettings>();
 
@@ -51,6 +55,19 @@ export function setMockOrganizationSettings(
   settings: OrganizationSettings,
 ): void {
   mockSettingsByOrg.set(organizationId, settings);
+  if (typeof window !== "undefined") {
+    const map = loadMockSettingsMap() as Record<string, OrganizationSettings>;
+    map[organizationId] = settings;
+    saveMockSettingsMap(map);
+  }
+}
+
+export function hydrateMockSettingsFromStorage(
+  map: Record<string, unknown>,
+): void {
+  for (const [orgId, settings] of Object.entries(map)) {
+    mockSettingsByOrg.set(orgId, settings as OrganizationSettings);
+  }
 }
 
 export function resetMockOrganizationSettings(): void {

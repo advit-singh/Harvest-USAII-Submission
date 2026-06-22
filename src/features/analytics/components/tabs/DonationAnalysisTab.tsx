@@ -45,7 +45,13 @@ export function DonationAnalysisTab({ orgId, filters }: DonationAnalysisTabProps
               <CardTitle className="text-base">Donation History</CardTitle>
             </CardHeader>
             <CardContent>
-              <TimeSeriesChart data={data.history} variant="area" />
+              <TimeSeriesChart
+                data={data.history}
+                variant="area"
+                xAxisLabel="Week"
+                yAxisLabel="Meals"
+                valueLabel="Meals donated"
+              />
             </CardContent>
           </Card>
 
@@ -57,6 +63,7 @@ export function DonationAnalysisTab({ orgId, filters }: DonationAnalysisTabProps
               <BreakdownBarChart
                 data={data.recipientPerformance}
                 layout="horizontal"
+                xAxisLabel="Meals"
               />
               <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
                 <div className="rounded-md bg-muted/50 p-3">

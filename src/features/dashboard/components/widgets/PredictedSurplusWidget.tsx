@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { TrendingUp } from "lucide-react";
-import { Area, AreaChart, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, XAxis, YAxis, Tooltip } from "recharts";
 import { Button } from "@/components/ui/button";
 import { ChartContainer } from "@/components/charts/ChartContainer";
+import { ChartTooltip } from "@/components/charts/ChartTooltip";
 import { ConfidenceIndicator } from "@/components/ai/ConfidenceIndicator";
 import { WidgetShell } from "@/features/dashboard/components/WidgetShell";
 import { WidgetQueryState } from "@/features/dashboard/components/WidgetQueryState";
@@ -71,6 +72,7 @@ export function PredictedSurplusWidget({ orgId }: PredictedSurplusWidgetProps) {
                     tickLine={false}
                   />
                   <YAxis hide />
+                  <Tooltip content={<ChartTooltip valueLabel="Meals" />} />
                   <Area
                     type="monotone"
                     dataKey="value"

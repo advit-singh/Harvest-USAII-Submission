@@ -22,9 +22,7 @@ import {
   type OrganizationProfileInput,
 } from "@/features/settings/schemas/organization-profile.schema";
 import { useOrganizations } from "@/features/organizations/hooks/useOrganizations";
-import { useQueryClient } from "@tanstack/react-query";
-import { organizationKeys } from "@/features/organizations/hooks/useOrganizations";
-import type { Organization } from "@/types/organization";
+import { updateOrganization } from "@/lib/api/organizations";
 
 interface OrganizationSectionProps {
   orgId: string;
@@ -32,7 +30,6 @@ interface OrganizationSectionProps {
 
 export function OrganizationSection({ orgId }: OrganizationSectionProps) {
   const { organizations, refetch, isLoading, isError } = useOrganizations();
-  const queryClient = useQueryClient();
   const org = organizations.find((o) => o.id === orgId);
 
   const form = useForm<OrganizationProfileInput>({
@@ -64,14 +61,13 @@ export function OrganizationSection({ orgId }: OrganizationSectionProps) {
 
   const handleSubmit = form.handleSubmit(async (values) => {
     if (!org) return;
-    const updated = { ...org, ...values };
-    queryClient.setQueryData(
-      organizationKeys.list(),
-      (prev: Organization[] | undefined) =>
-        prev?.map((o) => (o.id === orgId ? updated : o)),
-    );
-    toast.success("Organization profile saved");
-    await refetch();
+    try {
+      await updateOrganization(orgId, values);
+      toast.success("Organization profile saved");
+      await refetch();
+    } catch {
+      toast.error("Failed to save organization profile");
+    }
   });
 
   if (isLoading) return <PageLoadingState />;

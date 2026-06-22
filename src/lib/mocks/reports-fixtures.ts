@@ -8,10 +8,10 @@ import type {
   ReportTemplate,
   ReportTemplateId,
 } from "@/types/report";
+import { getOrgContext } from "@/lib/demo/org-context";
+import { getMockSitesForOrg } from "@/lib/api/sites";
 
 export const DEMO_ORG = "org_demo_123";
-export const DEMO_SITE_ID = "site_001";
-export const DEMO_SITE_NAME = "Lincoln Elementary Cafeteria";
 
 const TEMPLATE_NAMES: Record<ReportTemplateId, string> = {
   monthly_summary: "Monthly Summary",
@@ -94,14 +94,19 @@ function defaultDateRange() {
   };
 }
 
+function siteNameFor(orgId: string, siteId: string): string {
+  const site = getMockSitesForOrg(orgId).find((s) => s.id === siteId);
+  return site?.name ?? getOrgContext(orgId).primarySiteName;
+}
+
 let mockReports: ReportDetail[] = [
   {
     id: "rpt_001",
     organizationId: DEMO_ORG,
     template: "monthly_summary",
     templateName: "Monthly Summary",
-    siteId: DEMO_SITE_ID,
-    siteName: DEMO_SITE_NAME,
+    siteId: "site_001",
+    siteName: siteNameFor(DEMO_ORG, "site_001"),
     format: "pdf",
     status: "ready",
     generatedBy: "user_demo",
@@ -117,8 +122,8 @@ let mockReports: ReportDetail[] = [
     organizationId: DEMO_ORG,
     template: "waste_report",
     templateName: "Waste Report",
-    siteId: DEMO_SITE_ID,
-    siteName: DEMO_SITE_NAME,
+    siteId: "site_001",
+    siteName: siteNameFor(DEMO_ORG, "site_001"),
     format: "csv",
     status: "ready",
     generatedBy: "user_demo",
@@ -216,8 +221,7 @@ export function createMockReport(
     template: payload.template,
     templateName,
     siteId: payload.siteId,
-    siteName:
-      payload.siteId === DEMO_SITE_ID ? DEMO_SITE_NAME : payload.siteId,
+    siteName: siteNameFor(payload.organizationId, payload.siteId),
     format: payload.format,
     status: "queued",
     generatedBy: "user_demo",

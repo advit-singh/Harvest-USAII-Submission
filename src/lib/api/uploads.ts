@@ -11,6 +11,7 @@ import {
   rejectMockUpload,
   resolveMockAnomaly,
   triggerMockProcessing,
+  registerMockUploadFile,
 } from "@/lib/mocks/uploads-fixtures";
 import type {
   ApproveUploadPayload,
@@ -121,6 +122,7 @@ export async function uploadFile(
       fileSize: input.file.size,
       description: input.description,
     });
+    registerMockUploadFile(upload.id, input.file);
     triggerMockProcessing(upload.id);
     return { uploadId: upload.id, status: upload.status };
   }
